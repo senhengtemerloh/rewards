@@ -36,6 +36,7 @@
         }
         .product-image-container {
             width: 100%;
+            padding-top: 100%; /* 1:1 ratio */
             position: relative;
             overflow: hidden;
             border-radius: 8px;
@@ -47,9 +48,11 @@
         .product-image {
             max-width: 100%;
             max-height: 100%;
-            height: auto;
-            width: auto;
-            border-radius: 8px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            object-fit: contain; /* Maintain original ratio and fit inside the container */
         }
         .no-image {
             width: 60%;
@@ -163,13 +166,11 @@
                     productBox.className = 'product-box';
 
                     const imageContent = product['URL'] 
-                        ? `<img src="${product['URL']}" alt="${product['NAME']}" class="product-image">`
-                        : `<div class="no-image">No Image</div>`;
+                        ? `<div class="product-image-container"><img src="${product['URL']}" alt="${product['NAME']}" class="product-image"></div>`
+                        : `<div class="product-image-container"><div class="no-image">No Image</div></div>`;
 
                     productBox.innerHTML = `
-                        <div class="product-image-container">
-                            ${imageContent}
-                        </div>
+                        ${imageContent}
                         <div class="product-name">${product['NAME']}</div>
                         <div class="product-code">Product Code: ${product['SCF']}</div>
                         <div class="price-info">RCP: RM${Number(product['RCP']).toLocaleString()} | Member Price: RM${Number(product['BLK']).toLocaleString()}</div>
