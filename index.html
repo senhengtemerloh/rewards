@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Promotion Page</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-    <!-- Google Fonts for Noto Sans -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -36,7 +35,7 @@
         }
         .product-image-container {
             width: 100%;
-            padding-top: 100%; /* 1:1 ratio */
+            padding-top: 100%;
             position: relative;
             overflow: hidden;
             border-radius: 8px;
@@ -52,7 +51,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            object-fit: contain; /* Maintain original ratio and fit inside the container */
+            object-fit: contain;
         }
         .no-image {
             width: 60%;
@@ -68,7 +67,7 @@
         }
         .product-name {
             font-family: 'Noto Sans', sans-serif;
-            font-weight: 700; /* Bold font */
+            font-weight: 700;
             color: #212529;
             margin: 15px 0 8px;
             font-size: 1.2em;
@@ -100,10 +99,27 @@
             margin-bottom: 10px;
             text-align: center;
         }
-        .promo-price .price-main {
-            display: block;
+        .promo-price-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .price-main {
             font-size: 1.5em;
             font-weight: bold;
+            margin-right: 8px;
+        }
+        .plus-symbol {
+            background-color: white;
+            color: red;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            margin: 0 8px;
         }
         .coin-points {
             display: flex;
@@ -166,19 +182,24 @@
                     productBox.className = 'product-box';
 
                     const imageContent = product['URL'] 
-                        ? `<div class="product-image-container"><img src="${product['URL']}" alt="${product['NAME']}" class="product-image"></div>`
-                        : `<div class="product-image-container"><div class="no-image">No Image</div></div>`;
+                        ? `<img src="${product['URL']}" alt="${product['NAME']}" class="product-image">`
+                        : `<div class="no-image">No Image</div>`;
 
                     productBox.innerHTML = `
-                        ${imageContent}
+                        <div class="product-image-container">
+                            ${imageContent}
+                        </div>
                         <div class="product-name">${product['NAME']}</div>
                         <div class="product-code">Product Code: ${product['SCF']}</div>
                         <div class="price-info">RCP: RM${Number(product['RCP']).toLocaleString()} | Member Price: RM${Number(product['BLK']).toLocaleString()}</div>
                         <div class="promo-price">
-                            <span class="price-main">RM0.00</span>
-                            <div class="coin-points">
-                                <span>${Number(product['S-COIN']).toLocaleString()}</span>
-                                <small>S-Coin pts</small>
+                            <div class="promo-price-content">
+                                <span class="price-main">${product['PromoPrice'] ? `RM${Number(product['PromoPrice']).toLocaleString()}` : 'N/A'}</span>
+                                <div class="plus-symbol">+</div>
+                                <div class="coin-points">
+                                    <span>${Number(product['S-COIN']).toLocaleString()}</span>
+                                    <small>S-Coin pts</small>
+                                </div>
                             </div>
                         </div>
                         <div class="remarks">${remarksText}</div>
