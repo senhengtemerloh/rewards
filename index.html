@@ -89,7 +89,7 @@
             background-color: #dc3545;
             color: white;
             padding: 10px 16px;
-            border-radius: 30px;
+            border-radius: 15px; /* Reduced the border-radius for a more rectangular look */
             font-size: 1.2em;
             font-weight: bold;
             display: flex;
@@ -103,29 +103,28 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            width: 220px; /* Fixed width to prevent text overflow */
         }
         .price-main {
             font-size: 1.5em;
             font-weight: bold;
-            margin-right: 8px;
         }
         .plus-symbol {
-            background-color: white;
-            color: #dc3545;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
+            background-color: white; /* Same as promo price background */
+            color: #dc3545; /* White "+" symbol */
+            border-radius: 50%; /* Perfect circle */
+            width: 32px; /* Fixed width */
+            height: 32px; /* Fixed height to ensure it's a perfect circle */
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2em;
-            margin: 0 8px;
+            font-size: 1.5em;
+            margin: 0 12px;
         }
         .coin-points {
             display: flex;
             flex-direction: column;
             align-items: center;
-            margin-top: 4px;
         }
         .coin-points span {
             font-size: 1.1em;
