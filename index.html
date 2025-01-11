@@ -111,7 +111,7 @@
         }
         .plus-symbol {
             background-color: white;
-            color: red;
+            color: #dc3545;
             border-radius: 50%;
             width: 24px;
             height: 24px;
@@ -194,7 +194,7 @@
                         <div class="price-info">RCP: RM${Number(product['RCP']).toLocaleString()} | Member Price: RM${Number(product['BLK']).toLocaleString()}</div>
                         <div class="promo-price">
                             <div class="promo-price-content">
-                                <span class="price-main">${product['PromoPrice'] ? `RM${Number(product['PromoPrice']).toLocaleString()}` : 'N/A'}</span>
+                                <span class="price-main">RM0.00</span> <!-- Fixed promo price -->
                                 <div class="plus-symbol">+</div>
                                 <div class="coin-points">
                                     <span>${Number(product['S-COIN']).toLocaleString()}</span>
