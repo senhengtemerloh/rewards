@@ -94,31 +94,11 @@
             text-align: center;
         }
         .remarks {
-            font-size: 1em;
-            color: #495057;
+            font-size: 0.85em;
+            color: red;
             text-align: center;
             margin-top: 8px;
-            position: relative;
-        }
-        .remarks-tooltip {
-            display: inline-block;
-            position: relative;
-            cursor: pointer;
-            border-bottom: 1px dotted #495057;
-        }
-        .remarks-tooltip:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            white-space: nowrap;
-            z-index: 10;
-            font-size: 0.85em;
+            word-wrap: break-word;
         }
         @media (max-width: 768px) {
             .product-box {
@@ -171,8 +151,8 @@
                         <div class="product-name">${product['NAME']}</div>
                         <div class="product-code">Product Code: ${product['SCF']}</div>
                         <div class="price-info">RCP: RM${Number(product['RCP']).toLocaleString()} | Member Price: RM${Number(product['BLK']).toLocaleString()}</div>
-                        <div class="promo-price">RM${Number(product['RM']).toFixed(2)} + ${Number(product['S-COIN']).toLocaleString()} S-Coin pts</div>
-                        <div class="remarks">Remarks: <span class="remarks-tooltip" data-tooltip="${remarksText}">${remarksText.length > 30 ? remarksText.substring(0, 30) + '...' : remarksText}</span></div>
+                        <div class="promo-price">RM0.00 + ${Number(product['S-COIN']).toLocaleString()} S-Coin pts</div>
+                        <div class="remarks">${remarksText}</div>
                     `;
 
                     fragment.appendChild(productBox);
