@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Promotion Page</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+        }
+        .product-box {
+            border: 2px solid #007bff;
+            border-radius: 12px;
+            width: calc(100% / 4 - 24px);
+            max-width: 250px;
+            padding: 20px;
+            box-sizing: border-box;
+            background-color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+        .product-box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        .product-image-container {
+            width: 100%;
+            padding-top: 100%;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .no-image {
+            width: 60%;
+            height: 60%;
+            background-color: #adb5bd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .product-name {
+            font-weight: bold;
+            color: #212529;
+            margin: 15px 0 8px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        .product-code {
+            color: #6c757d;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .price-info {
+            font-size: 0.9em;
+            color: #495057;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .promo-price {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .remarks {
+            font-size: 1em;
+            color: #495057;
+            text-align: center;
+            margin-top: 8px;
+            position: relative;
+        }
+        .remarks-tooltip {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            border-bottom: 1px dotted #495057;
+        }
+        .remarks-tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 10;
+            font-size: 0.85em;
+        }
+        @media (max-width: 768px) {
+            .product-box {
+                width: calc(50% - 16px);
+            }
+        }
+        @media (max-width: 480px) {
+            .product-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: #007bff; margin-bottom: 40px;">Product Promotion</h1>
+    <div class="container"></div>
+
+    <script>
+        async function loadProducts() {
+            const filePath = './database.xlsx';
+
+            try {
+                const response = await fetch(filePath);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch file: ${response.statusText}`);
+                }
+                const data = await response.arrayBuffer();
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                const products = XLSX.utils.sheet_to_json(sheet);
+                const container = document.querySelector('.container');
+                container.innerHTML = ''; // Clear any previous data
+
+                const fragment = document.createDocumentFragment();
+
+                products.forEach(product => {
+                    const remarksText = product['Remark'] || 'No remarks available';
+                    const productBox = document.createElement('div');
+                    productBox.className = 'product-box';
+
+                    const imageContent = product['URL'] 
+                        ? `<img src="${product['URL']}" alt="${product['NAME']}" class="product-image">`
+                        : `<div class="no-image">No Image</div>`;
+
+                    productBox.innerHTML = `
+                        <div class="product-image-container">
+                            ${imageContent}
+                        </div>
+                        <div class="product-name">${product['NAME']}</div>
+                        <div class="product-code">Product Code: ${product['SCF']}</div>
+                        <div class="price-info">RCP: RM${Number(product['RCP']).toLocaleString()} | Member Price: RM${Number(product['BLK']).toLocaleString()}</div>
+                        <div class="promo-price">RM${Number(product['RM']).toFixed(2)} + ${Number(product['S-COIN']).toLocaleString()} S-Coin pts</div>
+                        <div class="remarks">Remarks: <span class="remarks-tooltip" data-tooltip="${remarksText}">${remarksText.length > 30 ? remarksText.substring(0, 30) + '...' : remarksText}</span></div>
+                    `;
+
+                    fragment.appendChild(productBox);
+                });
+
+                container.appendChild(fragment);
+            } catch (error) {
+                console.error('Error loading file:', error);
+                const container = document.querySelector('.container');
+                container.innerHTML = '<p>Error loading products. Please ensure that database.xlsx exists in the same folder.</p>';
+            }
+        }
+
+        // Automatically load the products on page load
+        window.onload = loadProducts;
+    </script>
+</body>
+</html>
