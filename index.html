@@ -89,9 +89,30 @@
             border-radius: 30px;
             font-size: 1.2em;
             font-weight: bold;
-            display: inline-block;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             margin-bottom: 10px;
             text-align: center;
+        }
+        .promo-price .price-main {
+            display: block;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .promo-price .coin-points {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 4px;
+        }
+        .coin-points span {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        .coin-points small {
+            font-size: 0.85em;
         }
         .remarks {
             font-size: 0.85em;
@@ -151,7 +172,13 @@
                         <div class="product-name">${product['NAME']}</div>
                         <div class="product-code">Product Code: ${product['SCF']}</div>
                         <div class="price-info">RCP: RM${Number(product['RCP']).toLocaleString()} | Member Price: RM${Number(product['BLK']).toLocaleString()}</div>
-                        <div class="promo-price">RM0.00 + ${Number(product['S-COIN']).toLocaleString()} S-Coin pts</div>
+                        <div class="promo-price">
+                            <span class="price-main">RM0.00</span>
+                            <div class="coin-points">
+                                <span>${Number(product['S-COIN']).toLocaleString()}</span>
+                                <small>S-Coin pts</small>
+                            </div>
+                        </div>
                         <div class="remarks">${remarksText}</div>
                     `;
 
