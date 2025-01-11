@@ -89,7 +89,7 @@
             background-color: #dc3545;
             color: white;
             padding: 10px 16px;
-            border-radius: 15px; /* Reduced the border-radius for a more rectangular look */
+            border-radius: 15px;
             font-size: 1.2em;
             font-weight: bold;
             display: flex;
@@ -98,28 +98,28 @@
             justify-content: center;
             margin-bottom: 10px;
             text-align: center;
+            width: 220px;
         }
         .promo-price-content {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            width: 220px; /* Fixed width to prevent text overflow */
         }
         .price-main {
             font-size: 1.5em;
             font-weight: bold;
         }
         .plus-symbol {
-            background-color: white; /* Same as promo price background */
-            color: #dc3545; /* White "+" symbol */
+            background-color: white; /* White background */
+            color: #dc3545; /* Same as promo price background */
             border-radius: 50%; /* Perfect circle */
-            width: 32px; /* Fixed width */
-            height: 32px; /* Fixed height to ensure it's a perfect circle */
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5em;
-            margin: 0 12px;
+            margin: 12px 0;
         }
         .coin-points {
             display: flex;
