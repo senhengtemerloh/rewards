@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Promotion Page</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -27,14 +28,10 @@
             box-sizing: border-box;
             background-color: #fff;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease-in-out;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-        }
-        .product-box:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            page-break-inside: avoid;
         }
         .product-image-container {
             width: 100%;
@@ -43,63 +40,12 @@
             overflow: hidden;
             border-radius: 8px;
             background-color: #e9ecef;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            position: absolute;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .product-image {
-            max-width: 100%;
-            max-height: 100%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            object-fit: contain;
-            display: none;
-        }
-        .no-image {
-            width: 60%;
-            height: 60%;
-            background-color: #adb5bd;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2em;
-            font-weight: bold;
         }
         .product-name {
             font-family: 'Noto Sans', sans-serif;
             font-weight: 700;
-            color: #212529;
             margin: 15px 0 8px;
             font-size: 1.2em;
-            text-align: center;
-        }
-        .product-code {
-            color: #6c757d;
-            font-size: 0.7em;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-        .price-info {
-            font-size: 0.9em;
-            color: #495057;
-            margin-bottom: 8px;
             text-align: center;
         }
         .promo-price {
@@ -107,54 +53,7 @@
             color: white;
             padding: 10px 16px;
             border-radius: 15px;
-            font-size: 1.2em;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-top: 12px;
             text-align: center;
-        }
-        .promo-price-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .price-main {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-        .plus-symbol {
-            background-color: white;
-            color: #dc3545;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5em;
-            margin: 12px 0;
-        }
-        .coin-points {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .coin-points span {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-        .coin-points small {
-            font-size: 0.85em;
-        }
-        .remarks {
-            font-size: 0.85em;
-            color: red;
-            text-align: center;
-            margin-top: 8px;
-            word-wrap: break-word;
         }
         @media (max-width: 768px) {
             .product-box {
@@ -166,10 +65,22 @@
                 width: 100%;
             }
         }
+        .pdf-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+        }
     </style>
 </head>
 <body>
     <h1 style="text-align: center; color: #007bff; margin-bottom: 40px;">Product Promotion</h1>
+    <button class="pdf-btn" onclick="downloadPDF()">Download Catalogue PDF</button>
     <div class="container"></div>
 
     <script>
@@ -187,69 +98,45 @@
                 const sheet = workbook.Sheets[sheetName];
                 const products = XLSX.utils.sheet_to_json(sheet);
                 const container = document.querySelector('.container');
-                container.innerHTML = ''; // Clear any previous data
+                container.innerHTML = ''; 
 
                 const fragment = document.createDocumentFragment();
 
                 products.forEach(product => {
-                    const remarksText = product['Remark'] || 'No remarks available';
                     const productBox = document.createElement('div');
                     productBox.className = 'product-box';
 
-                    const productImageContainer = document.createElement('div');
-                    productImageContainer.className = 'product-image-container';
-
-                    const loader = document.createElement('div');
-                    loader.className = 'loader';
-
-                    const productImage = document.createElement('img');
-                    productImage.className = 'product-image';
-                    productImage.src = product['URL'] || '';
-                    productImage.alt = product['NAME'];
-
-                    productImage.onload = () => {
-                        loader.style.display = 'none';
-                        productImage.style.display = 'block';
-                    };
-
-                    productImage.onerror = () => {
-                        loader.style.display = 'none';
-                        productImageContainer.innerHTML = '<div class="no-image">No Image</div>';
-                    };
-
-                    productImageContainer.appendChild(loader);
-                    productImageContainer.appendChild(productImage);
-
-                    productBox.innerHTML += `
+                    productBox.innerHTML = `
+                        <div class="product-image-container"></div>
                         <div class="product-name">${product['NAME']}</div>
-                        <div class="product-code">Code: ${product['SCF']}</div>
                         <div class="price-info">RCP: RM${Number(product['RCP']).toLocaleString()} | Member Price: RM${Number(product['BLK']).toLocaleString()}</div>
                         <div class="promo-price">
-                            <div class="promo-price-content">
-                                <span class="price-main">RM0.00</span>
-                                <div class="plus-symbol">+</div>
-                                <div class="coin-points">
-                                    <span>${Number(product['S-COIN']).toLocaleString()}</span>
-                                    <small>S-Coin pts</small>
-                                </div>
-                            </div>
+                            <span>RM0.00</span>
                         </div>
-                        <div class="remarks">${remarksText}</div>
                     `;
-
-                    productBox.prepend(productImageContainer);
                     fragment.appendChild(productBox);
                 });
 
                 container.appendChild(fragment);
             } catch (error) {
                 console.error('Error loading file:', error);
-                const container = document.querySelector('.container');
-                container.innerHTML = '<p>Error loading products. Please ensure that database.xlsx exists in the same folder.</p>';
+                document.querySelector('.container').innerHTML = '<p>Error loading products. Please ensure that database.xlsx exists in the same folder.</p>';
             }
         }
 
-        // Automatically load the products on page load
+        function downloadPDF() {
+            const container = document.querySelector('.container');
+            const opt = {
+                margin: [5, 5, 5, 5],
+                filename: 'ProductCatalogue.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().from(container).set(opt).save();
+        }
+
         window.onload = loadProducts;
     </script>
 </body>
