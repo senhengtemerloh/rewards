@@ -28,6 +28,27 @@
       justify-content: center;
     }
 
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .pagination button:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+
     .product-box {
       border: 2px solid #6c757d;
       border-radius: 12px;
@@ -48,144 +69,12 @@
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
 
-    .product-image-container {
-      width: 100%;
-      padding-top: 100%;
-      position: relative;
-      overflow: hidden;
-      border-radius: 8px;
-      background-color: #e9ecef;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .loader {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #007bff;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      position: absolute;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    .product-image {
-      max-width: 100%;
-      max-height: 100%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      object-fit: contain;
-      display: none;
-    }
-
-    .no-image {
-      width: 60%;
-      height: 60%;
-      background-color: #adb5bd;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.2em;
-      font-weight: bold;
-    }
-
     .product-name {
-      font-family: 'Noto Sans', sans-serif;
       font-weight: 700;
       color: #212529;
       margin: 15px 0 8px;
       font-size: 1.2em;
       text-align: center;
-    }
-
-    .product-code {
-      color: #6c757d;
-      font-size: 0.7em;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    .price-info {
-      font-size: 0.9em;
-      color: #495057;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-
-    .promo-price {
-      background-color: #dc3545;
-      color: white;
-      padding: 10px 16px;
-      border-radius: 15px;
-      font-size: 1.2em;
-      font-weight: bold;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-top: 12px;
-      text-align: center;
-    }
-
-    .promo-price-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .price-main {
-      font-size: 1.5em;
-      font-weight: bold;
-    }
-
-    .plus-symbol {
-      background-color: white;
-      color: #dc3545;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5em;
-      margin: 12px 0;
-    }
-
-    .coin-points {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .coin-points span {
-      font-size: 1.5em;
-      font-weight: bold;
-    }
-
-    .coin-points small {
-      font-size: 0.85em;
-    }
-
-    .remarks {
-      font-size: 0.85em;
-      color: red;
-      text-align: center;
-      margin-top: 8px;
-      word-wrap: break-word;
     }
 
     @media (max-width: 768px) {
@@ -204,8 +93,20 @@
 <body>
   <h1 style="text-align: center; color: #007bff; margin-bottom: 40px;">Product Promotion</h1>
   <div class="container"></div>
+  <div class="pagination">
+    <button id="firstPage" disabled>First Page</button>
+    <button id="prevPage" disabled>Previous</button>
+    <span id="pageInfo"></span>
+    <button id="nextPage">Next</button>
+    <button id="lastPage">Last Page</button>
+  </div>
 
   <script>
+    const PRODUCTS_PER_PAGE = 8;
+    let currentPage = 1;
+    let totalPages = 0;
+    let products = [];
+
     async function loadProducts() {
       const filePath = './database.xlsx';
 
@@ -218,81 +119,75 @@
         const workbook = XLSX.read(data, { type: 'array' });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
-        const products = XLSX.utils.sheet_to_json(sheet);
+        products = XLSX.utils.sheet_to_json(sheet);
 
-        const container = document.querySelector('.container');
-        container.innerHTML = ''; // Clear any previous data
-
-        const fragment = document.createDocumentFragment();
-
-        products.forEach(product => {
-          const remarksText = product['Remark'] || 'No remarks available';
-          const productBox = document.createElement('div');
-          productBox.className = 'product-box';
-
-          // Create image container
-          const productImageContainer = document.createElement('div');
-          productImageContainer.className = 'product-image-container';
-
-          // Create loader
-          const loader = document.createElement('div');
-          loader.className = 'loader';
-
-          // Create image element
-          const productImage = document.createElement('img');
-          productImage.className = 'product-image';
-          productImage.src = product['URL'] || '';
-          productImage.alt = product['NAME'];
-
-          productImage.onload = () => {
-            loader.style.display = 'none';
-            productImage.style.display = 'block';
-          };
-
-          productImage.onerror = () => {
-            loader.style.display = 'none';
-            productImageContainer.innerHTML =
-              '<div class="no-image">No Image</div>';
-          };
-
-          productImageContainer.appendChild(loader);
-          productImageContainer.appendChild(productImage);
-
-          // Insert the main info
-          productBox.innerHTML += `
-            <div class="product-name">${product['NAME']}</div>
-            <div class="product-code">Code: ${product['SCF']}</div>
-            <div class="price-info">
-              RCP: RM${Number(product['RCP']).toLocaleString()} |
-              Member Price: RM${Number(product['BLK']).toLocaleString()}
-            </div>
-            <div class="promo-price">
-              <div class="promo-price-content">
-                <span class="price-main">RM0.00</span>
-                <div class="plus-symbol">+</div>
-                <div class="coin-points">
-                  <span>${Number(product['S-COIN']).toLocaleString()}</span>
-                  <small>S-Coin pts</small>
-                </div>
-              </div>
-            </div>
-            <div class="remarks">${remarksText}</div>
-          `;
-
-          // Insert the image container at the beginning
-          productBox.prepend(productImageContainer);
-          fragment.appendChild(productBox);
-        });
-
-        container.appendChild(fragment);
+        totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
+        renderPage(currentPage);
       } catch (error) {
         console.error('Error loading file:', error);
-        const container = document.querySelector('.container');
-        container.innerHTML = '<p>Error loading products. Please ensure that database.xlsx exists in the same folder.</p>';
+        document.querySelector('.container').innerHTML = '<p>Error loading products. Please ensure that database.xlsx exists in the same folder.</p>';
       }
     }
 
-    // Automatically load the products on page load
+    function renderPage(page) {
+      const container = document.querySelector('.container');
+      container.innerHTML = '';
+
+      const start = (page - 1) * PRODUCTS_PER_PAGE;
+      const end = Math.min(start + PRODUCTS_PER_PAGE, products.length);
+      const fragment = document.createDocumentFragment();
+
+      for (let i = start; i < end; i++) {
+        const product = products[i];
+        const productBox = document.createElement('div');
+        productBox.className = 'product-box';
+
+        productBox.innerHTML = `
+          <div class="product-name">${product['NAME']}</div>
+          <div>Code: ${product['SCF']}</div>
+          <div>RCP: RM${Number(product['RCP']).toLocaleString()}</div>
+          <div>Member Price: RM${Number(product['BLK']).toLocaleString()}</div>
+        `;
+
+        fragment.appendChild(productBox);
+      }
+
+      container.appendChild(fragment);
+      updatePagination();
+    }
+
+    function updatePagination() {
+      document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+      document.getElementById('firstPage').disabled = currentPage === 1;
+      document.getElementById('prevPage').disabled = currentPage === 1;
+      document.getElementById('nextPage').disabled = currentPage === totalPages;
+      document.getElementById('lastPage').disabled = currentPage === totalPages;
+    }
+
+    document.getElementById('firstPage').addEventListener('click', () => {
+      currentPage = 1;
+      renderPage(currentPage);
+    });
+
+    document.getElementById('prevPage').addEventListener('click', () => {
+      if (currentPage > 1) {
+        currentPage--;
+        renderPage(currentPage);
+      }
+    });
+
+    document.getElementById('nextPage').addEventListener('click', () => {
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderPage(currentPage);
+      }
+    });
+
+    document.getElementById('lastPage').addEventListener('click', () => {
+      currentPage = totalPages;
+      renderPage(currentPage);
+    });
+
     window.onload = loadProducts;
   </script>
 </body>
