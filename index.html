@@ -53,7 +53,7 @@
       border: 2px solid #6c757d;
       border-radius: 12px;
       width: 100%;
-      max-width: 250px;
+      max-width: 280px;
       padding: 20px;
       box-sizing: border-box;
       background-color: #fff;
@@ -168,24 +168,6 @@
       align-items: center;
     }
 
-    .price-main {
-      font-size: 1.5em;
-      font-weight: bold;
-    }
-
-    .plus-symbol {
-      background-color: white;
-      color: #dc3545;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5em;
-      margin: 12px 0;
-    }
-
     .coin-points {
       display: flex;
       flex-direction: column;
@@ -193,12 +175,12 @@
     }
 
     .coin-points span {
-      font-size: 1.5em;
+      font-size: 2em;
       font-weight: bold;
     }
 
     .coin-points small {
-      font-size: 0.85em;
+      font-size: 1em;
     }
 
     .remarks {
@@ -307,8 +289,6 @@
           </div>
           <div class="promo-price">
             <div class="promo-price-content">
-              <span class="price-main">RM0.00</span>
-              <div class="plus-symbol">+</div>
               <div class="coin-points">
                 <span>${Number(product['S-COIN']).toLocaleString()}</span>
                 <small>S-Coin pts</small>
