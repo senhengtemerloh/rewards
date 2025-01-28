@@ -22,10 +22,10 @@
     }
 
     .container {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
       gap: 24px;
-      justify-content: center;
+      justify-items: center;
     }
 
     .pagination {
@@ -52,7 +52,7 @@
     .product-box {
       border: 2px solid #6c757d;
       border-radius: 12px;
-      width: calc(100% / 4 - 24px);
+      width: 100%;
       max-width: 250px;
       padding: 20px;
       box-sizing: border-box;
@@ -210,14 +210,14 @@
     }
 
     @media (max-width: 768px) {
-      .product-box {
-        width: calc(50% - 16px);
+      .container {
+        grid-template-columns: repeat(2, 1fr);
       }
     }
 
     @media (max-width: 480px) {
-      .product-box {
-        width: 100%;
+      .container {
+        grid-template-columns: 1fr;
       }
     }
   </style>
