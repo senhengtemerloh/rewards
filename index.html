@@ -71,16 +71,18 @@
       height: 60%;
       overflow: hidden;
       border-radius: 8px;
-      background-color: #e9ecef;
+      background-color: #e9ecef; /* Default grey background */
       display: flex;
       align-items: center;
       justify-content: center;
+      position: relative;
     }
 
     .product-image {
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
+      background-color: #e9ecef; /* Match the container background */
     }
 
     .product-name {
@@ -185,7 +187,7 @@
         productBox.className = 'product-box';
         productBox.innerHTML = `
           <div class="product-image-container">
-            <img class="product-image" src="${product['URL'] || ''}" alt="${product['NAME']}">
+            <img class="product-image" src="${product['URL'] || ''}" alt="${product['NAME']}" onload="handleImageLoad(this)">
           </div>
           <div class="product-name">${product['NAME']}</div>
           <div class="product-code">Code: ${product['SCF']}</div>
@@ -196,6 +198,29 @@
         container.appendChild(productBox);
       }
       updatePagination();
+    }
+
+    function handleImageLoad(img) {
+      // Check if the image has transparency (PNG)
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+      let hasTransparency = false;
+      for (let i = 3; i < imageData.length; i += 4) {
+        if (imageData[i] < 255) {
+          hasTransparency = true;
+          break;
+        }
+      }
+
+      // If the image is not transparent, blend the background
+      if (!hasTransparency) {
+        img.style.backgroundColor = '#e9ecef'; // Match the container background
+      }
     }
 
     function updatePagination() {
