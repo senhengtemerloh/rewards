@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Product Promotion Page</title>
+  <title>Product Promotion Cards</title>
 
   <!-- Load XLSX library -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
@@ -50,29 +50,24 @@
     }
 
     .product-box {
-      border: 2px solid #6c757d;
+      border: 4px solid #000;
       border-radius: 12px;
       width: 100%;
-      max-width: 280px;
+      max-width: 300px;
       padding: 20px;
       box-sizing: border-box;
       background-color: #fff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s ease-in-out;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-    }
-
-    .product-box:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      position: relative;
     }
 
     .product-image-container {
       width: 100%;
-      padding-top: 100%;
-      position: relative;
+      height: 200px;
       overflow: hidden;
       border-radius: 8px;
       background-color: #e9ecef;
@@ -81,114 +76,52 @@
       justify-content: center;
     }
 
-    .loader {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #007bff;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      animation: spin 1s linear infinite;
-      position: absolute;
-    }
-
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
     .product-image {
       max-width: 100%;
       max-height: 100%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       object-fit: contain;
-      display: none;
-    }
-
-    .no-image {
-      width: 60%;
-      height: 60%;
-      background-color: #adb5bd;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1.2em;
-      font-weight: bold;
     }
 
     .product-name {
       font-family: 'Noto Sans', sans-serif;
       font-weight: 700;
       color: #212529;
-      margin: 15px 0 8px;
-      font-size: 1.2em;
-      text-align: center;
+      margin: 10px 0 8px;
+      font-size: 1.4em;
     }
 
     .product-code {
       color: #6c757d;
-      font-size: 0.7em;
+      font-size: 0.85em;
       margin-bottom: 10px;
-      text-align: center;
     }
 
     .price-info {
-      font-size: 0.9em;
+      font-size: 1em;
       color: #495057;
-      margin-bottom: 8px;
-      text-align: center;
+      margin-bottom: 10px;
     }
 
     .promo-price {
       background-color: #dc3545;
       color: white;
-      padding: 10px 16px;
-      border-radius: 15px;
-      font-size: 1.2em;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 1.4em;
       font-weight: bold;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin-top: 12px;
-      text-align: center;
-    }
-
-    .promo-price-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      margin-top: 10px;
     }
 
     .coin-points {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .coin-points span {
-      font-size: 2em;
+      font-size: 1.8em;
       font-weight: bold;
-    }
-
-    .coin-points small {
-      font-size: 1em;
+      color: #007bff;
     }
 
     .remarks {
       font-size: 0.85em;
       color: red;
-      text-align: center;
-      margin-top: 8px;
-      word-wrap: break-word;
+      margin-top: 10px;
     }
 
     @media (max-width: 768px) {
@@ -205,7 +138,7 @@
   </style>
 </head>
 <body>
-  <h1 style="text-align: center; color: #007bff; margin-bottom: 40px;">Product Promotion</h1>
+  <h1 style="text-align: center; color: #007bff; margin-bottom: 40px;">Product Promotion Cards</h1>
   <div class="container"></div>
   <div class="pagination">
     <button id="firstPage" disabled>First Page</button>
@@ -223,7 +156,6 @@
 
     async function loadProducts() {
       const filePath = './database.xlsx';
-
       try {
         const response = await fetch(filePath);
         if (!response.ok) {
@@ -234,75 +166,34 @@
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         products = XLSX.utils.sheet_to_json(sheet);
-
         totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
         renderPage(currentPage);
       } catch (error) {
         console.error('Error loading file:', error);
-        document.querySelector('.container').innerHTML = '<p>Error loading products. Please ensure that database.xlsx exists in the same folder.</p>';
       }
     }
 
     function renderPage(page) {
       const container = document.querySelector('.container');
       container.innerHTML = '';
-
       const start = (page - 1) * PRODUCTS_PER_PAGE;
       const end = Math.min(start + PRODUCTS_PER_PAGE, products.length);
-      const fragment = document.createDocumentFragment();
-
       for (let i = start; i < end; i++) {
         const product = products[i];
         const productBox = document.createElement('div');
         productBox.className = 'product-box';
-
-        const productImageContainer = document.createElement('div');
-        productImageContainer.className = 'product-image-container';
-
-        const loader = document.createElement('div');
-        loader.className = 'loader';
-
-        const productImage = document.createElement('img');
-        productImage.className = 'product-image';
-        productImage.src = product['URL'] || '';
-        productImage.alt = product['NAME'];
-
-        productImage.onload = () => {
-          loader.style.display = 'none';
-          productImage.style.display = 'block';
-        };
-
-        productImage.onerror = () => {
-          loader.style.display = 'none';
-          productImageContainer.innerHTML = '<div class="no-image">No Image</div>';
-        };
-
-        productImageContainer.appendChild(loader);
-        productImageContainer.appendChild(productImage);
-
         productBox.innerHTML = `
+          <div class="product-image-container">
+            <img class="product-image" src="${product['URL'] || ''}" alt="${product['NAME']}">
+          </div>
           <div class="product-name">${product['NAME']}</div>
           <div class="product-code">Code: ${product['SCF']}</div>
-          <div class="price-info">
-            RCP: RM${Number(product['RCP']).toLocaleString()} |
-            Member Price: RM${Number(product['BLK']).toLocaleString()}
-          </div>
-          <div class="promo-price">
-            <div class="promo-price-content">
-              <div class="coin-points">
-                <span>${Number(product['S-COIN']).toLocaleString()}</span>
-                <small>S-Coin pts</small>
-              </div>
-            </div>
-          </div>
+          <div class="price-info">RCP: RM${Number(product['RCP']).toLocaleString()} | Member Price: RM${Number(product['BLK']).toLocaleString()}</div>
+          <div class="promo-price"><span class="coin-points">${Number(product['S-COIN']).toLocaleString()}</span> S-Coin pts</div>
           <div class="remarks">${product['Remark'] || 'No remarks available'}</div>
         `;
-
-        productBox.prepend(productImageContainer);
-        fragment.appendChild(productBox);
+        container.appendChild(productBox);
       }
-
-      container.appendChild(fragment);
       updatePagination();
     }
 
@@ -313,30 +204,6 @@
       document.getElementById('nextPage').disabled = currentPage === totalPages;
       document.getElementById('lastPage').disabled = currentPage === totalPages;
     }
-
-    document.getElementById('firstPage').addEventListener('click', () => {
-      currentPage = 1;
-      renderPage(currentPage);
-    });
-
-    document.getElementById('prevPage').addEventListener('click', () => {
-      if (currentPage > 1) {
-        currentPage--;
-        renderPage(currentPage);
-      }
-    });
-
-    document.getElementById('nextPage').addEventListener('click', () => {
-      if (currentPage < totalPages) {
-        currentPage++;
-        renderPage(currentPage);
-      }
-    });
-
-    document.getElementById('lastPage').addEventListener('click', () => {
-      currentPage = totalPages;
-      renderPage(currentPage);
-    });
 
     window.onload = loadProducts;
   </script>
