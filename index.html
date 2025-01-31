@@ -66,6 +66,18 @@
       position: relative;
     }
 
+    .brand-name {
+      font-family: 'Noto Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1.2em;
+      color: white;
+      background-color: #007bff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
     .product-image-container {
       width: 100%;
       height: 200px; /* Fixed height for image container */
@@ -90,10 +102,8 @@
       font-weight: 700;
       color: #212529;
       margin: 10px 0 8px;
-      font-size: 1.4em;
-      white-space: nowrap; /* Prevent text from wrapping */
-      overflow: hidden; /* Hide overflow */
-      text-overflow: ellipsis; /* Add ellipsis for long text */
+      font-size: 1.1em; /* Smaller font size for product name */
+      word-wrap: break-word; /* Ensure long text wraps */
     }
 
     .product-code {
@@ -160,6 +170,16 @@
     let totalPages = 0;
     let products = [];
 
+    // Function to extract brand name from product name
+    function extractBrandName(productName) {
+      const brandEndIndex = productName.indexOf(' '); // Find the first space
+      if (brandEndIndex === -1) return { brand: productName, description: '' }; // If no space, treat the whole name as brand
+      return {
+        brand: productName.substring(0, brandEndIndex),
+        description: productName.substring(brandEndIndex + 1),
+      };
+    }
+
     async function loadProducts() {
       const filePath = './database.xlsx';
       try {
@@ -186,13 +206,15 @@
       const end = Math.min(start + PRODUCTS_PER_PAGE, products.length);
       for (let i = start; i < end; i++) {
         const product = products[i];
+        const { brand, description } = extractBrandName(product['NAME']); // Extract brand and description
         const productBox = document.createElement('div');
         productBox.className = 'product-box';
         productBox.innerHTML = `
+          <div class="brand-name">${brand}</div>
           <div class="product-image-container">
             <img class="product-image" src="${product['URL'] || ''}" alt="${product['NAME']}" onload="handleImageLoad(this)">
           </div>
-          <div class="product-name">${product['NAME']}</div>
+          <div class="product-name">${description}</div>
           <div class="product-code">Code: ${product['SCF']}</div>
           <div class="price-info">RCP: RM${Number(product['RCP']).toLocaleString()} | Member Price: RM${Number(product['BLK']).toLocaleString()}</div>
           <div class="promo-price"><span class="coin-points">${Number(product['S-COIN']).toLocaleString()}</span> S-Coin pts</div>
@@ -228,6 +250,10 @@
 
     function updatePagination() {
       document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
+      document.getElementById('firstPage').disabled = currentPage === 1;
+      document.getElementById('prevPage').disabled = currentPage === 1;
+      document.getElementById('nextPage').disabled = currentPage === totalPages;
+      document.getElementById('lastPage').disabled = currentPage === totalPages;
     }
 
     document.getElementById('firstPage').addEventListener('click', () => { currentPage = 1; renderPage(currentPage); });
