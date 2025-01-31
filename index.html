@@ -9,17 +9,17 @@
   
   <style>
     :root {
-      --primary-color: #570987;
-      --accent-color: #ffd700;
-      --error-color: #dc3545;
-      --rcp-color: #e9ecef;
-      --member-price-color: #d4edda;
+      --primary-color: #2A2D43;    /* Deep navy */
+      --accent-color: #FF6B6B;     /* Coral red */
+      --secondary-color: #4ECDC4;  /* Teal */
+      --background-color: #F5F7FA; /* Light grey */
+      --text-color: #2D3436;       /* Dark grey */
     }
 
     body {
       font-family: 'Noto Sans', sans-serif;
       margin: 0;
-      background-color: #f8f9fa;
+      background-color: var(--background-color);
     }
 
     .header {
@@ -41,7 +41,7 @@
     #search {
       flex: 1;
       padding: 0.8rem;
-      border: 2px solid #ddd;
+      border: 2px solid #e0e0e0;
       border-radius: 25px;
       font-size: 1rem;
       transition: all 0.3s ease;
@@ -49,13 +49,13 @@
 
     #search:focus {
       outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 8px rgba(87,9,135,0.2);
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 8px rgba(78,205,196,0.2);
     }
 
     #filter {
       padding: 0.8rem 1.2rem;
-      border: 2px solid #ddd;
+      border: 2px solid #e0e0e0;
       border-radius: 25px;
       background: white;
       cursor: pointer;
@@ -68,6 +68,7 @@
       padding: 2rem;
       max-width: 1200px;
       margin: 0 auto;
+      min-height: 60vh;
     }
 
     .product-box {
@@ -99,7 +100,7 @@
 
     .product-image-container {
       height: 200px;
-      background: #ffffff;
+      background: var(--background-color);
       border-radius: 12px;
       margin-bottom: 1rem;
       position: relative;
@@ -119,7 +120,7 @@
 
     .product-name {
       font-weight: 700;
-      color: #333;
+      color: var(--text-color);
       margin-bottom: 0.5rem;
       line-height: 1.3;
     }
@@ -135,46 +136,64 @@
       grid-template-columns: 1fr 1fr;
       gap: 0.5rem;
       margin: 1rem 0;
+      background: var(--background-color);
+      padding: 0.5rem;
+      border-radius: 8px;
     }
 
     .price-item {
       padding: 0.75rem;
-      border-radius: 8px;
+      border-radius: 6px;
       text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .rcp-price {
-      background: var(--rcp-color);
-      color: #495057;
+      background: white;
+      color: var(--text-color);
+      border: 1px solid #e0e0e0;
     }
 
     .member-price {
-      background: var(--member-price-color);
-      color: #155724;
+      background: var(--primary-color);
+      color: white;
     }
 
     .price-label {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       margin-bottom: 0.25rem;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--secondary-color);
+    }
+
+    .member-price .price-label {
+      color: rgba(255,255,255,0.9);
     }
 
     .price-value {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
+      color: var(--text-color);
+    }
+
+    .member-price .price-value {
+      color: white;
     }
 
     .promo-price {
-      background: var(--error-color);
+      background: var(--accent-color);
       color: white;
       padding: 1rem;
-      border-radius: 12px;
+      border-radius: 8px;
       text-align: center;
+      margin-top: 1rem;
     }
 
     .coin-points {
-      color: var(--accent-color);
-      font-size: 1.7rem;
+      color: white;
+      font-size: 1.5rem;
       font-weight: 700;
       display: block;
       margin-bottom: 0.25rem;
@@ -200,7 +219,7 @@
     }
 
     .pagination button:hover:not(:disabled) {
-      background: #3a0660;
+      background: #1A1D2E;
       transform: translateY(-2px);
     }
 
@@ -214,16 +233,17 @@
       width: 50px;
       height: 50px;
       border: 4px solid #f3f3f3;
-      border-top: 4px solid var(--primary-color);
+      border-top: 4px solid var(--secondary-color);
       border-radius: 50%;
       animation: spin 1s linear infinite;
       margin: 2rem auto;
     }
 
     .error-message {
-      color: var(--error-color);
+      color: var(--accent-color);
       text-align: center;
       padding: 2rem;
+      font-weight: 700;
     }
 
     @keyframes spin {
@@ -285,12 +305,25 @@
       };
     };
 
+    function formatPrice(price) {
+      const number = Number(price);
+      if (isNaN(number)) return 'RM0.00';
+      return number.toLocaleString('en-MY', {
+        style: 'currency',
+        currency: 'MYR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
+
     function extractBrandName(productName) {
       const brandEndIndex = productName.indexOf(' ');
       return brandEndIndex === -1 
         ? { brand: productName, description: '' }
-        : { brand: productName.substring(0, brandEndIndex), 
-            description: productName.substring(brandEndIndex + 1) };
+        : { 
+            brand: productName.substring(0, brandEndIndex), 
+            description: productName.substring(brandEndIndex + 1) 
+          };
     }
 
     async function loadProducts() {
@@ -314,6 +347,7 @@
     function populateBrandFilter() {
       const brands = [...new Set(allProducts.map(p => extractBrandName(p.NAME).brand))];
       const filterSelect = document.getElementById('filter');
+      filterSelect.innerHTML = '<option value="">All Brands</option>';
       brands.forEach(brand => {
         const option = document.createElement('option');
         option.value = brand;
@@ -341,14 +375,21 @@
 
     function renderPage(page) {
       const container = document.querySelector('.container');
-      container.innerHTML = filteredProducts.length ? '' : '<div class="error-message">No products found</div>';
+      container.innerHTML = '';
       
+      if (filteredProducts.length === 0) {
+        container.innerHTML = '<div class="error-message">No products found matching your criteria</div>';
+        return;
+      }
+
       const start = (page - 1) * PRODUCTS_PER_PAGE;
       const end = start + PRODUCTS_PER_PAGE;
+      
       filteredProducts.slice(start, end).forEach(product => {
         const { brand, description } = extractBrandName(product.NAME);
         const productBox = document.createElement('div');
         productBox.className = 'product-box';
+        
         productBox.innerHTML = `
           <div class="brand-name">${brand}</div>
           <div class="product-image-container">
@@ -364,18 +405,18 @@
             
             <div class="price-comparison">
               <div class="price-item rcp-price">
-                <div class="price-label">RCP</div>
-                <div class="price-value">RM${Number(product.RCP).toLocaleString()}</div>
+                <div class="price-label">Regular Price</div>
+                <div class="price-value">${formatPrice(product.RCP)}</div>
               </div>
               <div class="price-item member-price">
                 <div class="price-label">Member Price</div>
-                <div class="price-value">RM${Number(product.BLK).toLocaleString()}</div>
+                <div class="price-value">${formatPrice(product.BLK)}</div>
               </div>
             </div>
 
             <div class="promo-price">
               <span class="coin-points">${Number(product['S-COIN']).toLocaleString()}</span>
-              S-Coin pts
+              S-Coin Points
             </div>
           </div>
         `;
@@ -409,6 +450,7 @@
     document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; renderPage(currentPage); } });
     document.getElementById('lastPage').addEventListener('click', () => { currentPage = totalPages; renderPage(currentPage); });
 
+    // Initial load
     window.onload = loadProducts;
   </script>
 </body>
