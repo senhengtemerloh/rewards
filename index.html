@@ -12,6 +12,8 @@
       --primary-color: #570987;
       --accent-color: #ffd700;
       --error-color: #dc3545;
+      --rcp-color: #e9ecef;
+      --member-price-color: #d4edda;
     }
 
     body {
@@ -97,7 +99,7 @@
 
     .product-image-container {
       height: 200px;
-      background: #ffffff;
+      background: #FFFFFF;
       border-radius: 12px;
       margin-bottom: 1rem;
       position: relative;
@@ -126,6 +128,40 @@
       color: #666;
       font-size: 0.85rem;
       margin-bottom: 1rem;
+    }
+
+    .price-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
+
+    .price-item {
+      padding: 0.75rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .rcp-price {
+      background: var(--rcp-color);
+      color: #495057;
+    }
+
+    .member-price {
+      background: var(--member-price-color);
+      color: #155724;
+    }
+
+    .price-label {
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+
+    .price-value {
+      font-size: 0.9rem;
+      font-weight: 700;
     }
 
     .promo-price {
@@ -241,7 +277,6 @@
     let allProducts = [];
     let filteredProducts = [];
 
-    // Debounce function
     const debounce = (func, delay) => {
       let timeoutId;
       return (...args) => {
@@ -326,6 +361,18 @@
           <div class="product-details">
             <div class="product-name">${description}</div>
             <div class="product-code">Code: ${product.SCF}</div>
+            
+            <div class="price-comparison">
+              <div class="price-item rcp-price">
+                <div class="price-label">RCP</div>
+                <div class="price-value">RM${Number(product.RCP).toLocaleString()}</div>
+              </div>
+              <div class="price-item member-price">
+                <div class="price-label">Member Price</div>
+                <div class="price-value">RM${Number(product.BLK).toLocaleString()}</div>
+              </div>
+            </div>
+
             <div class="promo-price">
               <span class="coin-points">${Number(product['S-COIN']).toLocaleString()}</span>
               S-Coin pts
