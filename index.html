@@ -290,7 +290,7 @@
     <button id="lastPage" aria-label="Last page">»</button>
   </div>
 
-    <script>
+  <script>
     const PRODUCTS_PER_PAGE = 9;
     let currentPage = 1;
     let totalPages = 0;
@@ -299,7 +299,16 @@
 
     const debounce = (func, delay) => { /* unchanged */ };
 
-    function formatPrice(price) { /* unchanged */ }
+    function formatPrice(price) {
+      const number = Number(price);
+      if (isNaN(number)) return 'RM0.00';
+      return number.toLocaleString('en-MY', {
+        style: 'currency',
+        currency: 'MYR',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+    }
 
     async function loadProducts() {
       toggleLoading(true);
@@ -310,17 +319,21 @@
         const workbook = XLSX.read(data, { type: 'array', cellFormula: false });
         const sheet = workbook.Sheets[workbook.SheetNames[0]];
         
-        // Get raw data including formulas
         const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-        
-        // Process data to handle formulas and clean up
         const headers = rawData[0];
+        
         allProducts = rawData.slice(1).map(row => {
           const product = {};
           headers.forEach((header, index) => {
             const cell = sheet[XLSX.utils.encode_cell({ r: row.__rowNum__ + 1, c: index })];
-            // Get calculated value if available, otherwise use raw value
-            product[header] = cell?.w || row[index];
+            let value = cell?.w || row[index];
+            
+            // Convert numeric columns to numbers
+            if (['RCP', 'BLK', 'S-COIN'].includes(header)) {
+              value = Number(value) || 0;
+            }
+            
+            product[header] = value;
           });
           return product;
         });
@@ -335,34 +348,9 @@
       }
     }
 
-    function populateBrandFilter() {
-      const brands = [...new Set(allProducts.map(p => p.BRAND))].filter(b => b);
-      const filterSelect = document.getElementById('filter');
-      filterSelect.innerHTML = '<option value="">All Brands</option>';
-      brands.forEach(brand => {
-        const option = document.createElement('option');
-        option.value = brand;
-        option.textContent = brand;
-        filterSelect.appendChild(option);
-      });
-    }
+    function populateBrandFilter() { /* unchanged */ }
 
-    function filterProducts() {
-      const searchTerm = document.getElementById('search').value.toLowerCase();
-      const selectedBrand = document.getElementById('filter').value;
-      
-      filteredProducts = allProducts.filter(product => {
-        const matchesSearch = 
-          (product.NAME?.toLowerCase().includes(searchTerm) || '') ||
-          (product.BRAND?.toLowerCase().includes(searchTerm) || '');
-        const matchesBrand = !selectedBrand || product.BRAND === selectedBrand;
-        return matchesSearch && matchesBrand;
-      });
-
-      currentPage = 1;
-      totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
-      renderPage(currentPage);
-    }
+    function filterProducts() { /* unchanged */ }
 
     function renderPage(page) {
       const container = document.querySelector('.container');
@@ -380,21 +368,20 @@
         const productBox = document.createElement('div');
         productBox.className = 'product-box';
         
-        // Handle missing data
-        const safeGet = (prop) => product[prop] || 'N/A';
+        const imageUrl = product.URL || 'https://pic.onlinewebfonts.com/thumbnails/icons_370375.svg';
         
         productBox.innerHTML = `
-          <div class="brand-name">${safeGet('BRAND')}</div>
+          <div class="brand-name">${product.BRAND || 'N/A'}</div>
           <div class="product-image-container">
             <img class="product-image" 
-                 src="${product.URL || 'placeholder.jpg'}" 
-                 alt="${safeGet('NAME')}"
+                 src="${imageUrl}" 
+                 alt="${product.NAME || ''}"
                  loading="lazy"
-                 onerror="this.src='placeholder.jpg'">
+                 onerror="this.src='https://pic.onlinewebfonts.com/thumbnails/icons_370375.svg'">
           </div>
           <div class="product-details">
-            <div class="product-name">${safeGet('NAME')}</div>
-            <div class="product-code">Code: ${safeGet('SCF')}</div>
+            <div class="product-name">${product.NAME || 'N/A'}</div>
+            <div class="product-code">Code: ${product.SCF || 'N/A'}</div>
             
             <div class="price-comparison">
               <div class="price-item rcp-price">
@@ -408,7 +395,7 @@
             </div>
 
             <div class="promo-price">
-              <span class="coin-points">${parseInt(product['S-COIN'])?.toLocaleString() || '0'}</span>
+              <span class="coin-points">${(product['S-COIN'] || 0).toLocaleString()}</span>
               S-Coin Points
             </div>
             ${product.Remark ? `<div style="font-size: 0.8em; color: red; margin-top: 8px;">${product.Remark}</div>` : ''}
