@@ -316,16 +316,6 @@
       });
     }
 
-    function extractBrandName(productName) {
-      const brandEndIndex = productName.indexOf(' ');
-      return brandEndIndex === -1 
-        ? { brand: productName, description: '' }
-        : { 
-            brand: productName.substring(0, brandEndIndex), 
-            description: productName.substring(brandEndIndex + 1) 
-          };
-    }
-
     async function loadProducts() {
       toggleLoading(true);
       try {
@@ -345,7 +335,7 @@
     }
 
     function populateBrandFilter() {
-      const brands = [...new Set(allProducts.map(p => extractBrandName(p.NAME).brand))];
+      const brands = [...new Set(allProducts.map(p => p.BRAND))];
       const filterSelect = document.getElementById('filter');
       filterSelect.innerHTML = '<option value="">All Brands</option>';
       brands.forEach(brand => {
@@ -361,10 +351,9 @@
       const selectedBrand = document.getElementById('filter').value;
       
       filteredProducts = allProducts.filter(product => {
-        const { brand, description } = extractBrandName(product.NAME);
-        const matchesSearch = description.toLowerCase().includes(searchTerm) || 
-                             brand.toLowerCase().includes(searchTerm);
-        const matchesBrand = !selectedBrand || brand === selectedBrand;
+        const matchesSearch = product.NAME.toLowerCase().includes(searchTerm) || 
+                             product.BRAND.toLowerCase().includes(searchTerm);
+        const matchesBrand = !selectedBrand || product.BRAND === selectedBrand;
         return matchesSearch && matchesBrand;
       });
 
@@ -386,21 +375,20 @@
       const end = start + PRODUCTS_PER_PAGE;
       
       filteredProducts.slice(start, end).forEach(product => {
-        const { brand, description } = extractBrandName(product.NAME);
         const productBox = document.createElement('div');
         productBox.className = 'product-box';
         
         productBox.innerHTML = `
-          <div class="brand-name">${brand}</div>
+          <div class="brand-name">${product.BRAND}</div>
           <div class="product-image-container">
             <img class="product-image" 
                  src="${product.URL || 'placeholder.jpg'}" 
-                 alt="${description}"
+                 alt="${product.NAME}"
                  loading="lazy"
                  onerror="this.src='placeholder.jpg'">
           </div>
           <div class="product-details">
-            <div class="product-name">${description}</div>
+            <div class="product-name">${product.NAME}</div>
             <div class="product-code">Code: ${product.SCF}</div>
             
             <div class="price-comparison">
