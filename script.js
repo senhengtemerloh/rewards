@@ -225,11 +225,11 @@ document.getElementById('prevPage').addEventListener('click', () => { if (curren
 document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; renderPage(currentPage); } });
 document.getElementById('lastPage').addEventListener('click', () => { currentPage = totalPages; renderPage(currentPage); });
 
-// New: Scroll to top and bottom functionality
-document.getElementById('scrollTop').addEventListener('click', () => {
+// Mobile fixed scroll buttons event listeners
+document.getElementById('mobileScrollTop').addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
-document.getElementById('scrollBottom').addEventListener('click', () => {
+document.getElementById('mobileScrollBottom').addEventListener('click', () => {
   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 });
 
