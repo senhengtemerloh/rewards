@@ -13,7 +13,7 @@ const debounce = (func, delay) => {
   };
 };
 
-// Price formatting (original)
+// Price formatting
 function formatPrice(price) {
   const priceStr = price ? price.toString() : "";
   const cleaned = priceStr.replace(/[^0-9.]/g, "");
@@ -22,29 +22,30 @@ function formatPrice(price) {
   return num < 11 ? `RM${num.toFixed(2)}` : `RM${Math.round(num)}`;
 }
 
-// S-Coin formatting (original)
+// S-Coin formatting
 function formatScoin(scoin) {
   const num = Number(scoin);
   return isNaN(num) ? scoin : num.toLocaleString('en-US');
 }
 
-// Image loading handler (new)
-function handleImageLoad(img) {
-  const container = img.parentElement;
+// Image loading handler
+function handleImageLoad(imgElement) {
+  const container = imgElement.parentElement;
   const loader = document.createElement('div');
   loader.className = 'image-loading';
   container.appendChild(loader);
   
-  img.onload = img.onerror = () => container.removeChild(loader);
+  imgElement.onload = imgElement.onerror = () => {
+    container.removeChild(loader);
+  };
 }
 
-// Product creation (original + image loader)
+// Create product element
 function createProductElement(product) {
   const productBox = document.createElement('div');
   productBox.className = 'product-box';
   const safeGet = (prop) => product[prop] || 'N/A';
 
-  // Image handling with loader
   const img = new Image();
   img.classList.add('product-image');
   img.src = product.URL || 'https://pic.onlinewebfonts.com/thumbnails/icons_370375.svg';
@@ -80,42 +81,27 @@ function createProductElement(product) {
   return productBox;
 }
 
-// Excel loading (original working version)
+// Load products from JSON
 async function loadProducts() {
   toggleLoading(true);
   try {
-    const response = await fetch('./database.xlsx');
-    if (!response.ok) throw new Error('Failed to load products');
-    const data = await response.arrayBuffer();
-    const workbook = XLSX.read(data, { type: 'array', cellFormula: false });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-    // Original working column mapping
-    allProducts = rawData.slice(1).map(row => ({
-      SCF: row[0],
-      BRAND: row[1],
-      NAME: row[2],
-      RCP: row[3],
-      BLK: row[4],
-      "S-COIN": row[6],
-      Remark: row[7],
-      URL: row[8]
-    }));
-
+    const response = await fetch('data.json');
+    if (!response.ok) throw new Error('Failed to load data');
+    allProducts = await response.json();
+    
     populateBrandFilter();
     filterProducts();
   } catch (error) {
-    showError('Failed to load products. Please check: 1) File exists 2) Column order');
+    showError('Failed to load products. Please check data.json file.');
     console.error('Loading error:', error);
   } finally {
     toggleLoading(false);
   }
 }
 
-// Rest of original functions with pagination updates
-function populateBrandFilter() { 
-  const brands = [...new Set(allProducts.map(p => p.BRAND))].filter(b => b);
+// Populate brand filter
+function populateBrandFilter() {
+  const brands = [...new Set(allProducts.map(p => p.BRAND))].filter(Boolean);
   const filterSelect = document.getElementById('filter');
   filterSelect.innerHTML = '<option value="">All Brands</option>';
   brands.forEach(brand => {
@@ -124,14 +110,16 @@ function populateBrandFilter() {
     option.textContent = brand;
     filterSelect.appendChild(option);
   });
- }
-function filterProducts() { 
+}
+
+// Filter products
+function filterProducts() {
   const searchTerm = document.getElementById('search').value.toLowerCase();
   const selectedBrand = document.getElementById('filter').value;
   
   filteredProducts = allProducts.filter(product => {
-    const nameMatches = product.NAME && product.NAME.toLowerCase().includes(searchTerm);
-    const brandMatches = product.BRAND && product.BRAND.toLowerCase().includes(searchTerm);
+    const nameMatches = product.NAME?.toLowerCase().includes(searchTerm);
+    const brandMatches = product.BRAND?.toLowerCase().includes(searchTerm);
     const matchesSearch = nameMatches || brandMatches;
     const matchesBrand = !selectedBrand || product.BRAND === selectedBrand;
     return matchesSearch && matchesBrand;
@@ -139,9 +127,10 @@ function filterProducts() {
 
   currentPage = 1;
   totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
-  renderPage(currentPage); }
+  renderPage(currentPage);
+}
 
-// Updated render function
+// Render products
 function renderPage(page) {
   const container = document.querySelector('.container');
   container.innerHTML = '';
@@ -161,36 +150,39 @@ function renderPage(page) {
   updatePagination();
 }
 
-// Dual pagination update
+// Update pagination
 function updatePagination() {
-  const update = (suffix = '') => {
+  const updateSection = (suffix = '') => {
     document.getElementById(`pageInfo${suffix}`).textContent = `Page ${currentPage} of ${totalPages}`;
     document.getElementById(`firstPage${suffix}`).disabled = currentPage === 1;
     document.getElementById(`prevPage${suffix}`).disabled = currentPage === 1;
     document.getElementById(`nextPage${suffix}`).disabled = currentPage === totalPages;
     document.getElementById(`lastPage${suffix}`).disabled = currentPage === totalPages;
   };
-  update();
-  update('Top');
+  
+  updateSection();
+  updateSection('Top');
 }
 
-// Navigation setup (new)
+// Navigation setup
 function setupNavigation() {
-  // Pagination sync
   document.querySelectorAll('.pagination-top button').forEach(button => {
-    button.addEventListener('click', () => document.getElementById(button.id.replace('Top', '')).click());
+    button.addEventListener('click', () => {
+      const action = button.id.replace('Top', '');
+      document.getElementById(action).click();
+    });
   });
 
-  // Scroll buttons
   document.getElementById('jumpToBottom').addEventListener('click', () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   });
+
   document.getElementById('backToTop').addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
 
-// Original utility functions
+// Utility functions
 function toggleLoading(show) {
   document.querySelector('.loading-spinner').style.display = show ? 'block' : 'none';
 }
@@ -200,7 +192,7 @@ function showError(message) {
   container.innerHTML = `<div class="error-message">${message}</div>`;
 }
 
-// Event listeners (original + top pagination)
+// Event listeners
 document.getElementById('search').addEventListener('input', debounce(filterProducts, 300));
 document.getElementById('filter').addEventListener('change', filterProducts);
 document.getElementById('firstPage').addEventListener('click', () => { currentPage = 1; renderPage(currentPage); });
@@ -208,7 +200,7 @@ document.getElementById('prevPage').addEventListener('click', () => { if (curren
 document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < totalPages) currentPage++; renderPage(currentPage); });
 document.getElementById('lastPage').addEventListener('click', () => { currentPage = totalPages; renderPage(currentPage); });
 
-// Initialize (updated)
+// Initialize
 window.onload = () => {
   loadProducts();
   setupNavigation();
