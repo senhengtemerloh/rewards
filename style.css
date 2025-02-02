@@ -90,11 +90,27 @@ body {
 
 .product-image-container {
   height: 200px;
-  background: var(--background-color);
+  background: #f5f5f5;
   border-radius: 12px;
   margin-bottom: 1rem;
   position: relative;
   overflow: hidden;
+}
+
+.image-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 400% 400%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
 }
 
 .product-image {
@@ -193,8 +209,12 @@ body {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
-  padding: 2rem;
-  flex-wrap: wrap;
+  padding: 1rem;
+  margin: 1rem auto;
+}
+
+.pagination-top {
+  display: none;
 }
 
 .pagination button {
@@ -236,6 +256,33 @@ body {
   font-weight: 700;
 }
 
+.navigation-floating {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+}
+
+.nav-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  background: var(--accent-color);
+  transform: scale(1.1);
+}
+
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
@@ -254,5 +301,13 @@ body {
 
   .product-box {
     padding: 1rem;
+  }
+
+  .pagination-top {
+    display: flex;
+  }
+  
+  .pagination-bottom {
+    margin-bottom: 60px;
   }
 }
