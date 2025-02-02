@@ -73,7 +73,7 @@ async function loadProducts() {
   renderSkeletons(); // show skeleton screens
 
   try {
-    // Check for cached data (and parse it)
+    // Check for cached data
     const cachedData = localStorage.getItem('allProducts');
     if (cachedData) {
       allProducts = JSON.parse(cachedData);
@@ -98,7 +98,7 @@ async function loadProducts() {
       Remark: row[7],
       URL: row[8]
     }));
-    // Cache data for future visits (you could also add an expiration mechanism)
+    // Cache the data for future visits
     localStorage.setItem('allProducts', JSON.stringify(allProducts));
     populateBrandFilter();
     filterProducts();
@@ -150,7 +150,6 @@ function filterProducts() {
  */
 function renderPage(page) {
   const container = document.querySelector('.container');
-  // Clear any skeletons or previous content
   container.innerHTML = '';
   
   if (filteredProducts.length === 0) {
@@ -225,6 +224,14 @@ document.getElementById('firstPage').addEventListener('click', () => { currentPa
 document.getElementById('prevPage').addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPage(currentPage); } });
 document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; renderPage(currentPage); } });
 document.getElementById('lastPage').addEventListener('click', () => { currentPage = totalPages; renderPage(currentPage); });
+
+// New: Scroll to top and bottom functionality
+document.getElementById('scrollTop').addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+document.getElementById('scrollBottom').addEventListener('click', () => {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+});
 
 // Load products when the window loads
 window.onload = loadProducts;
