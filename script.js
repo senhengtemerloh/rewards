@@ -202,6 +202,9 @@ function renderPage(page) {
   
   container.appendChild(fragment);
   updatePagination();
+  
+  // After rendering, attach modal click events to images (only on desktop)
+  attachModalEvents();
 }
 
 /**
@@ -215,9 +218,26 @@ function updatePagination() {
   document.getElementById('lastPage').disabled = currentPage === totalPages;
 }
 
-/* ---------------------------
-   Event Listeners
---------------------------- */
+/**
+ * Attach click event listeners to product images for modal preview (desktop only).
+ */
+function attachModalEvents() {
+  // Only add modal functionality on desktop (width >= 769px)
+  if (window.innerWidth < 769) return;
+  
+  const images = document.querySelectorAll('.product-image');
+  images.forEach(img => {
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', function () {
+      const modal = document.getElementById('modal');
+      const modalImg = document.getElementById('modalImg');
+      modal.style.display = 'block';
+      modalImg.src = this.src;
+    });
+  });
+}
+
+// Event Listeners for pagination
 document.getElementById('search').addEventListener('input', debounce(filterProducts, 300));
 document.getElementById('filter').addEventListener('change', filterProducts);
 document.getElementById('firstPage').addEventListener('click', () => { currentPage = 1; renderPage(currentPage); });
@@ -231,6 +251,17 @@ document.getElementById('mobileScrollTop').addEventListener('click', () => {
 });
 document.getElementById('mobileScrollBottom').addEventListener('click', () => {
   window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+});
+
+// Modal close functionality (desktop)
+const modalClose = document.getElementById('modalClose');
+modalClose.addEventListener('click', () => {
+  document.getElementById('modal').style.display = 'none';
+});
+window.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.getElementById('modal').style.display = 'none';
+  }
 });
 
 // Load products when the window loads
