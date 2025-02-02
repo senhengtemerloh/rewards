@@ -289,3 +289,38 @@ body {
     padding: 1rem;
   }
 }
+
+/* Mobile fixed scroll buttons (only visible on mobile) */
+#scrollButtons {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+#scrollButtons button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: white;
+  font-size: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+#scrollButtons button:hover {
+  background: #1A1D2E;
+}
+/* Hide fixed scroll buttons on larger screens */
+@media (min-width: 769px) {
+  #scrollButtons {
+    display: none;
+  }
+}
