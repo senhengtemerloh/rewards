@@ -125,26 +125,33 @@ async function loadProducts() {
   toggleLoading(true);
   try {
     const response = await fetch('./database.xlsx');
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
     const data = await response.arrayBuffer();
-    const workbook = XLSX.read(data, { type: 'array' });
+    const workbook = XLSX.read(data, { type: 'array', cellFormula: false });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
+    // Column mapping for your Excel structure
     allProducts = rawData.slice(1).map(row => ({
-      SCF: row[0],
-      BRAND: row[1],
-      NAME: row[2],
-      RCP: row[3],
-      BLK: row[4],
-      "S-COIN": row[6],
-      Remark: row[7],
-      URL: row[8]
+      SCF: row[0],     // Column A
+      BRAND: row[1],   // Column B
+      NAME: row[2],    // Column C
+      RCP: row[3],     // Column D
+      BLK: row[4],     // Column E
+      "S-COIN": row[6],// Column G (skip RM at index 5)
+      Remark: row[7],  // Column H
+      URL: row[8]      // Column I
     }));
 
     populateBrandFilter();
     filterProducts();
   } catch (error) {
-    showError('Failed to load products. Please check the Excel file.');
+    showError(`Failed to load products. Please verify: 
+      1. File name is 'database.xlsx'
+      2. Column order matches requirements
+      3. File is not password protected`);
+    console.error('Loading error:', error);
   } finally {
     toggleLoading(false);
   }
@@ -179,7 +186,6 @@ function updatePagination() {
 
 // Navigation setup
 function setupNavigation() {
-  // Sync pagination controls
   document.querySelectorAll('.pagination-top button').forEach(button => {
     button.addEventListener('click', () => {
       const action = button.id.replace('Top', '');
@@ -187,7 +193,6 @@ function setupNavigation() {
     });
   });
 
-  // Scroll handlers
   document.getElementById('jumpToBottom').addEventListener('click', () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   });
@@ -216,7 +221,7 @@ document.getElementById('prevPage').addEventListener('click', () => { if (curren
 document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < totalPages) currentPage++; renderPage(currentPage); });
 document.getElementById('lastPage').addEventListener('click', () => { currentPage = totalPages; renderPage(currentPage); });
 
-// Initialization
+// Initialize
 window.onload = () => {
   loadProducts();
   setupNavigation();
