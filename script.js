@@ -4,22 +4,85 @@ let totalPages = 0;
 let allProducts = [];
 let filteredProducts = [];
 
-// Debounce function remains same
-const debounce = (func, delay) => { /* ... */ };
+// Debounce function
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func.apply(null, args), delay);
+  };
+};
 
-// Price formatting remains same
-function formatPrice(price) { /* ... */ }
+// Price formatting
+function formatPrice(price) {
+  const priceStr = price ? price.toString() : "";
+  const cleaned = priceStr.replace(/[^0-9.]/g, "");
+  const num = parseFloat(cleaned);
+  if (isNaN(num)) return 'RM0.00';
+  return num < 11 ? `RM${num.toFixed(2)}` : `RM${Math.round(num)}`;
+}
 
-// S-Coin formatting remains same
-function formatScoin(scoin) { /* ... */ }
+// S-Coin formatting
+function formatScoin(scoin) {
+  const num = Number(scoin);
+  return isNaN(num) ? scoin : num.toLocaleString('en-US');
+}
 
-// New image loader handler
-function handleImageLoad(imgElement) { /* ... */ }
+// Image loading handler
+function handleImageLoad(imgElement) {
+  const container = imgElement.parentElement;
+  const loader = document.createElement('div');
+  loader.className = 'image-loading';
+  container.appendChild(loader);
+  
+  imgElement.onload = imgElement.onerror = () => {
+    container.removeChild(loader);
+  };
+}
 
-// Updated product element creation
-function createProductElement(product) { /* ... */ }
+// Create product element
+function createProductElement(product) {
+  const productBox = document.createElement('div');
+  productBox.className = 'product-box';
 
-// Critical Fix: Restore original filter logic
+  const safeGet = (prop) => product[prop] || 'N/A';
+  
+  const img = new Image();
+  img.classList.add('product-image');
+  img.src = product.URL || 'https://pic.onlinewebfonts.com/thumbnails/icons_370375.svg';
+  img.alt = safeGet('NAME');
+  img.loading = 'lazy';
+  handleImageLoad(img);
+
+  productBox.innerHTML = `
+    <div class="brand-name">${safeGet('BRAND')}</div>
+    <div class="product-image-container"></div>
+    <div class="product-details">
+      <div class="product-name">${safeGet('NAME')}</div>
+      <div class="product-code">Code: ${safeGet('SCF')}</div>
+      <div class="price-comparison">
+        <div class="price-item rcp-price">
+          <div class="price-label">RCP</div>
+          <div class="price-value">${formatPrice(product.RCP)}</div>
+        </div>
+        <div class="price-item member-price">
+          <div class="price-label">Member Price</div>
+          <div class="price-value">${formatPrice(product.BLK)}</div>
+        </div>
+      </div>
+      <div class="promo-price">
+        <span class="coin-points">${formatScoin(product["S-COIN"])}</span>
+        S-Coin Points
+      </div>
+      ${product.Remark ? `<div class="product-remark">${product.Remark}</div>` : ''}
+    </div>
+  `;
+
+  productBox.querySelector('.product-image-container').appendChild(img);
+  return productBox;
+}
+
+// Filter products
 function filterProducts() {
   const searchTerm = document.getElementById('search').value.toLowerCase();
   const selectedBrand = document.getElementById('filter').value;
@@ -37,7 +100,7 @@ function filterProducts() {
   renderPage(currentPage);
 }
 
-// Critical Fix: Restore original renderPage structure
+// Render products
 function renderPage(page) {
   const container = document.querySelector('.container');
   container.innerHTML = '';
@@ -57,7 +120,7 @@ function renderPage(page) {
   updatePagination();
 }
 
-// Restore original loadProducts function
+// Load products from Excel
 async function loadProducts() {
   toggleLoading(true);
   try {
@@ -87,7 +150,7 @@ async function loadProducts() {
   }
 }
 
-// Restore original brand filter population
+// Populate brand filter
 function populateBrandFilter() {
   const brands = [...new Set(allProducts.map(p => p.BRAND))].filter(Boolean);
   const filterSelect = document.getElementById('filter');
@@ -100,17 +163,52 @@ function populateBrandFilter() {
   });
 }
 
-// Keep the pagination update function
-function updatePagination() { /* ... */ }
+// Update pagination controls
+function updatePagination() {
+  const updateSection = (suffix = '') => {
+    document.getElementById(`pageInfo${suffix}`).textContent = `Page ${currentPage} of ${totalPages}`;
+    document.getElementById(`firstPage${suffix}`).disabled = currentPage === 1;
+    document.getElementById(`prevPage${suffix}`).disabled = currentPage === 1;
+    document.getElementById(`nextPage${suffix}`).disabled = currentPage === totalPages;
+    document.getElementById(`lastPage${suffix}`).disabled = currentPage === totalPages;
+  };
+  
+  updateSection();
+  updateSection('Top');
+}
 
-// Keep the navigation setup
-function setupNavigation() { /* ... */ }
+// Navigation setup
+function setupNavigation() {
+  // Sync pagination controls
+  document.querySelectorAll('.pagination-top button').forEach(button => {
+    button.addEventListener('click', () => {
+      const action = button.id.replace('Top', '');
+      document.getElementById(action).click();
+    });
+  });
 
-// Keep original utility functions
-function toggleLoading(show) { /* ... */ }
-function showError(message) { /* ... */ }
+  // Scroll handlers
+  document.getElementById('jumpToBottom').addEventListener('click', () => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+  });
 
-// Event listeners remain same
+  document.getElementById('backToTop').addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+}
+
+// Loading spinner
+function toggleLoading(show) {
+  document.querySelector('.loading-spinner').style.display = show ? 'block' : 'none';
+}
+
+// Error handling
+function showError(message) {
+  const container = document.querySelector('.container');
+  container.innerHTML = `<div class="error-message">${message}</div>`;
+}
+
+// Event listeners
 document.getElementById('search').addEventListener('input', debounce(filterProducts, 300));
 document.getElementById('filter').addEventListener('change', filterProducts);
 document.getElementById('firstPage').addEventListener('click', () => { currentPage = 1; renderPage(currentPage); });
@@ -118,7 +216,7 @@ document.getElementById('prevPage').addEventListener('click', () => { if (curren
 document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < totalPages) currentPage++; renderPage(currentPage); });
 document.getElementById('lastPage').addEventListener('click', () => { currentPage = totalPages; renderPage(currentPage); });
 
-// Initialize
+// Initialization
 window.onload = () => {
   loadProducts();
   setupNavigation();
