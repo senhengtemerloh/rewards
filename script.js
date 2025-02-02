@@ -13,7 +13,7 @@ const debounce = (func, delay) => {
   };
 };
 
-// Price formatting
+// Price formatting (original)
 function formatPrice(price) {
   const priceStr = price ? price.toString() : "";
   const cleaned = priceStr.replace(/[^0-9.]/g, "");
@@ -22,31 +22,29 @@ function formatPrice(price) {
   return num < 11 ? `RM${num.toFixed(2)}` : `RM${Math.round(num)}`;
 }
 
-// S-Coin formatting
+// S-Coin formatting (original)
 function formatScoin(scoin) {
   const num = Number(scoin);
   return isNaN(num) ? scoin : num.toLocaleString('en-US');
 }
 
-// Image loading handler
-function handleImageLoad(imgElement) {
-  const container = imgElement.parentElement;
+// Image loading handler (new)
+function handleImageLoad(img) {
+  const container = img.parentElement;
   const loader = document.createElement('div');
   loader.className = 'image-loading';
   container.appendChild(loader);
   
-  imgElement.onload = imgElement.onerror = () => {
-    container.removeChild(loader);
-  };
+  img.onload = img.onerror = () => container.removeChild(loader);
 }
 
-// Create product element
+// Product creation (original + image loader)
 function createProductElement(product) {
   const productBox = document.createElement('div');
   productBox.className = 'product-box';
-
   const safeGet = (prop) => product[prop] || 'N/A';
-  
+
+  // Image handling with loader
   const img = new Image();
   img.classList.add('product-image');
   img.src = product.URL || 'https://pic.onlinewebfonts.com/thumbnails/icons_370375.svg';
@@ -82,14 +80,58 @@ function createProductElement(product) {
   return productBox;
 }
 
-// Filter products
-function filterProducts() {
+// Excel loading (original working version)
+async function loadProducts() {
+  toggleLoading(true);
+  try {
+    const response = await fetch('./database.xlsx');
+    if (!response.ok) throw new Error('Failed to load products');
+    const data = await response.arrayBuffer();
+    const workbook = XLSX.read(data, { type: 'array', cellFormula: false });
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+    // Original working column mapping
+    allProducts = rawData.slice(1).map(row => ({
+      SCF: row[0],
+      BRAND: row[1],
+      NAME: row[2],
+      RCP: row[3],
+      BLK: row[4],
+      "S-COIN": row[6],
+      Remark: row[7],
+      URL: row[8]
+    }));
+
+    populateBrandFilter();
+    filterProducts();
+  } catch (error) {
+    showError('Failed to load products. Please check: 1) File exists 2) Column order');
+    console.error('Loading error:', error);
+  } finally {
+    toggleLoading(false);
+  }
+}
+
+// Rest of original functions with pagination updates
+function populateBrandFilter() { 
+  const brands = [...new Set(allProducts.map(p => p.BRAND))].filter(b => b);
+  const filterSelect = document.getElementById('filter');
+  filterSelect.innerHTML = '<option value="">All Brands</option>';
+  brands.forEach(brand => {
+    const option = document.createElement('option');
+    option.value = brand;
+    option.textContent = brand;
+    filterSelect.appendChild(option);
+  });
+ }
+function filterProducts() { 
   const searchTerm = document.getElementById('search').value.toLowerCase();
   const selectedBrand = document.getElementById('filter').value;
   
   filteredProducts = allProducts.filter(product => {
-    const nameMatches = product.NAME?.toLowerCase().includes(searchTerm);
-    const brandMatches = product.BRAND?.toLowerCase().includes(searchTerm);
+    const nameMatches = product.NAME && product.NAME.toLowerCase().includes(searchTerm);
+    const brandMatches = product.BRAND && product.BRAND.toLowerCase().includes(searchTerm);
     const matchesSearch = nameMatches || brandMatches;
     const matchesBrand = !selectedBrand || product.BRAND === selectedBrand;
     return matchesSearch && matchesBrand;
@@ -97,10 +139,9 @@ function filterProducts() {
 
   currentPage = 1;
   totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
-  renderPage(currentPage);
-}
+  renderPage(currentPage); }
 
-// Render products
+// Updated render function
 function renderPage(page) {
   const container = document.querySelector('.container');
   container.innerHTML = '';
@@ -120,100 +161,46 @@ function renderPage(page) {
   updatePagination();
 }
 
-// Load products from Excel
-async function loadProducts() {
-  toggleLoading(true);
-  try {
-    const response = await fetch('./database.xlsx');
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    
-    const data = await response.arrayBuffer();
-    const workbook = XLSX.read(data, { type: 'array', cellFormula: false });
-    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-    const rawData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-    // Column mapping for your Excel structure
-    allProducts = rawData.slice(1).map(row => ({
-      SCF: row[0],     // Column A
-      BRAND: row[1],   // Column B
-      NAME: row[2],    // Column C
-      RCP: row[3],     // Column D
-      BLK: row[4],     // Column E
-      "S-COIN": row[6],// Column G (skip RM at index 5)
-      Remark: row[7],  // Column H
-      URL: row[8]      // Column I
-    }));
-
-    populateBrandFilter();
-    filterProducts();
-  } catch (error) {
-    showError(`Failed to load products. Please verify: 
-      1. File name is 'database.xlsx'
-      2. Column order matches requirements
-      3. File is not password protected`);
-    console.error('Loading error:', error);
-  } finally {
-    toggleLoading(false);
-  }
-}
-
-// Populate brand filter
-function populateBrandFilter() {
-  const brands = [...new Set(allProducts.map(p => p.BRAND))].filter(Boolean);
-  const filterSelect = document.getElementById('filter');
-  filterSelect.innerHTML = '<option value="">All Brands</option>';
-  brands.forEach(brand => {
-    const option = document.createElement('option');
-    option.value = brand;
-    option.textContent = brand;
-    filterSelect.appendChild(option);
-  });
-}
-
-// Update pagination controls
+// Dual pagination update
 function updatePagination() {
-  const updateSection = (suffix = '') => {
+  const update = (suffix = '') => {
     document.getElementById(`pageInfo${suffix}`).textContent = `Page ${currentPage} of ${totalPages}`;
     document.getElementById(`firstPage${suffix}`).disabled = currentPage === 1;
     document.getElementById(`prevPage${suffix}`).disabled = currentPage === 1;
     document.getElementById(`nextPage${suffix}`).disabled = currentPage === totalPages;
     document.getElementById(`lastPage${suffix}`).disabled = currentPage === totalPages;
   };
-  
-  updateSection();
-  updateSection('Top');
+  update();
+  update('Top');
 }
 
-// Navigation setup
+// Navigation setup (new)
 function setupNavigation() {
+  // Pagination sync
   document.querySelectorAll('.pagination-top button').forEach(button => {
-    button.addEventListener('click', () => {
-      const action = button.id.replace('Top', '');
-      document.getElementById(action).click();
-    });
+    button.addEventListener('click', () => document.getElementById(button.id.replace('Top', '')).click());
   });
 
+  // Scroll buttons
   document.getElementById('jumpToBottom').addEventListener('click', () => {
     window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
   });
-
   document.getElementById('backToTop').addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
 
-// Loading spinner
+// Original utility functions
 function toggleLoading(show) {
   document.querySelector('.loading-spinner').style.display = show ? 'block' : 'none';
 }
 
-// Error handling
 function showError(message) {
   const container = document.querySelector('.container');
   container.innerHTML = `<div class="error-message">${message}</div>`;
 }
 
-// Event listeners
+// Event listeners (original + top pagination)
 document.getElementById('search').addEventListener('input', debounce(filterProducts, 300));
 document.getElementById('filter').addEventListener('change', filterProducts);
 document.getElementById('firstPage').addEventListener('click', () => { currentPage = 1; renderPage(currentPage); });
@@ -221,7 +208,7 @@ document.getElementById('prevPage').addEventListener('click', () => { if (curren
 document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < totalPages) currentPage++; renderPage(currentPage); });
 document.getElementById('lastPage').addEventListener('click', () => { currentPage = totalPages; renderPage(currentPage); });
 
-// Initialize
+// Initialize (updated)
 window.onload = () => {
   loadProducts();
   setupNavigation();
