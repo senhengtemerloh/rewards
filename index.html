@@ -4,11 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>My Rewards, My Choice</title>
-  <!-- External XLSX library -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
-  <!-- Link to external CSS file -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -23,9 +20,20 @@
     </select>
   </div>
 
+  <!-- Top Pagination (Mobile) -->
+  <div class="pagination pagination-top">
+    <button id="firstPageTop" aria-label="First page">«</button>
+    <button id="prevPageTop" aria-label="Previous page">‹</button>
+    <span id="pageInfoTop"></span>
+    <button id="nextPageTop" aria-label="Next page">›</button>
+    <button id="lastPageTop" aria-label="Last page">»</button>
+  </div>
+
   <div class="container"></div>
   <div class="loading-spinner"></div>
-  <div class="pagination">
+
+  <!-- Bottom Pagination -->
+  <div class="pagination pagination-bottom">
     <button id="firstPage" aria-label="First page">«</button>
     <button id="prevPage" aria-label="Previous page">‹</button>
     <span id="pageInfo"></span>
@@ -33,7 +41,12 @@
     <button id="lastPage" aria-label="Last page">»</button>
   </div>
 
-  <!-- Link to external JavaScript file -->
+  <!-- Floating Navigation -->
+  <div class="navigation-floating">
+    <button class="nav-button" id="backToTop" aria-label="Back to top">▲</button>
+    <button class="nav-button" id="jumpToBottom" aria-label="Jump to bottom">▼</button>
+  </div>
+
   <script src="script.js" defer></script>
 </body>
 </html>
