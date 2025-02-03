@@ -78,7 +78,7 @@ async function loadProducts() {
     if (cachedData) {
       allProducts = JSON.parse(cachedData);
       populateBrandFilter();
-      filterProducts();
+      filterAndSortProducts();
       return;
     }
     // Otherwise, load from the Excel file.
@@ -101,7 +101,7 @@ async function loadProducts() {
     // Cache the data for future visits
     localStorage.setItem('allProducts', JSON.stringify(allProducts));
     populateBrandFilter();
-    filterProducts();
+    filterAndSortProducts();
   } catch (error) {
     showError('Failed to load products. Please check the Excel file format.');
     console.error(error);
@@ -126,12 +126,13 @@ function populateBrandFilter() {
 }
 
 /**
- * Filter products based on search term and brand.
+ * Filter and sort products based on search term, selected brand, and sort criteria.
  */
-function filterProducts() {
+function filterAndSortProducts() {
   const searchTerm = document.getElementById('search').value.toLowerCase();
   const selectedBrand = document.getElementById('filter').value;
   
+  // Filter products
   filteredProducts = allProducts.filter(product => {
     const nameMatches = product.NAME && product.NAME.toLowerCase().includes(searchTerm);
     const brandMatches = product.BRAND && product.BRAND.toLowerCase().includes(searchTerm);
@@ -140,6 +141,26 @@ function filterProducts() {
     return matchesSearch && matchesBrand;
   });
 
+  // Sort products based on the selected sort option
+  const sortOption = document.getElementById('sort').value;
+  if (sortOption === 'scoin-asc') {
+    filteredProducts.sort((a, b) => Number(a["S-COIN"]) - Number(b["S-COIN"]));
+  } else if (sortOption === 'scoin-desc') {
+    filteredProducts.sort((a, b) => Number(b["S-COIN"]) - Number(a["S-COIN"]));
+  } else if (sortOption === 'name-asc') {
+    filteredProducts.sort((a, b) => {
+      const nameA = (a.NAME || '').toLowerCase();
+      const nameB = (b.NAME || '').toLowerCase();
+      return nameA.localeCompare(nameB);
+    });
+  } else if (sortOption === 'name-desc') {
+    filteredProducts.sort((a, b) => {
+      const nameA = (a.NAME || '').toLowerCase();
+      const nameB = (b.NAME || '').toLowerCase();
+      return nameB.localeCompare(nameA);
+    });
+  }
+  
   currentPage = 1;
   totalPages = Math.ceil(filteredProducts.length / PRODUCTS_PER_PAGE);
   renderPage(currentPage);
@@ -237,9 +258,17 @@ function attachModalEvents() {
   });
 }
 
-// Event Listeners for pagination
-document.getElementById('search').addEventListener('input', debounce(filterProducts, 300));
-document.getElementById('filter').addEventListener('change', filterProducts);
+/* ---------------------------
+   Event Listeners
+--------------------------- */
+// Listen for search input
+document.getElementById('search').addEventListener('input', debounce(filterAndSortProducts, 300));
+// Listen for brand filter changes
+document.getElementById('filter').addEventListener('change', filterAndSortProducts);
+// Listen for sort option changes
+document.getElementById('sort').addEventListener('change', filterAndSortProducts);
+
+// Pagination button event listeners
 document.getElementById('firstPage').addEventListener('click', () => { currentPage = 1; renderPage(currentPage); });
 document.getElementById('prevPage').addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPage(currentPage); } });
 document.getElementById('nextPage').addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; renderPage(currentPage); } });
