@@ -26,10 +26,12 @@ body {
   padding: 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
+  flex-wrap: wrap;
 }
 
-#search {
-  flex: 1;
+#search,
+#filter,
+#sort {
   padding: 0.8rem;
   border: 2px solid #e0e0e0;
   border-radius: 25px;
@@ -37,18 +39,12 @@ body {
   transition: all 0.3s ease;
 }
 
-#search:focus {
+#search:focus,
+#filter:focus,
+#sort:focus {
   outline: none;
   border-color: var(--secondary-color);
   box-shadow: 0 0 8px rgba(78,205,196,0.2);
-}
-
-#filter {
-  padding: 0.8rem 1.2rem;
-  border: 2px solid #e0e0e0;
-  border-radius: 25px;
-  background: white;
-  cursor: pointer;
 }
 
 .container {
@@ -86,12 +82,8 @@ body {
 }
 
 @keyframes loading {
-  0% {
-    left: -150px;
-  }
-  100% {
-    left: 100%;
-  }
+  0% { left: -150px; }
+  100% { left: 100%; }
 }
 
 .product-box {
