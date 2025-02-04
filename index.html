@@ -6,8 +6,6 @@
   <title>My Rewards, My Choice</title>
   <!-- External XLSX library -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-  <!-- html2pdf library for PDF generation -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
   <!-- Link to external CSS file -->
@@ -31,8 +29,6 @@
       <option value="name-asc">Name: A–Z</option>
       <option value="name-desc">Name: Z–A</option>
     </select>
-    <!-- New button to generate PDF of all products -->
-    <button id="generatePDF">Generate PDF</button>
   </div>
 
   <div class="container">
@@ -61,9 +57,6 @@
     <span class="modal-close" id="modalClose" aria-label="Close modal">&times;</span>
     <img class="modal-content" id="modalImg" alt="Full-size image">
   </div>
-
-  <!-- Hidden container for PDF generation (positioned off-screen) -->
-  <div id="pdfContainer" class="pdf-container"></div>
 
   <!-- Link to external JavaScript file -->
   <script src="script.js" defer></script>
