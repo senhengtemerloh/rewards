@@ -258,69 +258,6 @@ function attachModalEvents() {
   });
 }
 
-/**
- * Generate a PDF file containing all products.
- * Each PDF page is A4 size with narrow margins and shows exactly 9 products,
- * ensuring that no product is split between pages.
- */
-function generatePDF() {
-  // Create a temporary container for PDF generation (will be appended to body)
-  const pdfContainer = document.createElement('div');
-  pdfContainer.className = 'pdf-container';
-  pdfContainer.innerHTML = '';
-
-  // Use allProducts (or filteredProducts if you prefer) and split into chunks of 9
-  const products = allProducts;
-  const chunks = [];
-  for (let i = 0; i < products.length; i += 9) {
-    chunks.push(products.slice(i, i + 9));
-  }
-
-  // For each chunk, create a PDF page
-  chunks.forEach(chunk => {
-    const pageDiv = document.createElement('div');
-    pageDiv.className = 'pdf-page';
-    chunk.forEach(product => {
-      const productDiv = document.createElement('div');
-      productDiv.className = 'pdf-product';
-      const safeGet = (prop) => product[prop] || 'N/A';
-      productDiv.innerHTML = `
-        <div class="pdf-brand-name">${safeGet('BRAND')}</div>
-        <div>
-          <img src="${product.URL || 'https://pic.onlinewebfonts.com/thumbnails/icons_370375.svg'}" alt="${safeGet('NAME')}" onerror="this.src='https://pic.onlinewebfonts.com/thumbnails/icons_370375.svg'">
-        </div>
-        <div class="pdf-product-name">${safeGet('NAME')}</div>
-        <div class="pdf-product-code">Code: ${safeGet('SCF')}</div>
-        <div class="pdf-price-comparison">
-          <div>RCP: ${formatPrice(product.RCP)}</div>
-          <div>Member: ${formatPrice(product.BLK)}</div>
-        </div>
-        <div class="pdf-promo-price">${formatScoin(product["S-COIN"])} S-Coin</div>
-        ${ product.Remark ? `<div style="color: red; font-size: 0.7rem;">${product.Remark}</div>` : '' }
-      `;
-      pageDiv.appendChild(productDiv);
-    });
-    pdfContainer.appendChild(pageDiv);
-  });
-
-  // Append the container to the body so it's rendered (off-screen)
-  document.body.appendChild(pdfContainer);
-
-  // Configure html2pdf options
-  const opt = {
-    margin:       [5, 5, 5, 5], // 5mm margins on all sides
-    filename:     'products.pdf',
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2 },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
-  // Generate and save the PDF, then remove the temporary container.
-  html2pdf().set(opt).from(pdfContainer).save().then(() => {
-    document.body.removeChild(pdfContainer);
-  });
-}
-
 /* ---------------------------
    Event Listeners
 --------------------------- */
@@ -330,8 +267,6 @@ document.getElementById('search').addEventListener('input', debounce(filterAndSo
 document.getElementById('filter').addEventListener('change', filterAndSortProducts);
 // Listen for sort option changes
 document.getElementById('sort').addEventListener('change', filterAndSortProducts);
-// Listen for PDF generation button click
-document.getElementById('generatePDF').addEventListener('click', generatePDF);
 
 // Pagination button event listeners
 document.getElementById('firstPage').addEventListener('click', () => { currentPage = 1; renderPage(currentPage); });
