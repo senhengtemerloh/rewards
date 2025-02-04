@@ -356,12 +356,13 @@ body {
 /* -------------------------------
    PDF Generation Styles
    -------------------------------
-   The following CSS rules are applied only when generating the PDF.
-   The hidden container (.pdf-container) will be populated dynamically,
-   and each page (.pdf-page) is sized to A4 (210mm x 297mm) with narrow margins.
+   The following CSS rules are applied for PDF generation.
+   Instead of using display: none, we position the container off-screen.
 ----------------------------------*/
 .pdf-container {
-  display: none;
+  position: absolute;
+  top: -10000px;
+  left: -10000px;
 }
 .pdf-page {
   width: 210mm;
