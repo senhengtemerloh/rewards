@@ -31,12 +31,15 @@ body {
 
 #search,
 #filter,
-#sort {
+#sort,
+#generatePDF {
   padding: 0.8rem;
   border: 2px solid #e0e0e0;
   border-radius: 25px;
   font-size: 1rem;
   transition: all 0.3s ease;
+  background: white;
+  cursor: pointer;
 }
 
 #search:focus,
@@ -348,4 +351,73 @@ body {
 .modal-close:hover,
 .modal-close:focus {
   color: #bbb;
+}
+
+/* -------------------------------
+   PDF Generation Styles
+   -------------------------------
+   The following CSS rules are applied only when generating the PDF.
+   The hidden container (.pdf-container) will be populated dynamically,
+   and each page (.pdf-page) is sized to A4 (210mm x 297mm) with narrow margins.
+----------------------------------*/
+.pdf-container {
+  display: none;
+}
+.pdf-page {
+  width: 210mm;
+  height: 297mm;
+  margin: 0 auto;
+  padding: 5mm;
+  box-sizing: border-box;
+  page-break-after: always;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-content: flex-start;
+}
+.pdf-product {
+  width: calc(33% - 10px);
+  margin: 5px;
+  box-sizing: border-box;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 5px;
+  overflow: hidden;
+}
+.pdf-product img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+.pdf-brand-name {
+  font-weight: bold;
+  background: var(--accent-color);
+  color: white;
+  padding: 0.3rem;
+  border-radius: 4px;
+  margin-bottom: 0.3rem;
+  font-size: 0.8rem;
+}
+.pdf-product-name {
+  font-size: 0.8rem;
+  margin-bottom: 0.3rem;
+}
+.pdf-product-code {
+  font-size: 0.7rem;
+  margin-bottom: 0.3rem;
+}
+.pdf-price-comparison {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  margin-bottom: 0.3rem;
+}
+.pdf-promo-price {
+  font-size: 0.8rem;
+  font-weight: bold;
+  background: var(--primary-color);
+  color: white;
+  text-align: center;
+  padding: 0.3rem;
+  border-radius: 4px;
 }
