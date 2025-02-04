@@ -264,14 +264,12 @@ function attachModalEvents() {
  * ensuring that no product is split between pages.
  */
 function generatePDF() {
-  // Create a temporary hidden container for PDF generation.
+  // Create a temporary container for PDF generation (will be appended to body)
   const pdfContainer = document.createElement('div');
   pdfContainer.className = 'pdf-container';
-
-  // Clear any previous content
   pdfContainer.innerHTML = '';
 
-  // Use allProducts (you can change to filteredProducts if needed)
+  // Use allProducts (or filteredProducts if you prefer) and split into chunks of 9
   const products = allProducts;
   const chunks = [];
   for (let i = 0; i < products.length; i += 9) {
@@ -305,7 +303,7 @@ function generatePDF() {
     pdfContainer.appendChild(pageDiv);
   });
 
-  // Append the temporary container to the body (it is hidden by CSS)
+  // Append the container to the body so it's rendered (off-screen)
   document.body.appendChild(pdfContainer);
 
   // Configure html2pdf options
