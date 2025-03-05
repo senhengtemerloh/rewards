@@ -27,49 +27,48 @@
         header {
             background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
             color: white;
-            padding: 2.5rem 1rem;
+            padding: 2rem 1rem;
             text-align: center;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
         }
 
         h1 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             margin-bottom: 0.5rem;
             letter-spacing: -0.5px;
         }
 
         .tagline {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             opacity: 0.9;
             font-weight: 300;
         }
 
         .container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2rem;
-            padding: 0 2rem 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 0 1.5rem 2rem;
             max-width: 1440px;
             margin: 0 auto;
         }
 
         .product-card {
             background: white;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
         }
 
         .product-card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-5px);
         }
 
         .image-container {
             position: relative;
-            height: 320px;
+            height: 280px;
             background: white;
             display: flex;
             align-items: center;
@@ -78,94 +77,112 @@
         }
 
         .product-image {
-            max-width: 80%;
-            max-height: 80%;
+            max-width: 75%;
+            max-height: 75%;
             object-fit: contain;
             mix-blend-mode: multiply;
         }
 
         .brand-badge {
             position: absolute;
-            top: 15px;
-            left: 15px;
+            top: 12px;
+            left: 12px;
             background: var(--dark-red);
             color: white;
-            padding: 6px 18px;
-            border-radius: 24px;
-            font-size: 0.95rem;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
             font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
 
         .product-info {
-            padding: 1.5rem;
+            padding: 1.2rem;
         }
 
         .product-title {
-            font-size: 1.25rem;
-            color: #333;
+            font-size: 1rem;
+            color: #444;
             margin-bottom: 1rem;
             line-height: 1.4;
-            min-height: 3.5em;
+            min-height: 3em;
         }
 
         .price-container {
             display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            align-items: baseline;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+            justify-content: space-between;
+        }
+
+        .price-box {
+            flex: 1;
+            padding: 0.8rem;
+            border-radius: 8px;
+            text-align: center;
         }
 
         .rcp-price {
-            font-size: 1rem;
+            background: #f5f5f5;
             color: #666;
             position: relative;
         }
 
-        .rcp-price:after {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 50%;
-            width: 100%;
-            height: 2px;
-            background: #666;
+        .rcp-price .label {
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+            opacity: 0.8;
+        }
+
+        .rcp-price .value {
+            font-size: 0.95rem;
+            text-decoration: line-through;
         }
 
         .member-price {
-            font-size: 1.4rem;
+            background: #ffeeee;
             color: var(--dark-red);
-            font-weight: 700;
+        }
+
+        .member-price .label {
+            font-size: 0.8rem;
+            margin-bottom: 0.3rem;
+            opacity: 0.8;
+        }
+
+        .member-price .value {
+            font-size: 1.1rem;
+            font-weight: 600;
         }
 
         .scoin-container {
             background: var(--primary-red);
-            border-radius: 12px;
-            padding: 1.2rem;
+            border-radius: 8px;
+            padding: 1rem;
             text-align: center;
-            margin-top: auto;
         }
 
         .scoin-label {
             color: rgba(255,255,255,0.9);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            margin-bottom: 0.3rem;
+            letter-spacing: 0.3px;
         }
 
         .scoin-value {
             color: white;
-            font-size: 2rem;
-            font-weight: 800;
+            font-size: 2.2rem;
+            font-weight: 600;
             letter-spacing: -1px;
+            font-family: 'Arial Narrow', sans-serif;
         }
 
         .remark {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #666;
             margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px dashed #ddd;
+            padding-top: 0.8rem;
+            border-top: 1px dashed #eee;
             font-style: italic;
         }
     </style>
@@ -198,6 +215,8 @@
                 productCard.className = 'product-card';
                 
                 const scoinValue = (product.MEMBER * 100).toLocaleString();
+                const rcpFormatted = Number(product.RCP).toLocaleString();
+                const memberFormatted = Number(product.MEMBER).toLocaleString();
 
                 productCard.innerHTML = `
                     <div class="image-container">
@@ -208,8 +227,14 @@
                         <h3 class="product-title">${product['FULL NAME']}</h3>
                         
                         <div class="price-container">
-                            <div class="rcp-price">RM${product.RCP}</div>
-                            <div class="member-price">RM${product.MEMBER}</div>
+                            <div class="price-box rcp-price">
+                                <div class="label">RETAIL PRICE</div>
+                                <div class="value">RM${rcpFormatted}</div>
+                            </div>
+                            <div class="price-box member-price">
+                                <div class="label">MEMBER PRICE</div>
+                                <div class="value">RM${memberFormatted}</div>
+                            </div>
                         </div>
 
                         <div class="scoin-container">
