@@ -3,79 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S-COIN Redemption Store</title>
+    <title>S-COIN Redemption Catalog</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary-red: #c62828;
-            --dark-red: #8e0000;
-            --light-red: #ff5f52;
-            --bg-color: #f5f5f5;
+            --primary-red: #e53935;
+            --dark-red: #b71c1c;
+            --accent: #ffcdd2;
+            --bg-color: #ffffff;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Arial, sans-serif;
         }
 
         body {
-            background-color: var(--bg-color);
+            background: var(--bg-color);
         }
 
         header {
-            background: var(--primary-red);
+            background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
             color: white;
-            padding: 2rem;
+            padding: 2.5rem 1rem;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
         }
 
         .container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 2rem;
-            padding: 2rem;
-            max-width: 1400px;
+            padding: 0 2rem 2rem;
+            max-width: 1440px;
             margin: 0 auto;
         }
 
         .product-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
         .product-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
         }
 
         .image-container {
             position: relative;
-            height: 250px;
-            background: #ddd;
+            height: 320px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 2px solid var(--accent);
         }
 
         .product-image {
-            width: 100%;
-            height: 100%;
+            max-width: 80%;
+            max-height: 80%;
             object-fit: contain;
-            padding: 1rem;
+            mix-blend-mode: multiply;
         }
 
         .brand-badge {
             position: absolute;
-            top: 10px;
-            left: 10px;
+            top: 15px;
+            left: 15px;
             background: var(--dark-red);
             color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
+            padding: 6px 18px;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .product-info {
@@ -83,68 +102,78 @@
         }
 
         .product-title {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
             color: #333;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+            min-height: 3.5em;
         }
 
         .price-container {
             display: flex;
             gap: 1rem;
-            margin: 1rem 0;
+            margin-bottom: 1.5rem;
+            align-items: baseline;
         }
 
         .rcp-price {
-            text-decoration: line-through;
+            font-size: 1rem;
             color: #666;
+            position: relative;
+        }
+
+        .rcp-price:after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            background: #666;
         }
 
         .member-price {
+            font-size: 1.4rem;
             color: var(--dark-red);
-            font-weight: bold;
+            font-weight: 700;
+        }
+
+        .scoin-container {
+            background: var(--primary-red);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .scoin-label {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
         }
 
         .scoin-value {
-            background: #ffebee;
-            color: var(--primary-red);
-            padding: 0.8rem;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            text-align: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
         }
 
         .remark {
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: #666;
-            margin-top: 0.5rem;
-            font-style: italic;
-        }
-
-        .coin-balance {
             margin-top: 1rem;
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .coin-value {
-            background: white;
-            color: var(--primary-red);
-            padding: 0.5rem 1.5rem;
-            border-radius: 20px;
-            font-weight: bold;
+            padding-top: 1rem;
+            border-top: 1px dashed #ddd;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>🔥 S-COIN REDEMPTION STORE</h1>
-        <div class="coin-balance">
-            <span>Your S-COIN Balance:</span>
-            <div class="coin-value">0 SCOIN</div>
-        </div>
+        <h1>S-COIN REDEMPTION</h1>
+        <div class="tagline">My Rewards, My Choice!</div>
     </header>
 
     <div class="container" id="products"></div>
@@ -177,11 +206,17 @@
                     </div>
                     <div class="product-info">
                         <h3 class="product-title">${product['FULL NAME']}</h3>
+                        
                         <div class="price-container">
                             <div class="rcp-price">RM${product.RCP}</div>
                             <div class="member-price">RM${product.MEMBER}</div>
                         </div>
-                        <div class="scoin-value">${scoinValue} S-COIN</div>
+
+                        <div class="scoin-container">
+                            <div class="scoin-label">S-COIN POINTS</div>
+                            <div class="scoin-value">${scoinValue}</div>
+                        </div>
+
                         ${product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ''}
                     </div>
                 `;
