@@ -42,7 +42,7 @@
             left: 0;
             width: 100%;
             height: 20px;
-            background: linear-gradient(135deg, transparent 49% var(--primary-red), var(--primary-red) 51% transparent);
+            background: linear-gradient(135deg, transparent 49%, var(--primary-red) 51%, transparent);
             opacity: 0.2;
         }
 
@@ -61,7 +61,7 @@
 
         .container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(3, 1fr); /* Updated to exactly 3 columns */
             gap: 1.5rem;
             padding: 0 1.5rem 2rem;
             max-width: 1440px;
@@ -230,7 +230,6 @@
             font-style: italic;
         }
 
-        /* Pagination styles */
         #pagination {
             display: flex;
             justify-content: center;
@@ -273,7 +272,7 @@
         // Declare variables for products, current page, and products per page
         let products = [];
         let currentPage = 1;
-        const productsPerPage = 8;
+        const productsPerPage = 9; // Updated to 9 products per page
 
         // Load products from Excel file on page load
         document.addEventListener('DOMContentLoaded', () => {
