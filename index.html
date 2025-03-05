@@ -1,64 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Rewards, My Choice</title>
-  <!-- External XLSX library -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
-  <!-- Link to external CSS file -->
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S-COIN Redemption Store</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-red: #c62828;
+            --dark-red: #8e0000;
+            --light-red: #ff5f52;
+            --bg-color: #f5f5f5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+        }
+
+        header {
+            background: var(--primary-red);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-container {
+            position: relative;
+            height: 250px;
+            background: #ddd;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 1rem;
+        }
+
+        .brand-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--dark-red);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .price-container {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .rcp-price {
+            text-decoration: line-through;
+            color: #666;
+        }
+
+        .member-price {
+            color: var(--dark-red);
+            font-weight: bold;
+        }
+
+        .scoin-value {
+            background: #ffebee;
+            color: var(--primary-red);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .remark {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .coin-balance {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .coin-value {
+            background: white;
+            color: var(--primary-red);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-  <header class="header">
-    <h1>My Rewards, My Choice</h1>
-  </header>
+    <header>
+        <h1>🔥 S-COIN REDEMPTION STORE</h1>
+        <div class="coin-balance">
+            <span>Your S-COIN Balance:</span>
+            <div class="coin-value">0 SCOIN</div>
+        </div>
+    </header>
 
-  <div class="controls">
-    <input type="text" id="search" placeholder="Search products...">
-    <select id="filter">
-      <option value="">All Brands</option>
-    </select>
-    <!-- New sort control -->
-    <select id="sort">
-      <option value="">Sort by</option>
-      <option value="scoin-asc">S-Coin: Low to High</option>
-      <option value="scoin-desc">S-Coin: High to Low</option>
-      <option value="name-asc">Name: A–Z</option>
-      <option value="name-desc">Name: Z–A</option>
-    </select>
-  </div>
+    <div class="container" id="products"></div>
 
-  <div class="container">
-    <!-- Skeleton placeholders will appear here while products load -->
-    <div class="skeleton-wrapper"></div>
-  </div>
-  
-  <div class="loading-spinner"></div>
-  
-  <div class="pagination">
-    <button id="firstPage" aria-label="First page">«</button>
-    <button id="prevPage" aria-label="Previous page">‹</button>
-    <span id="pageInfo"></span>
-    <button id="nextPage" aria-label="Next page">›</button>
-    <button id="lastPage" aria-label="Last page">»</button>
-  </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('data.xlsx')
+                .then(response => response.arrayBuffer())
+                .then(data => {
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const products = XLSX.utils.sheet_to_json(worksheet);
+                    displayProducts(products);
+                });
+        });
 
-  <!-- Mobile fixed scroll buttons (visible only on mobile) -->
-  <div id="scrollButtons">
-    <button id="mobileScrollTop" aria-label="Scroll to top">&#8679;</button>
-    <button id="mobileScrollBottom" aria-label="Scroll to bottom">&#8681;</button>
-  </div>
+        function displayProducts(products) {
+            const container = document.getElementById('products');
 
-  <!-- Modal for desktop image preview -->
-  <div id="modal" class="modal">
-    <span class="modal-close" id="modalClose" aria-label="Close modal">&times;</span>
-    <img class="modal-content" id="modalImg" alt="Full-size image">
-  </div>
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                
+                const scoinValue = (product.MEMBER * 100).toLocaleString();
 
-  <!-- Link to external JavaScript file -->
-  <script src="script.js" defer></script>
+                productCard.innerHTML = `
+                    <div class="image-container">
+                        <img src="${product.URL}" alt="${product['FULL NAME']}" class="product-image">
+                        <div class="brand-badge">${product.BRAND}</div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-title">${product['FULL NAME']}</h3>
+                        <div class="price-container">
+                            <div class="rcp-price">RM${product.RCP}</div>
+                            <div class="member-price">RM${product.MEMBER}</div>
+                        </div>
+                        <div class="scoin-value">${scoinValue} S-COIN</div>
+                        ${product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ''}
+                    </div>
+                `;
+
+                container.appendChild(productCard);
+            });
+        }
+    </script>
 </body>
 </html>
