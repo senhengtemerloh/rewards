@@ -5,247 +5,239 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>S-COIN Redemption Catalog</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-red: #e53935;
-            --dark-red: #b71c1c;
-            --accent: #ffcdd2;
-            --bg-color: #ffffff;
+            --primary-teal: #26a69a;
+            --dark-teal: #00695c;
+            --light-teal: #b2dfdb;
+            --bg-color: #f4f7fa;
+            --gold-accent: #ffd700;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Noto Sans', Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
             background: var(--bg-color);
+            color: #333;
+            line-height: 1.6;
         }
 
         header {
-            background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
+            background: linear-gradient(135deg, var(--dark-teal), var(--primary-teal));
             color: white;
-            padding: 2rem 1rem;
+            padding: 3rem 2rem;
             text-align: center;
-            margin-bottom: 1.5rem;
             position: relative;
-            overflow: hidden;
-        }
-
-        header:after {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            width: 100%;
-            height: 20px;
-            background: linear-gradient(135deg, transparent 49%, var(--primary-red) 51%, transparent);
-            opacity: 0.2;
+            border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px;
         }
 
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.5px;
+            font-size: 2.5rem;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .tagline {
-            font-size: 1.1rem;
-            opacity: 0.9;
+            font-size: 1.2rem;
             font-weight: 300;
+            margin-top: 0.5rem;
+            opacity: 0.9;
         }
 
         .container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr); /* Updated to exactly 3 columns */
-            gap: 1.5rem;
-            padding: 0 1.5rem 2rem;
-            max-width: 1440px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            padding: 2rem;
+            max-width: 1400px;
             margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
 
         .product-card {
             background: white;
-            border-radius: 12px;
+            border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .product-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
         }
 
         .image-container {
-            position: relative;
-            height: 280px;
-            background: white;
+            height: 250px;
+            background: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-bottom: 2px solid var(--accent);
+            position: relative;
+            overflow: hidden;
         }
 
         .product-image {
-            max-width: 75%;
-            max-height: 75%;
+            max-width: 80%;
+            max-height: 80%;
             object-fit: contain;
-            mix-blend-mode: multiply;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
         }
 
         .brand-badge {
             position: absolute;
-            top: 12px;
-            left: 12px;
-            background: var(--dark-red);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            top: 15px;
+            right: 15px;
+            background: var(--gold-accent);
+            color: #333;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
             font-weight: 600;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .product-info {
-            padding: 1.2rem;
+            padding: 1.5rem;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
         }
 
         .product-title {
-            font-size: 1rem;
-            color: #444;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-teal);
             margin-bottom: 1rem;
             line-height: 1.4;
-            min-height: 3em;
-            font-weight: 400;
+            min-height: 3.2rem;
         }
 
         .price-container {
             display: flex;
-            gap: 0.8rem;
-            margin-bottom: 1.2rem;
-            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .price-box {
             flex: 1;
             padding: 0.8rem;
-            border-radius: 8px;
+            border-radius: 10px;
             text-align: center;
-            transition: transform 0.2s ease;
-        }
-
-        .price-box:hover {
-            transform: scale(1.02);
-        }
-
-        .rcp-price {
-            background: #f5f5f5;
-            color: #666;
-            position: relative;
-        }
-
-        .rcp-price .label {
-            font-size: 0.8rem;
-            margin-bottom: 0.3rem;
-            opacity: 0.8;
+            background: var(--light-teal);
+            color: var(--dark-teal);
         }
 
         .rcp-price .value {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             text-decoration: line-through;
+            opacity: 0.7;
         }
 
         .member-price {
-            background: #ffeeee;
-            color: var(--dark-red);
-        }
-
-        .member-price .label {
-            font-size: 0.8rem;
-            margin-bottom: 0.3rem;
-            opacity: 0.8;
+            background: var(--primary-teal);
+            color: white;
         }
 
         .member-price .value {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
         }
 
-        .scoin-container {
-            background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
-            border-radius: 8px;
-            padding: 1.2rem;
-            text-align: center;
-            margin-top: auto;
-            position: relative;
-            overflow: hidden;
+        .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+            font-weight: 400;
         }
 
-        .scoin-container:before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(45deg, transparent 50%, rgba(255,255,255,0.1) 50%);
-            background-size: 4px 4px;
+        .scoin-container {
+            background: var(--dark-teal);
+            padding: 1.5rem;
+            text-align: center;
+            border-top: 3px solid var(--gold-accent);
+            position: relative;
         }
 
         .scoin-label {
-            color: rgba(255,255,255,0.9);
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-            letter-spacing: 0.5px;
+            color: var(--light-teal);
+            font-size: 0.9rem;
             font-weight: 300;
+            margin-bottom: 0.5rem;
         }
 
         .scoin-value {
             color: white;
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: 700;
-            letter-spacing: -2px;
-            line-height: 1;
-            font-family: 'Noto Sans', sans-serif;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .scoin-icon {
+            width: 28px;
+            height: 28px;
         }
 
         .remark {
-            font-size: 0.8rem;
-            color: #666;
+            font-size: 0.85rem;
+            color: #777;
             margin-top: 1rem;
-            padding-top: 0.8rem;
-            border-top: 1px dashed #eee;
             font-style: italic;
+            border-top: 1px dashed var(--light-teal);
+            padding-top: 0.8rem;
         }
 
         #pagination {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 1rem;
-            margin: 2rem 0;
+            gap: 0.8rem;
+            padding: 2rem 0;
         }
 
         #pagination button {
-            padding: 0.5rem 1rem;
-            background: var(--primary-red);
+            padding: 0.7rem 1.2rem;
+            background: var(--primary-teal);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+        }
+
+        #pagination button:hover {
+            background: var(--dark-teal);
         }
 
         #pagination button:disabled {
@@ -253,28 +245,43 @@
             cursor: not-allowed;
         }
 
-        #pagination span {
-            font-size: 1rem;
-            color: #666;
+        #pagination .page-numbers {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        #pagination .page-numbers button {
+            background: #fff;
+            color: var(--primary-teal);
+            border: 2px solid var(--primary-teal);
+            padding: 0.5rem 1rem;
+        }
+
+        #pagination .page-numbers button.current {
+            background: var(--primary-teal);
+            color: white;
+            border-color: var(--primary-teal);
+        }
+
+        #pagination .page-numbers button:hover:not(.current) {
+            background: var(--light-teal);
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>S-COIN REDEMPTION</h1>
-        <div class="tagline">My Rewards, My Choice!</div>
+        <h1>S-COIN Redemption</h1>
+        <div class="tagline">Unlock Your Rewards Today!</div>
     </header>
 
     <div class="container" id="products"></div>
     <div id="pagination"></div>
 
     <script>
-        // Declare variables for products, current page, and products per page
         let products = [];
         let currentPage = 1;
-        const productsPerPage = 9; // Updated to 9 products per page
+        const productsPerPage = 9;
 
-        // Load products from Excel file on page load
         document.addEventListener('DOMContentLoaded', () => {
             fetch('data.xlsx')
                 .then(response => response.arrayBuffer())
@@ -286,17 +293,14 @@
                 });
         });
 
-        // Function to render products and pagination for the current page
         function renderPage() {
             const container = document.getElementById('products');
-            container.innerHTML = ''; // Clear existing products
+            container.innerHTML = '';
 
-            // Calculate start and end indices for the current page
             const start = (currentPage - 1) * productsPerPage;
             const end = start + productsPerPage;
             const pageProducts = products.slice(start, end);
 
-            // Generate product cards for the current page
             pageProducts.forEach(product => {
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
@@ -314,17 +318,20 @@
                         <h3 class="product-title">${product['FULL NAME']}</h3>
                         <div class="price-container">
                             <div class="price-box rcp-price">
-                                <div class="label">RETAIL PRICE</div>
+                                <div class="label">Retail Price</div>
                                 <div class="value">RM${rcpFormatted}</div>
                             </div>
                             <div class="price-box member-price">
-                                <div class="label">MEMBER PRICE</div>
+                                <div class="label">Member Price</div>
                                 <div class="value">RM${memberFormatted}</div>
                             </div>
                         </div>
                         <div class="scoin-container">
-                            <div class="scoin-label">S-COIN POINTS REQUIRED</div>
-                            <div class="scoin-value">${scoinValue}</div>
+                            <div class="scoin-label">S-COIN Points Required</div>
+                            <div class="scoin-value">
+                                <img src="https://via.placeholder.com/28/ffd700/000000?text=C" alt="S-COIN" class="scoin-icon">
+                                ${scoinValue}
+                            </div>
                         </div>
                         ${product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ''}
                     </div>
@@ -333,13 +340,11 @@
                 container.appendChild(productCard);
             });
 
-            // Generate pagination controls
             const pagination = document.getElementById('pagination');
-            pagination.innerHTML = ''; // Clear existing pagination
+            pagination.innerHTML = '';
 
             const totalPages = Math.ceil(products.length / productsPerPage);
 
-            // Previous button
             const prevButton = document.createElement('button');
             prevButton.textContent = 'Previous';
             prevButton.disabled = currentPage === 1;
@@ -350,11 +355,21 @@
                 }
             });
 
-            // Page info
-            const pageInfo = document.createElement('span');
-            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+            const pageNumbers = document.createElement('div');
+            pageNumbers.className = 'page-numbers';
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                if (i === currentPage) {
+                    pageButton.classList.add('current');
+                }
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    renderPage();
+                });
+                pageNumbers.appendChild(pageButton);
+            }
 
-            // Next button
             const nextButton = document.createElement('button');
             nextButton.textContent = 'Next';
             nextButton.disabled = currentPage === totalPages;
@@ -365,9 +380,8 @@
                 }
             });
 
-            // Append pagination elements
             pagination.appendChild(prevButton);
-            pagination.appendChild(pageInfo);
+            pagination.appendChild(pageNumbers);
             pagination.appendChild(nextButton);
         }
     </script>
