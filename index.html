@@ -266,6 +266,11 @@
         #pagination .page-numbers button:hover:not(.current) {
             background: var(--light-red); /* Changed from --light-teal */
         }
+
+        .model-code {
+            font-size: 0.75rem;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -316,9 +321,10 @@
                     </div>
                     <div class="product-info">
                         <h3 class="product-title">${product['FULL NAME']}</h3>
+                        ${product['MODEL'] ? `<small class="model-code">${product['MODEL']}</small>` : ''}
                         <div class="price-container">
                             <div class="price-box rcp-price">
-                                <div class="label">RCP</div> <!-- Changed from "Retail Price" -->
+                                <div class="label">RCP</div>
                                 <div class="value">RM${rcpFormatted}</div>
                             </div>
                             <div class="price-box member-price">
