@@ -81,9 +81,6 @@
         }
 
         @media (max-width: 600px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
             .image-container {
                 height: 200px;
             }
@@ -120,6 +117,12 @@
             }
             #search-input {
                 width: 90%;
+            }
+            #pagination .page-numbers {
+                display: none; /* Hide full page numbers on mobile */
+            }
+            #pagination .current-page {
+                display: block; /* Show current page indicator on mobile */
             }
             #pagination button {
                 padding: 0.5rem 0.8rem;
@@ -327,6 +330,47 @@
         #pagination .page-numbers button:hover:not(.current) {
             background: var(--light-red);
         }
+
+        #pagination .current-page {
+            display: none; /* Hidden by default, shown on mobile */
+            color: var(--primary-red);
+            font-size: 1rem;
+        }
+
+        @media (min-width: 601px) {
+            #pagination .current-page {
+                display: none; /* Ensure it stays hidden on desktop */
+            }
+            #pagination .page-numbers {
+                display: flex; /* Ensure page numbers are visible on desktop */
+            }
+        }
+
+        .mobile-only {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .mobile-only {
+                display: block;
+                position: fixed;
+                right: 10px;
+                opacity: 0.7;
+                z-index: 100;
+                background: var(--primary-red);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 0.5rem 1rem;
+                cursor: pointer;
+            }
+            #go-to-top {
+                bottom: 60px;
+            }
+            #go-to-bottom {
+                bottom: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -339,12 +383,13 @@
     </div>
     <div class="container" id="products"></div>
     <div id="pagination"></div>
+    <button id="go-to-top" class="mobile-only">Top</button>
+    <button id="go-to-bottom" class="mobile-only">Bottom</button>
 
     <script>
         let products = [];
         let filteredProducts;
         let currentPage = 1;
-        const productsPerPage = 9;
 
         document.addEventListener('DOMContentLoaded', () => {
             fetch('data.xlsx')
@@ -357,18 +402,29 @@
                     const searchInput = document.getElementById('search-input');
                     searchInput.addEventListener('input', () => {
                         const query = searchInput.value.toLowerCase();
-                        filteredProducts = products.filter(product => product['FULL NAME'].toLowerCase().includes(query));
+                        filteredProducts = products.filter(product => 
+                            product['FULL NAME'].toLowerCase().includes(query));
                         currentPage = 1;
                         renderPage();
                     });
                     renderPage();
                 });
+
+            document.getElementById('go-to-top').addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('go-to-bottom').addEventListener('click', () => {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            });
         });
 
         function renderPage() {
             const container = document.getElementById('products');
             container.innerHTML = '';
 
+            // Set products per page based on screen size
+            const productsPerPage = window.innerWidth <= 600 ? 12 : 9;
             const start = (currentPage - 1) * productsPerPage;
             const end = start + productsPerPage;
             const pageProducts = filteredProducts.slice(start, end);
@@ -402,7 +458,7 @@
                         <div class="scoin-container">
                             <div class="scoin-label">S-COIN Points Required</div>
                             <div class="scoin-value">
-                                <img src="https://iili.io/3qUXNjI.md.png" alt="S-COIN" class="scoin-icon">
+                                <img src="https://i.ibb.co/1YdtHZzX/upscalemedia-transformed.png" alt="S-COIN" class="scoin-icon">
                                 ${scoinValue}
                             </div>
                         </div>
@@ -443,6 +499,10 @@
                 pageNumbers.appendChild(pageButton);
             }
 
+            const currentPageIndicator = document.createElement('span');
+            currentPageIndicator.className = 'current-page';
+            currentPageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
+
             const nextButton = document.createElement('button');
             nextButton.textContent = 'Next';
             nextButton.disabled = currentPage === totalPages;
@@ -455,6 +515,7 @@
 
             pagination.appendChild(prevButton);
             pagination.appendChild(pageNumbers);
+            pagination.appendChild(currentPageIndicator);
             pagination.appendChild(nextButton);
         }
     </script>
