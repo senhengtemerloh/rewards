@@ -8,11 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-red: #e53935;  /* Bright red */
-            --dark-red: #b71c1c;     /* Darker red */
-            --light-red: #ffcdd2;    /* Light red */
-            --bg-color: #f4f7fa;     /* Light grayish background */
-            --gold-accent: #ffd700;  /* Gold accent */
+            --primary-red: #e53935;
+            --dark-red: #b71c1c;
+            --light-red: #ffcdd2;
+            --bg-color: #f4f7fa;
+            --gold-accent: #ffd700;
         }
 
         * {
@@ -81,7 +81,6 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
-            cursor: pointer;
         }
 
         .product-card:hover {
@@ -135,6 +134,44 @@
             color: var(--dark-red);
             margin-bottom: 1rem;
             line-height: 1.4;
+            min-height: 3.2rem;
+        }
+
+        .price-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .price-box {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 10px;
+            text-align: center;
+            background: var(--light-red);
+            color: var(--dark-red);
+        }
+
+        .rcp-price .value {
+            font-size: 0.8rem;
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .member-price {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        .member-price .value {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
         }
 
         .scoin-container {
@@ -166,22 +203,31 @@
             height: 28px;
         }
 
+        .remark {
+            font-size: 0.85rem;
+            color: #777;
+            margin-top: 1rem;
+            font-style: italic;
+            border-top: 1px dashed var(--light-red);
+            padding-top: 0.8rem;
+        }
+
         #pagination {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 1rem;
+            gap: 0.8rem;
             padding: 2rem 0;
         }
 
         #pagination button {
+            padding: 0.7rem 1.2rem;
             background: var(--primary-red);
             color: white;
             border: none;
-            border-radius: 25px;
-            padding: 0.6rem 1.5rem;
-            font-size: 1rem;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 1rem;
             transition: background 0.3s ease;
         }
 
@@ -194,13 +240,24 @@
             cursor: not-allowed;
         }
 
-        #pagination .page-indicator {
-            font-size: 1rem;
-            color: var(--primary-red);
-            font-weight: 600;
+        #pagination .page-numbers {
+            display: flex;
+            gap: 0.5rem;
         }
 
-        /* Mobile Styles */
+        #pagination .page-numbers button {
+            background: #fff;
+            color: var(--primary-red);
+            border: 2px solid var(--primary-red);
+            padding: 0.5rem 1rem;
+        }
+
+        #pagination .page-numbers button.current {
+            background: var(--primary-red);
+            color: white;
+        }
+
+        /* Mobile-Specific Styles */
         @media (max-width: 600px) {
             .container {
                 grid-template-columns: repeat(2, 1fr);
@@ -214,20 +271,22 @@
                 padding: 0.5rem;
             }
             .product-title {
-                font-size: calc(0.8rem + 0.2vw);
+                font-size: 0.9rem;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
-                max-width: 100%;
+            }
+            .price-container, .remark, .model-code {
+                display: none;
             }
             .scoin-container {
                 padding: 0.8rem;
             }
             .scoin-label {
-                font-size: calc(0.6rem + 0.2vw);
+                font-size: 0.7rem;
             }
             .scoin-value {
-                font-size: calc(1.2rem + 0.2vw);
+                font-size: 1.5rem;
             }
             .scoin-icon {
                 width: 20px;
@@ -235,19 +294,46 @@
             }
             #search-input {
                 width: 90%;
-                font-size: calc(0.9rem + 0.1vw);
+                font-size: 0.9rem;
+            }
+            #pagination .page-numbers {
+                display: none;
+            }
+            #pagination .page-indicator {
+                display: block;
+                font-size: 0.9rem;
+                color: var(--primary-red);
             }
             #pagination button {
                 padding: 0.5rem 1rem;
-                font-size: calc(0.8rem + 0.1vw);
+                font-size: 0.9rem;
             }
-            #pagination .page-indicator {
-                font-size: calc(0.9rem + 0.1vw);
+            .mobile-only {
+                display: block;
+                position: fixed;
+                right: 10px;
+                opacity: 0.7;
+                background: var(--primary-red);
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 0.5rem 1rem;
+                cursor: pointer;
             }
-            /* Hide non-essential details on mobile */
-            .desktop-only {
-                display: none;
+            #go-to-top {
+                bottom: 60px;
             }
+            #go-to-bottom {
+                bottom: 10px;
+            }
+        }
+
+        .mobile-only {
+            display: none;
+        }
+
+        #pagination .page-indicator {
+            display: none;
         }
     </style>
 </head>
@@ -261,6 +347,8 @@
     </div>
     <div class="container" id="products"></div>
     <div id="pagination"></div>
+    <button id="go-to-top" class="mobile-only">Top</button>
+    <button id="go-to-bottom" class="mobile-only">Bottom</button>
 
     <script>
         let products = [];
@@ -276,9 +364,8 @@
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     products = XLSX.utils.sheet_to_json(worksheet);
                     filteredProducts = products;
-                    const searchInput = document.getElementById('search-input');
-                    searchInput.addEventListener('input', () => {
-                        const query = searchInput.value.toLowerCase();
+                    document.getElementById('search-input').addEventListener('input', () => {
+                        const query = document.getElementById('search-input').value.toLowerCase();
                         filteredProducts = products.filter(product => 
                             product['FULL NAME'].toLowerCase().includes(query));
                         currentPage = 1;
@@ -286,16 +373,22 @@
                     });
                     renderPage();
                 });
+
+            document.getElementById('go-to-top').addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            document.getElementById('go-to-bottom').addEventListener('click', () => {
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            });
         });
 
         function renderPage() {
             const container = document.getElementById('products');
             container.innerHTML = '';
-
             const start = (currentPage - 1) * productsPerPage;
             const end = start + productsPerPage;
             const pageProducts = filteredProducts.slice(start, end);
-
             const isMobile = window.innerWidth <= 600;
 
             pageProducts.forEach(product => {
@@ -306,6 +399,8 @@
                 });
 
                 const scoinValue = (product.MEMBER * 100).toLocaleString();
+                const rcpFormatted = Number(product.RCP).toLocaleString();
+                const memberFormatted = Number(product.MEMBER).toLocaleString();
                 const truncatedName = product['FULL NAME'].length > 20 
                     ? product['FULL NAME'].substring(0, 17) + '...' 
                     : product['FULL NAME'];
@@ -316,23 +411,35 @@
                         <div class="brand-badge">${product.BRAND}</div>
                     </div>
                     <div class="product-info">
-                        <h3 class="product-title desktop-only">${truncatedName}</h3>
+                        <h3 class="product-title">${isMobile ? truncatedName : product['FULL NAME']}</h3>
+                        ${!isMobile ? `<small class="model-code">${product['MODEL']}</small>` : ''}
+                        ${!isMobile ? `
+                        <div class="price-container">
+                            <div class="price-box rcp-price">
+                                <div class="label">RCP</div>
+                                <div class="value">RM${rcpFormatted}</div>
+                            </div>
+                            <div class="price-box member-price">
+                                <div class="label">Member Price</div>
+                                <div class="value">RM${memberFormatted}</div>
+                            </div>
+                        </div>
+                        ` : ''}
                         <div class="scoin-container">
-                            <div class="scoin-label">S-COIN</div>
+                            <div class="scoin-label">S-COIN Points Required</div>
                             <div class="scoin-value">
                                 <img src="https://i.ibb.co/1YdtHZzX/upscalemedia-transformed.png" alt="S-COIN" class="scoin-icon">
                                 ${scoinValue}
                             </div>
                         </div>
+                        ${!isMobile && product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ''}
                     </div>
                 `;
-
                 container.appendChild(productCard);
             });
 
             const pagination = document.getElementById('pagination');
             pagination.innerHTML = '';
-
             const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
             const prevButton = document.createElement('button');
@@ -345,9 +452,22 @@
                 }
             });
 
+            const pageNumbers = document.createElement('div');
+            pageNumbers.className = 'page-numbers';
+            for (let i = 1; i <= totalPages; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                if (i === currentPage) pageButton.classList.add('current');
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    renderPage();
+                });
+                pageNumbers.appendChild(pageButton);
+            }
+
             const pageIndicator = document.createElement('span');
             pageIndicator.className = 'page-indicator';
-            pageIndicator.textContent = `${currentPage}/${totalPages}`;
+            pageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
 
             const nextButton = document.createElement('button');
             nextButton.textContent = 'Next';
@@ -359,9 +479,15 @@
                 }
             });
 
-            pagination.appendChild(prevButton);
-            pagination.appendChild(pageIndicator);
-            pagination.appendChild(nextButton);
+            if (isMobile) {
+                pagination.appendChild(prevButton);
+                pagination.appendChild(pageIndicator);
+                pagination.appendChild(nextButton);
+            } else {
+                pagination.appendChild(prevButton);
+                pagination.appendChild(pageNumbers);
+                pagination.appendChild(nextButton);
+            }
         }
     </script>
 </body>
