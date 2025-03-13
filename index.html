@@ -8,11 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-red: #e53935;
-            --dark-red: #b71c1c;
-            --light-red: #ffcdd2;
-            --bg-color: #f4f7fa;
-            --gold-accent: #ffd700;
+            --primary-red: #e53935;  /* Bright red */
+            --dark-red: #b71c1c;     /* Darker red */
+            --light-red: #ffcdd2;    /* Light red */
+            --bg-color: #f4f7fa;     /* Light grayish background */
+            --gold-accent: #ffd700;  /* Gold accent */
         }
 
         * {
@@ -31,8 +31,9 @@
         header {
             background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
             color: white;
-            padding: 3rem 2rem;
+            padding: 2rem 1rem;
             text-align: center;
+            position: relative;
             border-bottom-left-radius: 50px;
             border-bottom-right-radius: 50px;
         }
@@ -51,26 +52,25 @@
             opacity: 0.9;
         }
 
-        .search-container {
-            text-align: center;
-            margin: 2rem 0;
-        }
-
-        #search-input {
-            padding: 0.5rem 1rem;
-            width: 300px;
-            border: 2px solid var(--primary-red);
-            border-radius: 20px;
-            font-size: 1rem;
-        }
-
         .container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 2rem;
-            padding: 2rem;
+            padding: 1rem;
             max-width: 1400px;
             margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
 
         .product-card {
@@ -81,6 +81,8 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
             flex-direction: column;
+            position: relative;
+            cursor: pointer;
         }
 
         .product-card:hover {
@@ -89,11 +91,12 @@
         }
 
         .image-container {
-            height: 300px;
+            height: 250px;
             background: #fff;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
             overflow: hidden;
         }
 
@@ -118,10 +121,11 @@
             border-radius: 15px;
             font-size: 0.85rem;
             font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .product-info {
-            padding: 1.5rem;
+            padding: 1rem;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
@@ -129,7 +133,7 @@
         }
 
         .product-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--dark-red);
             margin-bottom: 1rem;
@@ -172,13 +176,15 @@
             font-size: 0.65rem;
             text-transform: uppercase;
             margin-bottom: 0.3rem;
+            font-weight: 400;
         }
 
         .scoin-container {
             background: var(--dark-red);
-            padding: 1.5rem;
+            padding: 1rem;
             text-align: center;
             border-top: 3px solid var(--gold-accent);
+            position: relative;
         }
 
         .scoin-label {
@@ -190,7 +196,7 @@
 
         .scoin-value {
             color: white;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -255,85 +261,63 @@
         #pagination .page-numbers button.current {
             background: var(--primary-red);
             color: white;
+            border-color: var(--primary-red);
         }
 
-        /* Mobile-Specific Styles */
-        @media (max-width: 600px) {
-            .container {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-                padding: 1rem;
-            }
-            .image-container {
-                height: 150px;
-            }
-            .product-info {
-                padding: 0.5rem;
-            }
-            .product-title {
-                font-size: 0.9rem;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-            .price-container, .remark, .model-code {
-                display: none;
-            }
-            .scoin-container {
-                padding: 0.8rem;
-            }
-            .scoin-label {
-                font-size: 0.7rem;
-            }
-            .scoin-value {
-                font-size: 1.5rem;
-            }
-            .scoin-icon {
-                width: 20px;
-                height: 20px;
-            }
-            #search-input {
-                width: 90%;
-                font-size: 0.9rem;
-            }
-            #pagination .page-numbers {
-                display: none;
-            }
-            #pagination .page-indicator {
-                display: block;
-                font-size: 0.9rem;
-                color: var(--primary-red);
-            }
-            #pagination button {
-                padding: 0.5rem 1rem;
-                font-size: 0.9rem;
-            }
-            .mobile-only {
-                display: block;
-                position: fixed;
-                right: 10px;
-                opacity: 0.7;
-                background: var(--primary-red);
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 0.5rem 1rem;
-                cursor: pointer;
-            }
-            #go-to-top {
-                bottom: 60px;
-            }
-            #go-to-bottom {
-                bottom: 10px;
-            }
+        #pagination .page-numbers button:hover:not(.current) {
+            background: var(--light-red);
         }
 
-        .mobile-only {
+        /* Modal Styles */
+        .modal {
             display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        #pagination .page-indicator {
-            display: none;
+        .modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            transform: translateY(-50px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        #modal-image {
+            max-width: 100%;
+            max-height: 200px;
+            object-fit: contain;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
@@ -342,17 +326,26 @@
         <h1>S-COIN Redemption</h1>
         <div class="tagline">My Rewards, My Choice!</div>
     </header>
-    <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search products...">
-    </div>
+
     <div class="container" id="products"></div>
     <div id="pagination"></div>
-    <button id="go-to-top" class="mobile-only">Top</button>
-    <button id="go-to-bottom" class="mobile-only">Bottom</button>
+
+    <!-- Modal for Product Details -->
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modal-image" src="" alt="Product Image">
+            <h3 id="modal-title"></h3>
+            <p id="modal-model"></p>
+            <p id="modal-rcp"></p>
+            <p id="modal-member"></p>
+            <p id="modal-scoin"></p>
+            <p id="modal-remark"></p>
+        </div>
+    </div>
 
     <script>
         let products = [];
-        let filteredProducts;
         let currentPage = 1;
         const productsPerPage = 9;
 
@@ -363,47 +356,38 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     products = XLSX.utils.sheet_to_json(worksheet);
-                    filteredProducts = products;
-                    document.getElementById('search-input').addEventListener('input', () => {
-                        const query = document.getElementById('search-input').value.toLowerCase();
-                        filteredProducts = products.filter(product => 
-                            product['FULL NAME'].toLowerCase().includes(query));
-                        currentPage = 1;
-                        renderPage();
-                    });
                     renderPage();
-                });
+                })
+                .catch(error => console.error('Error loading data:', error));
 
-            document.getElementById('go-to-top').addEventListener('click', () => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Modal close functionality
+            const modal = document.getElementById('product-modal');
+            const closeModal = document.querySelector('.close');
+            closeModal.addEventListener('click', () => {
+                modal.classList.remove('show');
             });
-
-            document.getElementById('go-to-bottom').addEventListener('click', () => {
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            window.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                }
             });
         });
 
         function renderPage() {
             const container = document.getElementById('products');
             container.innerHTML = '';
+
             const start = (currentPage - 1) * productsPerPage;
             const end = start + productsPerPage;
-            const pageProducts = filteredProducts.slice(start, end);
-            const isMobile = window.innerWidth <= 600;
+            const pageProducts = products.slice(start, end);
 
             pageProducts.forEach(product => {
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
-                productCard.addEventListener('click', () => {
-                    alert(`Full Name: ${product['FULL NAME']}\nModel: ${product['MODEL']}\nRCP: RM${Number(product.RCP).toLocaleString()}\nMember Price: RM${Number(product.MEMBER).toLocaleString()}\nS-COIN: ${(product.MEMBER * 100).toLocaleString()}\nImage: ${product.URL}`);
-                });
 
                 const scoinValue = (product.MEMBER * 100).toLocaleString();
                 const rcpFormatted = Number(product.RCP).toLocaleString();
                 const memberFormatted = Number(product.MEMBER).toLocaleString();
-                const truncatedName = product['FULL NAME'].length > 20 
-                    ? product['FULL NAME'].substring(0, 17) + '...' 
-                    : product['FULL NAME'];
 
                 productCard.innerHTML = `
                     <div class="image-container">
@@ -411,9 +395,7 @@
                         <div class="brand-badge">${product.BRAND}</div>
                     </div>
                     <div class="product-info">
-                        <h3 class="product-title">${isMobile ? truncatedName : product['FULL NAME']}</h3>
-                        ${!isMobile ? `<small class="model-code">${product['MODEL']}</small>` : ''}
-                        ${!isMobile ? `
+                        <h3 class="product-title">${product['FULL NAME']}</h3>
                         <div class="price-container">
                             <div class="price-box rcp-price">
                                 <div class="label">RCP</div>
@@ -424,23 +406,36 @@
                                 <div class="value">RM${memberFormatted}</div>
                             </div>
                         </div>
-                        ` : ''}
                         <div class="scoin-container">
                             <div class="scoin-label">S-COIN Points Required</div>
                             <div class="scoin-value">
-                                <img src="https://i.ibb.co/1YdtHZzX/upscalemedia-transformed.png" alt="S-COIN" class="scoin-icon">
+                                <img src="https://i.ibb.co/1YdtHZz/upscalemedia-transformed.png" alt="S-COIN" class="scoin-icon">
                                 ${scoinValue}
                             </div>
                         </div>
-                        ${!isMobile && product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ''}
+                        ${product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ''}
                     </div>
                 `;
+
+                // Add click event to show modal
+                productCard.addEventListener('click', () => {
+                    document.getElementById('modal-image').src = product.URL;
+                    document.getElementById('modal-title').textContent = product['FULL NAME'];
+                    document.getElementById('modal-model').textContent = `Model: ${product['MODEL'] || 'N/A'}`;
+                    document.getElementById('modal-rcp').textContent = `RCP: RM${rcpFormatted}`;
+                    document.getElementById('modal-member').textContent = `Member Price: RM${memberFormatted}`;
+                    document.getElementById('modal-scoin').textContent = `S-COIN: ${scoinValue}`;
+                    document.getElementById('modal-remark').textContent = product.REMARK ? `Remark: ${product.REMARK}` : '';
+                    document.getElementById('product-modal').classList.add('show');
+                });
+
                 container.appendChild(productCard);
             });
 
             const pagination = document.getElementById('pagination');
             pagination.innerHTML = '';
-            const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+            const totalPages = Math.ceil(products.length / productsPerPage);
 
             const prevButton = document.createElement('button');
             prevButton.textContent = 'Previous';
@@ -457,17 +452,15 @@
             for (let i = 1; i <= totalPages; i++) {
                 const pageButton = document.createElement('button');
                 pageButton.textContent = i;
-                if (i === currentPage) pageButton.classList.add('current');
+                if (i === currentPage) {
+                    pageButton.classList.add('current');
+                }
                 pageButton.addEventListener('click', () => {
                     currentPage = i;
                     renderPage();
                 });
                 pageNumbers.appendChild(pageButton);
             }
-
-            const pageIndicator = document.createElement('span');
-            pageIndicator.className = 'page-indicator';
-            pageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
 
             const nextButton = document.createElement('button');
             nextButton.textContent = 'Next';
@@ -479,15 +472,9 @@
                 }
             });
 
-            if (isMobile) {
-                pagination.appendChild(prevButton);
-                pagination.appendChild(pageIndicator);
-                pagination.appendChild(nextButton);
-            } else {
-                pagination.appendChild(prevButton);
-                pagination.appendChild(pageNumbers);
-                pagination.appendChild(nextButton);
-            }
+            pagination.appendChild(prevButton);
+            pagination.appendChild(pageNumbers);
+            pagination.appendChild(nextButton);
         }
     </script>
 </body>
