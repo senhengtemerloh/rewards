@@ -52,6 +52,20 @@
             opacity: 0.9;
         }
 
+        .search-container {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        #search-input {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--primary-red);
+            border-radius: 20px;
+            font-size: 1rem;
+            width: 300px;
+            max-width: 100%;
+        }
+
         .container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -136,15 +150,23 @@
             font-size: 1rem;
             font-weight: 600;
             color: var(--dark-red);
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
             line-height: 1.4;
             min-height: 3.2rem;
+        }
+
+        .model-code {
+            font-size: 0.8rem;
+            text-align: center;
+            color: #555;
+            margin-top: 0.5rem;
         }
 
         .price-container {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 1.5rem;
+            margin-top: 0.5rem;
         }
 
         .price-box {
@@ -246,26 +268,10 @@
             cursor: not-allowed;
         }
 
-        #pagination .page-numbers {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        #pagination .page-numbers button {
-            background: #fff;
-            color: var(--primary-red);
-            border: 2px solid var(--primary-red);
-            padding: 0.5rem 1rem;
-        }
-
-        #pagination .page-numbers button.current {
-            background: var(--primary-red);
-            color: white;
-            border-color: var(--primary-red);
-        }
-
-        #pagination .page-numbers button:hover:not(.current) {
-            background: var(--light-red);
+        #pagination span {
+            font-size: 1rem;
+            color: #333;
+            margin: 0 1rem;
         }
 
         /* Modal Styles */
@@ -325,6 +331,9 @@
     <header>
         <h1>S-COIN Redemption</h1>
         <div class="tagline">My Rewards, My Choice!</div>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Search products...">
+        </div>
     </header>
 
     <div class="container" id="products"></div>
@@ -333,7 +342,7 @@
     <!-- Modal for Product Details -->
     <div id="product-modal" class="modal">
         <div class="modal-content">
-            <span class="close">&times;</span>
+            <span class="close">×</span>
             <img id="modal-image" src="" alt="Product Image">
             <h3 id="modal-title"></h3>
             <p id="modal-model"></p>
@@ -346,6 +355,7 @@
 
     <script>
         let products = [];
+        let filteredProducts;
         let currentPage = 1;
         const productsPerPage = 9;
 
@@ -356,7 +366,21 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     products = XLSX.utils.sheet_to_json(worksheet);
+                    filteredProducts = products;
                     renderPage();
+
+                    // Add search functionality
+                    const searchInput = document.getElementById('search-input');
+                    searchInput.addEventListener('input', () => {
+                        const searchTerm = searchInput.value.toLowerCase();
+                        filteredProducts = products.filter(product => {
+                            const fullName = product['FULL NAME'] ? product['FULL NAME'].toLowerCase() : '';
+                            const model = product['MODEL'] ? product['MODEL'].toLowerCase() : '';
+                            return fullName.includes(searchTerm) || model.includes(searchTerm);
+                        });
+                        currentPage = 1;
+                        renderPage();
+                    });
                 })
                 .catch(error => console.error('Error loading data:', error));
 
@@ -377,104 +401,98 @@
             const container = document.getElementById('products');
             container.innerHTML = '';
 
-            const start = (currentPage - 1) * productsPerPage;
-            const end = start + productsPerPage;
-            const pageProducts = products.slice(start, end);
+            if (filteredProducts.length === 0) {
+                container.innerHTML = '<p>No products found.</p>';
+            } else {
+                const start = (currentPage - 1) * productsPerPage;
+                const end = start + productsPerPage;
+                const pageProducts = filteredProducts.slice(start, end);
 
-            pageProducts.forEach(product => {
-                const productCard = document.createElement('div');
-                productCard.className = 'product-card';
+                pageProducts.forEach(product => {
+                    const productCard = document.createElement('div');
+                    productCard.className = 'product-card';
 
-                const scoinValue = (product.MEMBER * 100).toLocaleString();
-                const rcpFormatted = Number(product.RCP).toLocaleString();
-                const memberFormatted = Number(product.MEMBER).toLocaleString();
+                    const scoinValue = (product.MEMBER * 100).toLocaleString();
+                    const rcpFormatted = Number(product.RCP).toLocaleString();
+                    const memberFormatted = Number(product.MEMBER).toLocaleString();
 
-                productCard.innerHTML = `
-                    <div class="image-container">
-                        <img src="${product.URL}" alt="${product['FULL NAME']}" class="product-image">
-                        <div class="brand-badge">${product.BRAND}</div>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">${product['FULL NAME']}</h3>
-                        <div class="price-container">
-                            <div class="price-box rcp-price">
-                                <div class="label">RCP</div>
-                                <div class="value">RM${rcpFormatted}</div>
-                            </div>
-                            <div class="price-box member-price">
-                                <div class="label">Member Price</div>
-                                <div class="value">RM${memberFormatted}</div>
-                            </div>
+                    productCard.innerHTML = `
+                        <div class="image-container">
+                            <img src="${product.URL}" alt="${product['FULL NAME']}" class="product-image">
+                            <div class="brand-badge">${product.BRAND}</div>
                         </div>
-                        <div class="scoin-container">
-                            <div class="scoin-label">S-COIN Points Required</div>
-                            <div class="scoin-value">
-                                <img src="SCOIN.png" alt="S-COIN" class="scoin-icon">
-                                ${scoinValue}
+                        <div class="product-info">
+                            <h3 class="product-title">${product['FULL NAME']}</h3>
+                            <div class="model-code">${product['MODEL'] || 'N/A'}</div>
+                            <div class="price-container">
+                                <div class="price-box rcp-price">
+                                    <div class="label">RCP</div>
+                                    <div class="value">RM${rcpFormatted}</div>
+                                </div>
+                                <div class="price-box member-price">
+                                    <div class="label">Member Price</div>
+                                    <div class="value">RM${memberFormatted}</div>
+                                </div>
                             </div>
+                            <div class="scoin-container">
+                                <div class="scoin-label">S-COIN Points Required</div>
+                                <div class="scoin-value">
+                                    <img src="SCOIN.png" alt="S-COIN" class="scoin-icon">
+                                    ${scoinValue}
+                                </div>
+                            </div>
+                            ${product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ''}
                         </div>
-                        ${product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ''}
-                    </div>
-                `;
+                    `;
 
-                // Add click event to show modal
-                productCard.addEventListener('click', () => {
-                    document.getElementById('modal-image').src = product.URL;
-                    document.getElementById('modal-title').textContent = product['FULL NAME'];
-                    document.getElementById('modal-model').textContent = `Model: ${product['MODEL'] || 'N/A'}`;
-                    document.getElementById('modal-rcp').textContent = `RCP: RM${rcpFormatted}`;
-                    document.getElementById('modal-member').textContent = `Member Price: RM${memberFormatted}`;
-                    document.getElementById('modal-scoin').textContent = `S-COIN: ${scoinValue}`;
-                    document.getElementById('modal-remark').textContent = product.REMARK ? `Remark: ${product.REMARK}` : '';
-                    document.getElementById('product-modal').classList.add('show');
+                    productCard.addEventListener('click', () => {
+                        document.getElementById('modal-image').src = product.URL;
+                        document.getElementById('modal-title').textContent = product['FULL NAME'];
+                        document.getElementById('modal-model').textContent = `Model: ${product['MODEL'] || 'N/A'}`;
+                        document.getElementById('modal-rcp').textContent = `RCP: RM${rcpFormatted}`;
+                        document.getElementById('modal-member').textContent = `Member Price: RM${memberFormatted}`;
+                        document.getElementById('modal-scoin').textContent = `S-COIN: ${scoinValue}`;
+                        document.getElementById('modal-remark').textContent = product.REMARK ? `Remark: ${product.REMARK}` : '';
+                        document.getElementById('product-modal').classList.add('show');
+                    });
+
+                    container.appendChild(productCard);
                 });
-
-                container.appendChild(productCard);
-            });
+            }
 
             const pagination = document.getElementById('pagination');
             pagination.innerHTML = '';
 
-            const totalPages = Math.ceil(products.length / productsPerPage);
+            const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
-            const prevButton = document.createElement('button');
-            prevButton.textContent = 'Previous';
-            prevButton.disabled = currentPage === 1;
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
-                    currentPage--;
-                    renderPage();
-                }
-            });
-
-            const pageNumbers = document.createElement('div');
-            pageNumbers.className = 'page-numbers';
-            for (let i = 1; i <= totalPages; i++) {
-                const pageButton = document.createElement('button');
-                pageButton.textContent = i;
-                if (i === currentPage) {
-                    pageButton.classList.add('current');
-                }
-                pageButton.addEventListener('click', () => {
-                    currentPage = i;
-                    renderPage();
+            if (totalPages > 0) {
+                const prevButton = document.createElement('button');
+                prevButton.textContent = 'Previous';
+                prevButton.disabled = currentPage <= 1 || totalPages === 0;
+                prevButton.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        renderPage();
+                    }
                 });
-                pageNumbers.appendChild(pageButton);
+
+                const pageInfo = document.createElement('span');
+                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+                const nextButton = document.createElement('button');
+                nextButton.textContent = 'Next';
+                nextButton.disabled = currentPage >= totalPages || totalPages === 0;
+                nextButton.addEventListener('click', () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        renderPage();
+                    }
+                });
+
+                pagination.appendChild(prevButton);
+                pagination.appendChild(pageInfo);
+                pagination.appendChild(nextButton);
             }
-
-            const nextButton = document.createElement('button');
-            nextButton.textContent = 'Next';
-            nextButton.disabled = currentPage === totalPages;
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    renderPage();
-                }
-            });
-
-            pagination.appendChild(prevButton);
-            pagination.appendChild(pageNumbers);
-            pagination.appendChild(nextButton);
         }
     </script>
 </body>
