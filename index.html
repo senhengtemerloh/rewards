@@ -1,499 +1,609 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S-COIN Redemption Catalog</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-red: #e53935;  /* Bright red */
-            --dark-red: #b71c1c;     /* Darker red */
-            --light-red: #ffcdd2;    /* Light red */
-            --bg-color: #f4f7fa;     /* Light grayish background */
-            --gold-accent: #ffd700;  /* Gold accent */
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>S-COIN Redemption Catalog</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --primary-red: #e53935; /* Bright red */
+      --dark-red: #b71c1c;    /* Darker red */
+      --light-red: #ffcdd2;   /* Light red */
+      --bg-color: #f4f7fa;    /* Light grayish background */
+      --gold-accent: #ffd700; /* Gold accent */
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
 
-        body {
-            background: var(--bg-color);
-            color: #333;
-            line-height: 1.6;
-        }
+    body {
+      background: var(--bg-color);
+      color: #333;
+      line-height: 1.6;
+    }
 
-        header {
-            background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
-            color: white;
-            padding: 2rem 1rem;
-            text-align: center;
-            position: relative;
-            border-bottom-left-radius: 50px;
-            border-bottom-right-radius: 50px;
-        }
+    header {
+      background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+      position: relative;
+      border-bottom-left-radius: 50px;
+      border-bottom-right-radius: 50px;
+    }
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
 
-        .tagline {
-            font-size: 1.2rem;
-            font-weight: 300;
-            margin-top: 0.5rem;
-            opacity: 0.9;
-        }
+    .tagline {
+      font-size: 1.2rem;
+      font-weight: 300;
+      margin-top: 0.5rem;
+      opacity: 0.9;
+    }
 
-        .search-container {
-            margin-top: 1rem;
-            text-align: center;
-        }
+    .search-container {
+      margin-top: 1rem;
+      text-align: center;
+    }
 
-        #search-input {
-            padding: 0.5rem 1rem;
-            border: 2px solid var(--primary-red);
-            border-radius: 20px;
-            font-size: 1rem;
-            width: 300px;
-            max-width: 100%;
-        }
+    #search-input {
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--primary-red);
+      border-radius: 20px;
+      font-size: 1rem;
+      width: 300px;
+      max-width: 100%;
+    }
 
-        .container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            padding: 1rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+    /* Brand filter dropdown */
+    #brand-filter {
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--primary-red);
+      border-radius: 20px;
+      font-size: 1rem;
+      width: 200px;
+      max-width: 100%;
+      margin-left: 0.5rem;
+    }
 
-        @media (max-width: 1024px) {
-            .container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+    /* Sort filter dropdown for Member Price */
+    #sort-filter {
+      padding: 0.5rem 1rem;
+      border: 2px solid var(--primary-red);
+      border-radius: 20px;
+      font-size: 1rem;
+      width: 220px;
+      max-width: 100%;
+      margin-left: 0.5rem;
+    }
 
-        @media (max-width: 600px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
+    .container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      padding: 1rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
 
-        .product-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            cursor: pointer;
-        }
+    @media (max-width: 1024px) {
+      .container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
 
-        .product-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
-        }
+    @media (max-width: 600px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
 
-        .image-container {
-            height: 250px;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-        }
+    .product-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      cursor: pointer;
+    }
 
-        .product-image {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform 0.3s ease;
-        }
+    .product-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+    }
 
-        .product-card:hover .product-image {
-            transform: scale(1.05);
-        }
+    .image-container {
+      height: 250px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
 
-        .brand-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: var(--gold-accent);
-            color: #333;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
+    .product-image {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
 
-        .product-info {
-            padding: 1rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
+    .product-card:hover .product-image {
+      transform: scale(1.05);
+    }
 
-        .product-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--dark-red);
-            margin-bottom: 0.5rem;
-            line-height: 1.4;
-            min-height: 3.2rem;
-        }
+    .brand-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--gold-accent);
+      color: #333;
+      padding: 6px 12px;
+      border-radius: 15px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
 
-        .model-code {
-            font-size: 0.8rem;
-            text-align: center;
-            color: #555;
-            margin-top: 0.5rem;
-        }
+    .product-info {
+      padding: 1rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
-        .price-container {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            margin-top: 0.5rem;
-        }
+    .product-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--dark-red);
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+      min-height: 3.2rem;
+    }
 
-        .price-box {
-            flex: 1;
-            padding: 0.5rem;
-            border-radius: 10px;
-            text-align: center;
-            background: var(--light-red);
-            color: var(--dark-red);
-        }
+    .model-code {
+      font-size: 0.8rem;
+      text-align: center;
+      color: #555;
+      margin-top: 0.5rem;
+    }
 
-        .rcp-price .value {
-            font-size: 0.8rem;
-            text-decoration: line-through;
-            opacity: 0.7;
-        }
+    .price-container {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      margin-top: 0.5rem;
+    }
 
-        .member-price {
-            background: var(--primary-red);
-            color: white;
-        }
+    .price-box {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 10px;
+      text-align: center;
+      background: var(--light-red);
+      color: var(--dark-red);
+    }
 
-        .member-price .value {
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
+    .rcp-price .value {
+      font-size: 0.8rem;
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
 
-        .label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            margin-bottom: 0.3rem;
-            font-weight: 400;
-        }
+    .member-price {
+      background: var(--primary-red);
+      color: white;
+    }
 
-        .scoin-container {
-            background: var(--dark-red);
-            padding: 1rem;
-            text-align: center;
-            border-top: 3px solid var(--gold-accent);
-            position: relative;
-        }
+    .member-price .value {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
 
-        .scoin-label {
-            color: var(--light-red);
-            font-size: 0.9rem;
-            font-weight: 300;
-            margin-bottom: 0.5rem;
-        }
+    .label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      margin-bottom: 0.3rem;
+      font-weight: 400;
+    }
 
-        .scoin-value {
-            color: white;
-            font-size: 2.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-        }
+    .scoin-container {
+      background: var(--dark-red);
+      padding: 1rem;
+      text-align: center;
+      border-top: 3px solid var(--gold-accent);
+      position: relative;
+    }
 
-        .scoin-icon {
-            width: 40px;
-            height: 40px;
-        }
+    .scoin-label {
+      color: var(--light-red);
+      font-size: 0.9rem;
+      font-weight: 300;
+      margin-bottom: 0.5rem;
+    }
 
-        .remark {
-            font-size: 0.85rem;
-            color: #777;
-            margin-top: 1rem;
-            font-style: italic;
-            border-top: 1px dashed var(--light-red);
-            padding-top: 0.8rem;
-        }
+    .scoin-value {
+      color: white;
+      font-size: 2.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
 
-        #pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.8rem;
-            padding: 2rem 0;
-        }
+    .scoin-icon {
+      width: 40px;
+      height: 40px;
+    }
 
-        #pagination button {
-            padding: 0.7rem 1.2rem;
-            background: var(--primary-red);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: background 0.3s ease;
-        }
+    .remark {
+      font-size: 0.85rem;
+      color: #777;
+      margin-top: 1rem;
+      font-style: italic;
+      border-top: 1px dashed var(--light-red);
+      padding-top: 0.8rem;
+    }
 
-        #pagination button:hover {
-            background: var(--dark-red);
-        }
+    #pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 2rem 0;
+    }
 
-        #pagination button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
+    #pagination button {
+      padding: 0.7rem 1.2rem;
+      background: var(--primary-red);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s ease;
+    }
 
-        #pagination span {
-            font-size: 1rem;
-            color: #333;
-            margin: 0 1rem;
-        }
+    #pagination button:hover {
+      background: var(--dark-red);
+    }
 
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
+    #pagination button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
 
-        .modal.show {
-            display: flex;
-            opacity: 1;
-        }
+    #pagination span {
+      font-size: 1rem;
+      color: #333;
+      margin: 0 1rem;
+    }
 
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            position: relative;
-            transform: translateY(-50px);
-            transition: transform 0.3s ease;
-        }
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
-        .modal.show .modal-content {
-            transform: translateY(0);
-        }
+    .modal.show {
+      display: flex;
+      opacity: 1;
+    }
 
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.5rem;
-            cursor: pointer;
-        }
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      transform: translateY(-50px);
+      transition: transform 0.3s ease;
+    }
 
-        #modal-image {
-            max-width: 100%;
-            max-height: 200px;
-            object-fit: contain;
-            margin-bottom: 1rem;
-        }
-    </style>
+    .modal.show .modal-content {
+      transform: translateY(0);
+    }
+
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    #modal-image {
+      max-width: 100%;
+      max-height: 200px;
+      object-fit: contain;
+      margin-bottom: 1rem;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1>S-COIN Redemption</h1>
-        <div class="tagline">My Rewards, My Choice!</div>
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search products...">
-        </div>
-    </header>
+  <header>
+    <h1>S-COIN Redemption</h1>
+    <div class="tagline">My Rewards, My Choice!</div>
+    <div class="search-container">
+      <!-- Existing Search Input -->
+      <input type="text" id="search-input" placeholder="Search products..." />
 
-    <div class="container" id="products"></div>
-    <div id="pagination"></div>
+      <!-- Brand filter dropdown -->
+      <select id="brand-filter">
+        <option value="">All Brands</option>
+      </select>
 
-    <!-- Modal for Product Details -->
-    <div id="product-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">×</span>
-            <img id="modal-image" src="" alt="Product Image">
-            <h3 id="modal-title"></h3>
-            <p id="modal-model"></p>
-            <p id="modal-rcp"></p>
-            <p id="modal-member"></p>
-            <p id="modal-scoin"></p>
-            <p id="modal-remark"></p>
-        </div>
+      <!-- Sort filter dropdown (Member Price) -->
+      <select id="sort-filter">
+        <option value="">Sort by Price</option>
+        <option value="low-high">Member Price (Low to High)</option>
+        <option value="high-low">Member Price (High to Low)</option>
+      </select>
     </div>
+  </header>
 
-    <script>
-        let products = [];
-        let filteredProducts;
-        let currentPage = 1;
-        const productsPerPage = 9;
+  <div class="container" id="products"></div>
+  <div id="pagination"></div>
 
-        document.addEventListener('DOMContentLoaded', () => {
-            fetch('data.xlsx')
-                .then(response => response.arrayBuffer())
-                .then(data => {
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                    products = XLSX.utils.sheet_to_json(worksheet);
-                    filteredProducts = products;
-                    renderPage();
+  <!-- Modal for Product Details -->
+  <div id="product-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">×</span>
+      <img id="modal-image" src="" alt="Product Image" />
+      <h3 id="modal-title"></h3>
+      <p id="modal-model"></p>
+      <p id="modal-rcp"></p>
+      <p id="modal-member"></p>
+      <p id="modal-scoin"></p>
+      <p id="modal-remark"></p>
+    </div>
+  </div>
 
-                    // Add search functionality
-                    const searchInput = document.getElementById('search-input');
-                    searchInput.addEventListener('input', () => {
-                        const searchTerm = searchInput.value.toLowerCase();
-                        filteredProducts = products.filter(product => {
-                            const fullName = product['FULL NAME'] ? product['FULL NAME'].toLowerCase() : '';
-                            const model = product['MODEL'] ? product['MODEL'].toLowerCase() : '';
-                            return fullName.includes(searchTerm) || model.includes(searchTerm);
-                        });
-                        currentPage = 1;
-                        renderPage();
-                    });
-                })
-                .catch(error => console.error('Error loading data:', error));
+  <script>
+    let products = [];
+    let filteredProducts = [];
+    let currentPage = 1;
+    const productsPerPage = 9;
 
-            // Modal close functionality
-            const modal = document.getElementById('product-modal');
-            const closeModal = document.querySelector('.close');
-            closeModal.addEventListener('click', () => {
-                modal.classList.remove('show');
-            });
-            window.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    modal.classList.remove('show');
-                }
-            });
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch("data.xlsx")
+        .then((response) => response.arrayBuffer())
+        .then((data) => {
+          const workbook = XLSX.read(data, { type: "array" });
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+          products = XLSX.utils.sheet_to_json(worksheet);
+
+          // Populate brand filter with unique brands
+          const brandSet = new Set();
+          products.forEach((product) => {
+            if (product.BRAND) brandSet.add(product.BRAND);
+          });
+          const brandSelect = document.getElementById("brand-filter");
+          brandSet.forEach((brand) => {
+            const option = document.createElement("option");
+            option.value = brand;
+            option.textContent = brand;
+            brandSelect.appendChild(option);
+          });
+
+          // Default to show all products initially
+          filteredProducts = products;
+          renderPage();
+
+          // Hook up search, brand filter, and sort filter
+          document.getElementById("search-input").addEventListener("input", applyFilters);
+          brandSelect.addEventListener("change", applyFilters);
+          document.getElementById("sort-filter").addEventListener("change", applyFilters);
+        })
+        .catch((error) => console.error("Error loading data:", error));
+
+      // Modal close functionality
+      const modal = document.getElementById("product-modal");
+      const closeModal = document.querySelector(".close");
+      closeModal.addEventListener("click", () => {
+        modal.classList.remove("show");
+      });
+      window.addEventListener("click", (event) => {
+        if (event.target === modal) {
+          modal.classList.remove("show");
+        }
+      });
+    });
+
+    // Apply all filters (search, brand, sort)
+    function applyFilters() {
+      const searchTerm = document.getElementById("search-input").value.toLowerCase();
+      const selectedBrand = document.getElementById("brand-filter").value;
+      const sortValue = document.getElementById("sort-filter").value;
+
+      // Filter by brand and search term
+      filteredProducts = products.filter((product) => {
+        const fullName = product["FULL NAME"] ? product["FULL NAME"].toLowerCase() : "";
+        const model = product["MODEL"] ? product["MODEL"].toLowerCase() : "";
+        const brand = product["BRAND"] ? product["BRAND"] : "";
+
+        // Match search text
+        const matchesSearch = fullName.includes(searchTerm) || model.includes(searchTerm);
+
+        // Match brand filter (if a brand is selected)
+        const matchesBrand = selectedBrand ? brand === selectedBrand : true;
+
+        return matchesSearch && matchesBrand;
+      });
+
+      // Sort the filtered array if a sort option is chosen
+      if (sortValue === "low-high") {
+        filteredProducts.sort((a, b) => Number(a.MEMBER) - Number(b.MEMBER));
+      } else if (sortValue === "high-low") {
+        filteredProducts.sort((a, b) => Number(b.MEMBER) - Number(a.MEMBER));
+      }
+
+      // Reset to first page and render
+      currentPage = 1;
+      renderPage();
+    }
+
+    function renderPage() {
+      const container = document.getElementById("products");
+      container.innerHTML = "";
+
+      if (filteredProducts.length === 0) {
+        container.innerHTML = "<p>No products found.</p>";
+      } else {
+        const start = (currentPage - 1) * productsPerPage;
+        const end = start + productsPerPage;
+        const pageProducts = filteredProducts.slice(start, end);
+
+        pageProducts.forEach((product) => {
+          const productCard = document.createElement("div");
+          productCard.className = "product-card";
+
+          const scoinValue = (product.MEMBER * 100).toLocaleString();
+          const rcpFormatted = Number(product.RCP).toLocaleString();
+          const memberFormatted = Number(product.MEMBER).toLocaleString();
+
+          productCard.innerHTML = `
+            <div class="image-container">
+              <img src="${product.URL}" alt="${product["FULL NAME"]}" class="product-image">
+              <div class="brand-badge">${product.BRAND}</div>
+            </div>
+            <div class="product-info">
+              <h3 class="product-title">${product["FULL NAME"]}</h3>
+              <div class="model-code">${product["MODEL"] || "N/A"}</div>
+              <div class="price-container">
+                <div class="price-box rcp-price">
+                  <div class="label">RCP</div>
+                  <div class="value">RM${rcpFormatted}</div>
+                </div>
+                <div class="price-box member-price">
+                  <div class="label">Member Price</div>
+                  <div class="value">RM${memberFormatted}</div>
+                </div>
+              </div>
+              <div class="scoin-container">
+                <div class="scoin-label">S-COIN Points Required</div>
+                <div class="scoin-value">
+                  <img src="SCOIN.png" alt="S-COIN" class="scoin-icon">
+                  ${scoinValue}
+                </div>
+              </div>
+              ${
+                product.REMARK
+                  ? `<div class="remark">${product.REMARK}</div>`
+                  : ""
+              }
+            </div>
+          `;
+
+          // Modal trigger
+          productCard.addEventListener("click", () => {
+            document.getElementById("modal-image").src = product.URL;
+            document.getElementById("modal-title").textContent = product["FULL NAME"];
+            document.getElementById("modal-model").textContent = `Model: ${
+              product["MODEL"] || "N/A"
+            }`;
+            document.getElementById("modal-rcp").textContent = `RCP: RM${rcpFormatted}`;
+            document.getElementById("modal-member").textContent = `Member Price: RM${memberFormatted}`;
+            document.getElementById("modal-scoin").textContent = `S-COIN: ${scoinValue}`;
+            document.getElementById("modal-remark").textContent = product.REMARK
+              ? `Remark: ${product.REMARK}`
+              : "";
+            document.getElementById("product-modal").classList.add("show");
+          });
+
+          container.appendChild(productCard);
+        });
+      }
+
+      // Build pagination
+      const pagination = document.getElementById("pagination");
+      pagination.innerHTML = "";
+
+      const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+
+      if (totalPages > 0) {
+        // First button
+        const firstButton = document.createElement("button");
+        firstButton.textContent = "First";
+        firstButton.disabled = currentPage === 1;
+        firstButton.addEventListener("click", () => {
+          currentPage = 1;
+          renderPage();
         });
 
-        function renderPage() {
-            const container = document.getElementById('products');
-            container.innerHTML = '';
+        // Previous button
+        const prevButton = document.createElement("button");
+        prevButton.textContent = "Previous";
+        prevButton.disabled = currentPage <= 1;
+        prevButton.addEventListener("click", () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderPage();
+          }
+        });
 
-            if (filteredProducts.length === 0) {
-                container.innerHTML = '<p>No products found.</p>';
-            } else {
-                const start = (currentPage - 1) * productsPerPage;
-                const end = start + productsPerPage;
-                const pageProducts = filteredProducts.slice(start, end);
+        const pageInfo = document.createElement("span");
+        pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
 
-                pageProducts.forEach(product => {
-                    const productCard = document.createElement('div');
-                    productCard.className = 'product-card';
+        // Next button
+        const nextButton = document.createElement("button");
+        nextButton.textContent = "Next";
+        nextButton.disabled = currentPage >= totalPages;
+        nextButton.addEventListener("click", () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderPage();
+          }
+        });
 
-                    const scoinValue = (product.MEMBER * 100).toLocaleString();
-                    const rcpFormatted = Number(product.RCP).toLocaleString();
-                    const memberFormatted = Number(product.MEMBER).toLocaleString();
+        // Last button
+        const lastButton = document.createElement("button");
+        lastButton.textContent = "Last";
+        lastButton.disabled = currentPage === totalPages;
+        lastButton.addEventListener("click", () => {
+          currentPage = totalPages;
+          renderPage();
+        });
 
-                    productCard.innerHTML = `
-                        <div class="image-container">
-                            <img src="${product.URL}" alt="${product['FULL NAME']}" class="product-image">
-                            <div class="brand-badge">${product.BRAND}</div>
-                        </div>
-                        <div class="product-info">
-                            <h3 class="product-title">${product['FULL NAME']}</h3>
-                            <div class="model-code">${product['MODEL'] || 'N/A'}</div>
-                            <div class="price-container">
-                                <div class="price-box rcp-price">
-                                    <div class="label">RCP</div>
-                                    <div class="value">RM${rcpFormatted}</div>
-                                </div>
-                                <div class="price-box member-price">
-                                    <div class="label">Member Price</div>
-                                    <div class="value">RM${memberFormatted}</div>
-                                </div>
-                            </div>
-                            <div class="scoin-container">
-                                <div class="scoin-label">S-COIN Points Required</div>
-                                <div class="scoin-value">
-                                    <img src="SCOIN.png" alt="S-COIN" class="scoin-icon">
-                                    ${scoinValue}
-                                </div>
-                            </div>
-                            ${product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ''}
-                        </div>
-                    `;
-
-                    productCard.addEventListener('click', () => {
-                        document.getElementById('modal-image').src = product.URL;
-                        document.getElementById('modal-title').textContent = product['FULL NAME'];
-                        document.getElementById('modal-model').textContent = `Model: ${product['MODEL'] || 'N/A'}`;
-                        document.getElementById('modal-rcp').textContent = `RCP: RM${rcpFormatted}`;
-                        document.getElementById('modal-member').textContent = `Member Price: RM${memberFormatted}`;
-                        document.getElementById('modal-scoin').textContent = `S-COIN: ${scoinValue}`;
-                        document.getElementById('modal-remark').textContent = product.REMARK ? `Remark: ${product.REMARK}` : '';
-                        document.getElementById('product-modal').classList.add('show');
-                    });
-
-                    container.appendChild(productCard);
-                });
-            }
-
-            const pagination = document.getElementById('pagination');
-            pagination.innerHTML = '';
-
-            const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-
-            if (totalPages > 0) {
-                const prevButton = document.createElement('button');
-                prevButton.textContent = 'Previous';
-                prevButton.disabled = currentPage <= 1 || totalPages === 0;
-                prevButton.addEventListener('click', () => {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        renderPage();
-                    }
-                });
-
-                const pageInfo = document.createElement('span');
-                pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-
-                const nextButton = document.createElement('button');
-                nextButton.textContent = 'Next';
-                nextButton.disabled = currentPage >= totalPages || totalPages === 0;
-                nextButton.addEventListener('click', () => {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        renderPage();
-                    }
-                });
-
-                pagination.appendChild(prevButton);
-                pagination.appendChild(pageInfo);
-                pagination.appendChild(nextButton);
-            }
-        }
-    </script>
+        pagination.appendChild(firstButton);
+        pagination.appendChild(prevButton);
+        pagination.appendChild(pageInfo);
+        pagination.appendChild(nextButton);
+        pagination.appendChild(lastButton);
+      }
+    }
+  </script>
 </body>
 </html>
