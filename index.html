@@ -10,7 +10,7 @@
     :root {
       --primary-blue: #276ef1;
       --accent-blue: #79aaff;
-      --bg-glass: rgba(255,255,255,0.8);
+      --bg-glass: rgba(255,255,255,0.9);
       --bg-blur: blur(10px);
       --text-main: #212b36;
       --text-light: #5a6a85;
@@ -19,6 +19,11 @@
       --border-light: #e3eaf3;
       --success: #47d867;
       --danger: #f14d61;
+      --scoin-highlight: #f7b500;
+      --scoin-text: #24210f;
+      --scoin-glow: 0 0 0 4px #fff6a2, 0 8px 24px #f7b50055;
+      --checker-light: #f7f8fa;
+      --checker-dark: #e6eaf2;
     }
     body {
       font-family: 'Montserrat', sans-serif;
@@ -47,7 +52,6 @@
       letter-spacing: 0.5px;
       font-weight: 400;
     }
-
     .filters-bar {
       display: flex;
       flex-wrap: wrap;
@@ -80,7 +84,7 @@
 
     .container {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       gap: 2rem;
       max-width: 1200px;
       margin: 0 auto;
@@ -94,89 +98,151 @@
       box-shadow: var(--glass-shadow);
       display: flex;
       flex-direction: column;
+      align-items: center;
       transition: transform 0.22s, box-shadow 0.22s;
       cursor: pointer;
-      min-height: 480px;
+      min-height: 520px;
       border: 1px solid var(--border-light);
       position: relative;
       overflow: hidden;
+      padding-bottom: 1.2rem;
     }
     .product-card:hover {
       transform: translateY(-7px) scale(1.012);
       box-shadow: 0 16px 40px rgba(39,110,241,0.11);
     }
-    .image-container {
-      width: 100%;
-      height: 210px;
-      background: #f4f7fa;
+    .image-frame {
+      width: 180px;
+      height: 180px;
+      margin: 2.3rem auto 0.5rem auto;
       display: flex;
       align-items: center;
       justify-content: center;
+      background:
+        linear-gradient(135deg, #f8fafd 80%, #e2e7ef 100%),
+        repeating-linear-gradient(45deg, var(--checker-light) 0 22px, var(--checker-dark) 22px 44px);
       position: relative;
+      border-radius: 18px;
+      border: 1.5px solid var(--border-light);
+      box-shadow: 0 3px 14px rgba(120,140,180,0.07);
       overflow: hidden;
     }
+    .image-frame::before {
+      content: "";
+      display: block;
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, #fcfdff00 70%, #eaeefb11 100%);
+      z-index: 1;
+      pointer-events: none;
+    }
     .product-image {
-      width: auto;
-      height: 150px;
-      max-width: 95%;
-      max-height: 95%;
+      max-width: 85%;
+      max-height: 85%;
       object-fit: contain;
+      position: relative;
+      z-index: 2;
+      filter: drop-shadow(0 1px 2px #9aacc080);
       transition: transform 0.27s;
+      background: none !important;
     }
     .product-card:hover .product-image {
-      transform: scale(1.07);
+      transform: scale(1.08);
     }
     .brand-badge {
       position: absolute;
-      bottom: 14px;
-      left: 14px;
+      top: 15px;
+      left: 19px;
       background: var(--accent-blue);
       color: #fff;
       padding: 6px 14px;
-      border-radius: 20px;
+      border-radius: 18px;
       font-size: 0.90rem;
       font-weight: 600;
       box-shadow: 0 2px 7px rgba(39,110,241,0.13);
-      letter-spacing: 1.5px;
+      letter-spacing: 1.2px;
       text-transform: uppercase;
+      z-index: 4;
     }
-
+    .scoin-highlight {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0.2rem 0 1rem 0;
+      width: 95%;
+      min-height: 65px;
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: var(--scoin-text);
+      background: linear-gradient(90deg, #ffe49c 70%, #ffd700 100%);
+      border-radius: 33px;
+      box-shadow: var(--scoin-glow);
+      border: 2.5px solid #ffe3b3;
+      letter-spacing: 1.4px;
+      text-align: center;
+      position: relative;
+      z-index: 10;
+      transition: box-shadow 0.13s;
+    }
+    .scoin-highlight img {
+      width: 45px;
+      height: 45px;
+      margin-right: 0.25em;
+      filter: drop-shadow(0 2px 6px #fffbe3cc);
+    }
+    .scoin-label {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #bd9502;
+      text-shadow: 0 2px 8px #fff8e5bb;
+      margin-right: 8px;
+      letter-spacing: 1px;
+    }
     .product-info {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 1.2rem 1rem 1rem 1rem;
+      align-items: center;
+      justify-content: flex-start;
+      width: 97%;
+      text-align: center;
+      padding-top: 0.2rem;
     }
     .product-title {
       font-size: 1.04rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--primary-blue);
-      margin-bottom: 0.3rem;
-      min-height: 2.8rem;
+      margin: 0.9rem 0 0.35rem 0;
       letter-spacing: 0.1px;
-      line-height: 1.35;
+      line-height: 1.28;
+      min-height: 2.3rem;
+      max-width: 97%;
+      word-break: break-word;
     }
     .model-code {
-      font-size: 0.9rem;
+      font-size: 0.97rem;
       color: var(--text-light);
       font-weight: 500;
-      margin-bottom: 0.2rem;
       opacity: 0.7;
+      margin-bottom: 0.3rem;
+      max-width: 97%;
+      word-break: break-all;
     }
     .product-tags {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.55rem;
       flex-wrap: wrap;
-      margin-bottom: 1.2rem;
+      justify-content: center;
+      margin-bottom: 1.05rem;
     }
     .tag {
       background: #f3f7fc;
       color: var(--primary-blue);
       border-radius: 50px;
-      font-size: 0.92rem;
+      font-size: 0.97rem;
       font-weight: 600;
-      padding: 0.32rem 1.05rem;
+      padding: 0.32rem 1.1rem;
       box-shadow: 0 0.5px 2px rgba(100,140,200,0.07);
       border: 1px solid #e6ecfa;
       display: flex;
@@ -194,46 +260,17 @@
       color: var(--primary-blue);
       text-decoration: line-through;
     }
-    .tag.scoin {
-      background: #edf9f2;
-      color: var(--success);
-      font-weight: 700;
-      border: 1px solid #d0f6d8;
-    }
-    .tag.scoin img {
-      width: 1.2em;
-      height: 1.2em;
-      vertical-align: middle;
-      margin-right: 2px;
-      filter: drop-shadow(0 0 2px #fff9);
-    }
     .remark {
-      font-size: 0.93rem;
+      font-size: 0.96rem;
       color: var(--danger);
       background: #fff0f2;
       border-left: 3px solid var(--danger);
-      padding: 0.3rem 0.8rem;
-      margin-top: 0.8rem;
+      padding: 0.33rem 0.7rem;
+      margin-top: 0.6rem;
       border-radius: 7px;
       font-style: italic;
+      max-width: 98%;
       word-break: break-word;
-    }
-
-    .redeem-btn {
-      margin: 1.5rem 0 0.2rem 0;
-      padding: 0.7rem 0;
-      width: 100%;
-      border: none;
-      border-radius: 20px;
-      background: linear-gradient(90deg, var(--primary-blue) 80%, var(--accent-blue) 100%);
-      color: #fff;
-      font-size: 1.02rem;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 1.1px;
-      box-shadow: 0 2px 8px rgba(39,110,241,0.07);
-      transition: background 0.19s, box-shadow 0.16s;
-      display: none; /* Hide for now, for future enhancement */
     }
 
     #pagination {
@@ -278,7 +315,7 @@
       position: fixed;
       z-index: 10000;
       left: 0; top: 0; width: 100vw; height: 100vh;
-      background: rgba(48,78,130,0.28);
+      background: rgba(48,78,130,0.22);
       justify-content: center;
       align-items: center;
       opacity: 0;
@@ -296,7 +333,7 @@
       padding: 2rem 2.2rem 1.5rem 2.2rem;
       min-width: 320px;
       max-width: 98vw;
-      width: 400px;
+      width: 410px;
       position: relative;
       text-align: center;
       backdrop-filter: blur(22px);
@@ -320,29 +357,75 @@
       opacity: 0.8;
       transition: opacity 0.16s;
     }
-    .close:hover {
-      opacity: 1;
+    .close:hover { opacity: 1; }
+    .modal-image-frame {
+      width: 185px;
+      height: 185px;
+      margin: 0 auto 1rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background:
+        linear-gradient(135deg, #f8fafd 80%, #e2e7ef 100%),
+        repeating-linear-gradient(45deg, var(--checker-light) 0 22px, var(--checker-dark) 22px 44px);
+      position: relative;
+      border-radius: 18px;
+      border: 1.5px solid var(--border-light);
+      box-shadow: 0 3px 14px rgba(120,140,180,0.07);
+      overflow: hidden;
+    }
+    .modal-image-frame::before {
+      content: "";
+      display: block;
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, #fcfdff00 70%, #eaeefb11 100%);
+      z-index: 1;
+      pointer-events: none;
     }
     #modal-image {
-      max-width: 95%;
-      max-height: 170px;
+      max-width: 85%;
+      max-height: 85%;
       object-fit: contain;
-      margin-bottom: 1.4rem;
-      border-radius: 13px;
-      box-shadow: 0 4px 20px rgba(39,110,241,0.09);
-      background: #f3f6fa;
-      padding: 0.5rem;
+      position: relative;
+      z-index: 2;
+      background: none !important;
+      filter: drop-shadow(0 1px 2px #9aacc080);
     }
     #modal-title {
       font-size: 1.25rem;
       font-weight: 700;
       color: var(--primary-blue);
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.3rem;
     }
-    #modal-model, #modal-rcp, #modal-member, #modal-scoin, #modal-remark {
-      font-size: 1.04rem;
+    .modal-scoin-highlight {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0.8rem auto 1.1rem auto;
+      width: 90%;
+      min-height: 62px;
+      font-size: 2.05rem;
+      font-weight: 800;
+      color: var(--scoin-text);
+      background: linear-gradient(90deg, #ffe49c 70%, #ffd700 100%);
+      border-radius: 33px;
+      box-shadow: var(--scoin-glow);
+      border: 2.5px solid #ffe3b3;
+      letter-spacing: 1.2px;
+      text-align: center;
+    }
+    .modal-scoin-highlight img {
+      width: 40px;
+      height: 40px;
+      margin-right: 0.18em;
+      filter: drop-shadow(0 2px 6px #fffbe3cc);
+    }
+    #modal-model, #modal-rcp, #modal-member, #modal-remark {
+      font-size: 1.07rem;
       color: var(--text-light);
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.3rem;
       font-weight: 500;
     }
     #modal-remark {
@@ -350,7 +433,7 @@
       background: #fff3f3;
       padding: 0.5rem 1rem;
       border-radius: 9px;
-      margin-top: 0.5rem;
+      margin-top: 0.6rem;
     }
 
     /* Responsive for mobile */
@@ -360,10 +443,12 @@
       .container { gap: 1.2rem; }
       .modal-content { padding: 1rem 0.5rem 1rem 0.5rem; }
       .product-card { min-height: 420px; }
+      .image-frame, .modal-image-frame { width: 140px; height: 140px; }
+      .scoin-highlight, .modal-scoin-highlight { font-size: 1.32rem; min-height: 40px; }
     }
     @media (max-width: 500px) {
       .container { padding: 0 2px 1.3rem 2px; }
-      .product-card { min-height: 370px; }
+      .product-card { min-height: 350px; }
     }
   </style>
 </head>
@@ -387,15 +472,17 @@
   <div id="pagination"></div>
 
   <!-- Modal for Product Details -->
-  <div id="product-modal" class="modal">
+  <div id="product-modal" class="modal" tabindex="-1">
     <div class="modal-content">
       <button class="close" aria-label="Close">&times;</button>
-      <img id="modal-image" src="" alt="Product Image" />
+      <div class="modal-image-frame">
+        <img id="modal-image" src="" alt="Product Image" />
+      </div>
       <h3 id="modal-title"></h3>
-      <p id="modal-model"></p>
-      <p id="modal-rcp"></p>
-      <p id="modal-member"></p>
-      <p id="modal-scoin"></p>
+      <div class="modal-scoin-highlight" id="modal-scoin-highlight"></div>
+      <div id="modal-model"></div>
+      <div id="modal-rcp"></div>
+      <div id="modal-member"></div>
       <div id="modal-remark"></div>
     </div>
   </div>
@@ -427,11 +514,9 @@
             brandSelect.appendChild(option);
           });
 
-          // Default to show all products initially
           filteredProducts = products;
           renderPage();
 
-          // Hook up search, brand filter, and sort filter
           document.getElementById("search-input").addEventListener("input", applyFilters);
           brandSelect.addEventListener("change", applyFilters);
           document.getElementById("sort-filter").addEventListener("change", applyFilters);
@@ -449,37 +534,29 @@
           modal.classList.remove("show");
         }
       });
+      // Close on escape
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") modal.classList.remove("show");
+      });
     });
 
-    // Apply all filters (search, brand, sort)
     function applyFilters() {
       const searchTerm = document.getElementById("search-input").value.toLowerCase();
       const selectedBrand = document.getElementById("brand-filter").value;
       const sortValue = document.getElementById("sort-filter").value;
-
-      // Filter by brand and search term
       filteredProducts = products.filter((product) => {
         const fullName = product["FULL NAME"] ? product["FULL NAME"].toLowerCase() : "";
         const model = product["MODEL"] ? product["MODEL"].toLowerCase() : "";
         const brand = product["BRAND"] ? product["BRAND"] : "";
-
-        // Match search text
         const matchesSearch = fullName.includes(searchTerm) || model.includes(searchTerm);
-
-        // Match brand filter (if a brand is selected)
         const matchesBrand = selectedBrand ? brand === selectedBrand : true;
-
         return matchesSearch && matchesBrand;
       });
-
-      // Sort the filtered array if a sort option is chosen
       if (sortValue === "low-high") {
         filteredProducts.sort((a, b) => Number(a.MEMBER) - Number(b.MEMBER));
       } else if (sortValue === "high-low") {
         filteredProducts.sort((a, b) => Number(b.MEMBER) - Number(a.MEMBER));
       }
-
-      // Reset to first page and render
       currentPage = 1;
       renderPage();
     }
@@ -487,7 +564,6 @@
     function renderPage() {
       const container = document.getElementById("products");
       container.innerHTML = "";
-
       if (filteredProducts.length === 0) {
         container.innerHTML = "<p>No products found.</p>";
       } else {
@@ -498,28 +574,28 @@
         pageProducts.forEach((product) => {
           const productCard = document.createElement("div");
           productCard.className = "product-card";
-
+          // S-COIN value
           const scoinValue = (product.MEMBER * 100).toLocaleString();
           const rcpFormatted = Number(product.RCP).toLocaleString();
           const memberFormatted = Number(product.MEMBER).toLocaleString();
 
           productCard.innerHTML = `
-            <div class="image-container">
-              <img src="${product.URL}" alt="${product["FULL NAME"]}" class="product-image">
+            <div class="image-frame">
+              <img src="${product.URL}" alt="${product['FULL NAME'] || 'Product Image'}" class="product-image" loading="lazy" />
               <div class="brand-badge">${product.BRAND}</div>
             </div>
+            <div class="scoin-highlight">
+              <img src="SCOIN.png" alt="S-COIN" />
+              <span class="scoin-label">${scoinValue} S-COIN</span>
+            </div>
             <div class="product-info">
-              <div>
-                <div class="product-title">${product["FULL NAME"]}</div>
-                <div class="model-code">${product["MODEL"] || "N/A"}</div>
-                <div class="product-tags">
-                  <span class="tag rcp">RCP: RM${rcpFormatted}</span>
-                  <span class="tag member">Member: RM${memberFormatted}</span>
-                  <span class="tag scoin"><img src="SCOIN.png" alt="S-COIN"/>${scoinValue} S-COIN</span>
-                </div>
-                ${product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ""}
+              <div class="product-title">${product["FULL NAME"]}</div>
+              <div class="model-code">${product["MODEL"] || "N/A"}</div>
+              <div class="product-tags">
+                <span class="tag rcp">RCP: RM${rcpFormatted}</span>
+                <span class="tag member">Member: RM${memberFormatted}</span>
               </div>
-              <!--<button class="redeem-btn">Redeem</button>-->
+              ${product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ""}
             </div>
           `;
 
@@ -530,66 +606,48 @@
             document.getElementById("modal-model").textContent = `Model: ${product["MODEL"] || "N/A"}`;
             document.getElementById("modal-rcp").textContent = `RCP: RM${rcpFormatted}`;
             document.getElementById("modal-member").textContent = `Member Price: RM${memberFormatted}`;
-            document.getElementById("modal-scoin").textContent = `S-COIN: ${scoinValue}`;
             document.getElementById("modal-remark").textContent = product.REMARK
               ? `Remark: ${product.REMARK}` : "";
+            // Modal S-COIN highlight
+            document.getElementById("modal-scoin-highlight").innerHTML =
+              `<img src="SCOIN.png" alt="S-COIN"/> <span class="scoin-label">${scoinValue} S-COIN</span>`;
             document.getElementById("product-modal").classList.add("show");
           });
 
           container.appendChild(productCard);
         });
       }
-
-      // Build pagination
+      // Pagination
       const pagination = document.getElementById("pagination");
       pagination.innerHTML = "";
-
       const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-
       if (totalPages > 0) {
-        // First button
         const firstButton = document.createElement("button");
         firstButton.textContent = "First";
         firstButton.disabled = currentPage === 1;
         firstButton.addEventListener("click", () => {
-          currentPage = 1;
-          renderPage();
+          currentPage = 1; renderPage();
         });
-
-        // Previous button
         const prevButton = document.createElement("button");
         prevButton.textContent = "Previous";
         prevButton.disabled = currentPage <= 1;
         prevButton.addEventListener("click", () => {
-          if (currentPage > 1) {
-            currentPage--;
-            renderPage();
-          }
+          if (currentPage > 1) { currentPage--; renderPage(); }
         });
-
         const pageInfo = document.createElement("span");
         pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-
-        // Next button
         const nextButton = document.createElement("button");
         nextButton.textContent = "Next";
         nextButton.disabled = currentPage >= totalPages;
         nextButton.addEventListener("click", () => {
-          if (currentPage < totalPages) {
-            currentPage++;
-            renderPage();
-          }
+          if (currentPage < totalPages) { currentPage++; renderPage(); }
         });
-
-        // Last button
         const lastButton = document.createElement("button");
         lastButton.textContent = "Last";
         lastButton.disabled = currentPage === totalPages;
         lastButton.addEventListener("click", () => {
-          currentPage = totalPages;
-          renderPage();
+          currentPage = totalPages; renderPage();
         });
-
         pagination.appendChild(firstButton);
         pagination.appendChild(prevButton);
         pagination.appendChild(pageInfo);
