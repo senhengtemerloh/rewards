@@ -5,374 +5,383 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>S-COIN Redemption Catalog</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --primary-red: #e53935; /* Bright red */
-      --dark-red: #b71c1c;    /* Darker red */
-      --light-red: #ffcdd2;   /* Light red */
-      --bg-color: #f4f7fa;    /* Light grayish background */
-      --gold-accent: #ffd700; /* Gold accent */
+      --primary-blue: #276ef1;
+      --accent-blue: #79aaff;
+      --bg-glass: rgba(255,255,255,0.8);
+      --bg-blur: blur(10px);
+      --text-main: #212b36;
+      --text-light: #5a6a85;
+      --glass-shadow: 0 8px 24px rgba(39,110,241,0.07), 0 1.5px 5px rgba(60,60,60,0.10);
+      --card-radius: 24px;
+      --border-light: #e3eaf3;
+      --success: #47d867;
+      --danger: #f14d61;
     }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-
     body {
-      background: var(--bg-color);
-      color: #333;
-      line-height: 1.6;
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #e9f0ff 0%, #f5f8fc 100%);
+      min-height: 100vh;
+      color: var(--text-main);
     }
-
     header {
-      background: linear-gradient(135deg, var(--dark-red), var(--primary-red));
-      color: white;
-      padding: 2rem 1rem;
+      padding: 2.5rem 1rem 1rem 1rem;
       text-align: center;
-      position: relative;
-      border-bottom-left-radius: 50px;
-      border-bottom-right-radius: 50px;
+      background: linear-gradient(100deg, #f6fafd 60%, #cce0ff 100%);
+      border-bottom-left-radius: 36px;
+      border-bottom-right-radius: 36px;
+      box-shadow: 0 2px 16px rgba(39,110,241,0.07);
     }
-
     h1 {
-      font-size: 2.5rem;
+      font-size: 2.3rem;
       font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+      color: var(--primary-blue);
     }
-
     .tagline {
-      font-size: 1.2rem;
-      font-weight: 300;
-      margin-top: 0.5rem;
-      opacity: 0.9;
+      font-size: 1.08rem;
+      color: var(--text-light);
+      margin-top: 0.2rem;
+      letter-spacing: 0.5px;
+      font-weight: 400;
     }
 
-    .search-container {
-      margin-top: 1rem;
-      text-align: center;
+    .filters-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-glass);
+      backdrop-filter: var(--bg-blur);
+      box-shadow: var(--glass-shadow);
+      padding: 1rem 2rem;
+      margin: -2.5rem auto 2rem auto;
+      max-width: 1050px;
+      border-radius: 20px;
+      gap: 0.7rem;
+      position: relative;
+      z-index: 2;
     }
-
-    #search-input {
-      padding: 0.5rem 1rem;
-      border: 2px solid var(--primary-red);
+    .filters-bar input, .filters-bar select {
+      padding: 0.52rem 1.2rem;
+      border: 1.5px solid var(--border-light);
       border-radius: 20px;
       font-size: 1rem;
-      width: 300px;
-      max-width: 100%;
+      background: #f8fafd;
+      margin: 0 2px;
+      transition: border 0.2s;
+      outline: none;
     }
-
-    /* Brand filter dropdown */
-    #brand-filter {
-      padding: 0.5rem 1rem;
-      border: 2px solid var(--primary-red);
-      border-radius: 20px;
-      font-size: 1rem;
-      width: 200px;
-      max-width: 100%;
-      margin-left: 0.5rem;
-    }
-
-    /* Sort filter dropdown for Member Price */
-    #sort-filter {
-      padding: 0.5rem 1rem;
-      border: 2px solid var(--primary-red);
-      border-radius: 20px;
-      font-size: 1rem;
-      width: 220px;
-      max-width: 100%;
-      margin-left: 0.5rem;
+    .filters-bar input:focus, .filters-bar select:focus {
+      border: 1.5px solid var(--primary-blue);
     }
 
     .container {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 2rem;
-      padding: 1rem;
-      max-width: 1400px;
+      max-width: 1200px;
       margin: 0 auto;
-    }
-
-    @media (max-width: 1024px) {
-      .container {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (max-width: 600px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
+      padding: 0 1rem 2rem 1rem;
     }
 
     .product-card {
-      background: white;
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: var(--bg-glass);
+      backdrop-filter: var(--bg-blur);
+      border-radius: var(--card-radius);
+      box-shadow: var(--glass-shadow);
       display: flex;
       flex-direction: column;
-      position: relative;
+      transition: transform 0.22s, box-shadow 0.22s;
       cursor: pointer;
+      min-height: 480px;
+      border: 1px solid var(--border-light);
+      position: relative;
+      overflow: hidden;
     }
-
     .product-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+      transform: translateY(-7px) scale(1.012);
+      box-shadow: 0 16px 40px rgba(39,110,241,0.11);
     }
-
     .image-container {
-      height: 250px;
-      background: #fff;
+      width: 100%;
+      height: 210px;
+      background: #f4f7fa;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       overflow: hidden;
     }
-
     .product-image {
-      max-width: 100%;
-      max-height: 100%;
+      width: auto;
+      height: 150px;
+      max-width: 95%;
+      max-height: 95%;
       object-fit: contain;
-      transition: transform 0.3s ease;
+      transition: transform 0.27s;
     }
-
     .product-card:hover .product-image {
-      transform: scale(1.05);
+      transform: scale(1.07);
     }
-
     .brand-badge {
       position: absolute;
-      top: 15px;
-      right: 15px;
-      background: var(--gold-accent);
-      color: #333;
-      padding: 6px 12px;
-      border-radius: 15px;
-      font-size: 0.85rem;
+      bottom: 14px;
+      left: 14px;
+      background: var(--accent-blue);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.90rem;
       font-weight: 600;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 7px rgba(39,110,241,0.13);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
     }
 
     .product-info {
-      padding: 1rem;
-      flex-grow: 1;
+      flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      padding: 1.2rem 1rem 1rem 1rem;
     }
-
     .product-title {
-      font-size: 1rem;
+      font-size: 1.04rem;
       font-weight: 600;
-      color: var(--dark-red);
-      margin-bottom: 0.5rem;
-      line-height: 1.4;
-      min-height: 3.2rem;
+      color: var(--primary-blue);
+      margin-bottom: 0.3rem;
+      min-height: 2.8rem;
+      letter-spacing: 0.1px;
+      line-height: 1.35;
     }
-
     .model-code {
-      font-size: 0.8rem;
-      text-align: center;
-      color: #555;
-      margin-top: 0.5rem;
-    }
-
-    .price-container {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      margin-top: 0.5rem;
-    }
-
-    .price-box {
-      flex: 1;
-      padding: 0.5rem;
-      border-radius: 10px;
-      text-align: center;
-      background: var(--light-red);
-      color: var(--dark-red);
-    }
-
-    .rcp-price .value {
-      font-size: 0.8rem;
-      text-decoration: line-through;
+      font-size: 0.9rem;
+      color: var(--text-light);
+      font-weight: 500;
+      margin-bottom: 0.2rem;
       opacity: 0.7;
     }
-
-    .member-price {
-      background: var(--primary-red);
-      color: white;
+    .product-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.2rem;
     }
-
-    .member-price .value {
-      font-size: 0.9rem;
+    .tag {
+      background: #f3f7fc;
+      color: var(--primary-blue);
+      border-radius: 50px;
+      font-size: 0.92rem;
       font-weight: 600;
-    }
-
-    .label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      margin-bottom: 0.3rem;
-      font-weight: 400;
-    }
-
-    .scoin-container {
-      background: var(--dark-red);
-      padding: 1rem;
-      text-align: center;
-      border-top: 3px solid var(--gold-accent);
-      position: relative;
-    }
-
-    .scoin-label {
-      color: var(--light-red);
-      font-size: 0.9rem;
-      font-weight: 300;
-      margin-bottom: 0.5rem;
-    }
-
-    .scoin-value {
-      color: white;
-      font-size: 2.5rem;
-      font-weight: 700;
+      padding: 0.32rem 1.05rem;
+      box-shadow: 0 0.5px 2px rgba(100,140,200,0.07);
+      border: 1px solid #e6ecfa;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
+      gap: 0.2em;
     }
-
-    .scoin-icon {
-      width: 40px;
-      height: 40px;
+    .tag.member {
+      background: var(--primary-blue);
+      color: #fff;
+      font-weight: 700;
+      border: none;
     }
-
+    .tag.rcp {
+      background: #e0e9fa;
+      color: var(--primary-blue);
+      text-decoration: line-through;
+    }
+    .tag.scoin {
+      background: #edf9f2;
+      color: var(--success);
+      font-weight: 700;
+      border: 1px solid #d0f6d8;
+    }
+    .tag.scoin img {
+      width: 1.2em;
+      height: 1.2em;
+      vertical-align: middle;
+      margin-right: 2px;
+      filter: drop-shadow(0 0 2px #fff9);
+    }
     .remark {
-      font-size: 0.85rem;
-      color: #777;
-      margin-top: 1rem;
+      font-size: 0.93rem;
+      color: var(--danger);
+      background: #fff0f2;
+      border-left: 3px solid var(--danger);
+      padding: 0.3rem 0.8rem;
+      margin-top: 0.8rem;
+      border-radius: 7px;
       font-style: italic;
-      border-top: 1px dashed var(--light-red);
-      padding-top: 0.8rem;
+      word-break: break-word;
+    }
+
+    .redeem-btn {
+      margin: 1.5rem 0 0.2rem 0;
+      padding: 0.7rem 0;
+      width: 100%;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(90deg, var(--primary-blue) 80%, var(--accent-blue) 100%);
+      color: #fff;
+      font-size: 1.02rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: 1.1px;
+      box-shadow: 0 2px 8px rgba(39,110,241,0.07);
+      transition: background 0.19s, box-shadow 0.16s;
+      display: none; /* Hide for now, for future enhancement */
     }
 
     #pagination {
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 0.8rem;
-      padding: 2rem 0;
+      gap: 0.5rem;
+      padding: 2.2rem 0 0.8rem 0;
+      margin-bottom: 0.5rem;
     }
-
     #pagination button {
-      padding: 0.7rem 1.2rem;
-      background: var(--primary-red);
-      color: white;
+      padding: 0.5rem 1.35rem;
+      background: var(--primary-blue);
+      color: #fff;
       border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      border-radius: 13px;
       font-size: 1rem;
-      transition: background 0.3s ease;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 0 1.5px 7px rgba(39,110,241,0.11);
     }
-
-    #pagination button:hover {
-      background: var(--dark-red);
+    #pagination button:hover:not(:disabled) {
+      background: var(--accent-blue);
     }
-
     #pagination button:disabled {
-      background: #ccc;
+      background: #e8eaf0;
+      color: #bbb;
       cursor: not-allowed;
     }
-
     #pagination span {
-      font-size: 1rem;
-      color: #333;
-      margin: 0 1rem;
+      font-size: 1.08rem;
+      color: var(--text-main);
+      margin: 0 1.1rem;
+      font-weight: 600;
+      letter-spacing: 1.1px;
     }
 
     /* Modal Styles */
     .modal {
       display: none;
       position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: rgba(48,78,130,0.28);
       justify-content: center;
       align-items: center;
       opacity: 0;
-      transition: opacity 0.3s ease;
+      transition: opacity 0.22s;
+      backdrop-filter: blur(2px);
     }
-
     .modal.show {
       display: flex;
       opacity: 1;
     }
-
     .modal-content {
-      background: white;
-      padding: 2rem;
-      border-radius: 10px;
-      max-width: 500px;
-      width: 90%;
-      text-align: center;
+      background: var(--bg-glass);
+      box-shadow: var(--glass-shadow);
+      border-radius: 26px;
+      padding: 2rem 2.2rem 1.5rem 2.2rem;
+      min-width: 320px;
+      max-width: 98vw;
+      width: 400px;
       position: relative;
-      transform: translateY(-50px);
-      transition: transform 0.3s ease;
+      text-align: center;
+      backdrop-filter: blur(22px);
+      border: 1.5px solid var(--border-light);
+      animation: modalFadeIn 0.25s cubic-bezier(.25,.8,.25,1);
     }
-
-    .modal.show .modal-content {
-      transform: translateY(0);
+    @keyframes modalFadeIn {
+      0% { transform: scale(0.92) translateY(30px); opacity:0;}
+      100% { transform: scale(1) translateY(0); opacity:1;}
     }
-
     .close {
       position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 1.5rem;
+      top: 18px;
+      right: 22px;
+      font-size: 2rem;
+      color: var(--primary-blue);
+      font-weight: 700;
+      background: none;
+      border: none;
       cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.16s;
+    }
+    .close:hover {
+      opacity: 1;
+    }
+    #modal-image {
+      max-width: 95%;
+      max-height: 170px;
+      object-fit: contain;
+      margin-bottom: 1.4rem;
+      border-radius: 13px;
+      box-shadow: 0 4px 20px rgba(39,110,241,0.09);
+      background: #f3f6fa;
+      padding: 0.5rem;
+    }
+    #modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary-blue);
+      margin-bottom: 0.2rem;
+    }
+    #modal-model, #modal-rcp, #modal-member, #modal-scoin, #modal-remark {
+      font-size: 1.04rem;
+      color: var(--text-light);
+      margin-bottom: 0.2rem;
+      font-weight: 500;
+    }
+    #modal-remark {
+      color: var(--danger);
+      background: #fff3f3;
+      padding: 0.5rem 1rem;
+      border-radius: 9px;
+      margin-top: 0.5rem;
     }
 
-    #modal-image {
-      max-width: 100%;
-      max-height: 200px;
-      object-fit: contain;
-      margin-bottom: 1rem;
+    /* Responsive for mobile */
+    @media (max-width: 750px) {
+      header { padding: 2rem 0.2rem 1rem 0.2rem; }
+      .filters-bar { padding: 1rem 0.5rem; gap: 0.3rem; }
+      .container { gap: 1.2rem; }
+      .modal-content { padding: 1rem 0.5rem 1rem 0.5rem; }
+      .product-card { min-height: 420px; }
+    }
+    @media (max-width: 500px) {
+      .container { padding: 0 2px 1.3rem 2px; }
+      .product-card { min-height: 370px; }
     }
   </style>
 </head>
 <body>
   <header>
     <h1>S-COIN Redemption</h1>
-    <div class="tagline">My Rewards, My Choice!</div>
-    <div class="search-container">
-      <!-- Existing Search Input -->
-      <input type="text" id="search-input" placeholder="Search products..." />
-
-      <!-- Brand filter dropdown -->
-      <select id="brand-filter">
-        <option value="">All Brands</option>
-      </select>
-
-      <!-- Sort filter dropdown (Member Price) -->
-      <select id="sort-filter">
-        <option value="">Sort by Price</option>
-        <option value="low-high">Member Price (Low to High)</option>
-        <option value="high-low">Member Price (High to Low)</option>
-      </select>
-    </div>
+    <div class="tagline">Find your rewards. Claim your joy!</div>
   </header>
+  <!-- Floating filters bar -->
+  <div class="filters-bar">
+    <input type="text" id="search-input" placeholder="Search product name or model..." />
+    <select id="brand-filter"><option value="">All Brands</option></select>
+    <select id="sort-filter">
+      <option value="">Sort by Price</option>
+      <option value="low-high">Member Price (Low to High)</option>
+      <option value="high-low">Member Price (High to Low)</option>
+    </select>
+  </div>
 
   <div class="container" id="products"></div>
   <div id="pagination"></div>
@@ -380,14 +389,14 @@
   <!-- Modal for Product Details -->
   <div id="product-modal" class="modal">
     <div class="modal-content">
-      <span class="close">×</span>
+      <button class="close" aria-label="Close">&times;</button>
       <img id="modal-image" src="" alt="Product Image" />
       <h3 id="modal-title"></h3>
       <p id="modal-model"></p>
       <p id="modal-rcp"></p>
       <p id="modal-member"></p>
       <p id="modal-scoin"></p>
-      <p id="modal-remark"></p>
+      <div id="modal-remark"></div>
     </div>
   </div>
 
@@ -500,30 +509,17 @@
               <div class="brand-badge">${product.BRAND}</div>
             </div>
             <div class="product-info">
-              <h3 class="product-title">${product["FULL NAME"]}</h3>
-              <div class="model-code">${product["MODEL"] || "N/A"}</div>
-              <div class="price-container">
-                <div class="price-box rcp-price">
-                  <div class="label">RCP</div>
-                  <div class="value">RM${rcpFormatted}</div>
+              <div>
+                <div class="product-title">${product["FULL NAME"]}</div>
+                <div class="model-code">${product["MODEL"] || "N/A"}</div>
+                <div class="product-tags">
+                  <span class="tag rcp">RCP: RM${rcpFormatted}</span>
+                  <span class="tag member">Member: RM${memberFormatted}</span>
+                  <span class="tag scoin"><img src="SCOIN.png" alt="S-COIN"/>${scoinValue} S-COIN</span>
                 </div>
-                <div class="price-box member-price">
-                  <div class="label">Member Price</div>
-                  <div class="value">RM${memberFormatted}</div>
-                </div>
+                ${product.REMARK ? `<div class="remark">${product.REMARK}</div>` : ""}
               </div>
-              <div class="scoin-container">
-                <div class="scoin-label">S-COIN Points Required</div>
-                <div class="scoin-value">
-                  <img src="SCOIN.png" alt="S-COIN" class="scoin-icon">
-                  ${scoinValue}
-                </div>
-              </div>
-              ${
-                product.REMARK
-                  ? `<div class="remark">${product.REMARK}</div>`
-                  : ""
-              }
+              <!--<button class="redeem-btn">Redeem</button>-->
             </div>
           `;
 
@@ -531,15 +527,12 @@
           productCard.addEventListener("click", () => {
             document.getElementById("modal-image").src = product.URL;
             document.getElementById("modal-title").textContent = product["FULL NAME"];
-            document.getElementById("modal-model").textContent = `Model: ${
-              product["MODEL"] || "N/A"
-            }`;
+            document.getElementById("modal-model").textContent = `Model: ${product["MODEL"] || "N/A"}`;
             document.getElementById("modal-rcp").textContent = `RCP: RM${rcpFormatted}`;
             document.getElementById("modal-member").textContent = `Member Price: RM${memberFormatted}`;
             document.getElementById("modal-scoin").textContent = `S-COIN: ${scoinValue}`;
             document.getElementById("modal-remark").textContent = product.REMARK
-              ? `Remark: ${product.REMARK}`
-              : "";
+              ? `Remark: ${product.REMARK}` : "";
             document.getElementById("product-modal").classList.add("show");
           });
 
