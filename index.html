@@ -3,126 +3,111 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>S‑COIN Redemption Catalog — Refreshed</title>
+  <title>S‑COIN Redemption Catalog — Senheng Theme</title>
   <meta name="color-scheme" content="light dark">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
+    /* ===== Senheng Brand System =====
+       Reference: Senheng red-first brand. Primary: #E60012
+       Supporting tints/shades derived from primary.
+    */
     :root{
-      /* Core palette */
-      --bg: #0d0d0f;
-      --bg-soft: #121216;
-      --panel: rgba(255,255,255,0.9);
+      /* Brand core */
+      --brand: #E60012;             /* Senheng Red */
+      --brand-600: #cc0010;
+      --brand-500: #ff1a2b;
+      --brand-100: #ffe5e7;
+
+      /* Surface & text */
+      --bg: #fafafa;
+      --panel: rgba(255,255,255,0.92);
       --panel-border: #ececec;
       --text: #1f2328;
       --muted: #6c727f;
-      --brand: #e53935;           /* primary accent */
-      --brand-2: #ff6b6b;         /* secondary accent */
-      --coin: #f7b500;            /* S-COIN gold */
-      --success: #35c36b;
+
+      /* Functional */
+      --coin: #f7b500;
       --danger: #f14d61;
       --radius: 20px;
-      --shadow: 0 10px 30px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.06);
       --glass: blur(12px) saturate(110%);
+      --shadow: 0 10px 30px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.06);
     }
-    
-    /* Dark mode overrides */
+
+    /* Dark mode tuned around brand red */
     :root[data-theme="dark"]{
-      --panel: rgba(22,23,27,0.7);
-      --panel-border: #272a32;
-      --bg: #08090b;
-      --bg-soft: #0d0f13;
-      --text: #e9eaee;
+      --bg: #0b0c0e;
+      --panel: rgba(20,22,26,0.78);
+      --panel-border: #2a2e36;
+      --text: #eceff3;
       --muted: #a0a6b0;
-      --shadow: 0 16px 40px rgba(0,0,0,.45), 0 4px 12px rgba(0,0,0,.35);
+      --shadow: 0 16px 42px rgba(0,0,0,.45), 0 4px 12px rgba(0,0,0,.35);
     }
 
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif;
+      font-family:'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif;
       color:var(--text);
       background:
-        radial-gradient(1200px 600px at 10% -10%, #ffe3e3 0%, transparent 60%),
-        radial-gradient(900px 600px at 120% 10%, #ffdede 0%, transparent 55%),
-        linear-gradient(180deg,#fff 0%,#fff 260px,transparent 260px),
+        radial-gradient(1200px 600px at -10% -20%, var(--brand-100) 0%, transparent 55%),
+        radial-gradient(900px 600px at 110% 10%, #fff1f2 0%, transparent 55%),
+        linear-gradient(180deg,#fff 0, #fff 240px, transparent 240px),
         var(--bg);
-      background-attachment: fixed;
+      background-attachment:fixed;
     }
 
-    header{
-      position:sticky; top:0; z-index:40;
-      background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.65));
-      backdrop-filter: blur(8px);
+    /* ===== Header with Senheng ribbon ===== */
+    header{position:sticky; top:0; z-index:50; backdrop-filter: blur(8px)}
+    .brand-bar{height:8px; background:linear-gradient(90deg,var(--brand) 0 40%, var(--brand-500) 40% 100%)}
+    .hero{
+      max-width:1200px; margin:0 auto; padding:1.1rem 1rem .9rem; text-align:center;
+      background:linear-gradient(180deg,rgba(255,255,255,.92),rgba(255,255,255,.72));
       border-bottom:1px solid var(--panel-border);
     }
-    [data-theme="dark"] header{ background: linear-gradient(180deg,rgba(13,15,18,.8),rgba(13,15,18,.6)); }
+    [data-theme="dark"] .hero{background:linear-gradient(180deg,rgba(20,22,26,.9),rgba(20,22,26,.6))}
 
-    .hero{
-      max-width:1200px; margin:0 auto; padding:1.2rem 1rem 1rem; text-align:center;
+    .title{ display:flex; align-items:center; justify-content:center; gap:.65rem; font-weight:800; letter-spacing:.3px;
+      font-size:clamp(1.6rem,3.5vw,2.5rem); color:var(--brand) }
+    .title .logo{
+      width:110px; height:22px; display:inline-grid; place-items:center; border-radius:6px;
+      background:var(--brand); color:#fff; font-weight:900; letter-spacing:.5px; font-size:.86rem
     }
-    .title{
-      font-size:clamp(1.6rem,3.5vw,2.5rem); font-weight:800; letter-spacing:.2px; color:var(--brand);
-      display:flex; align-items:center; justify-content:center; gap:.65rem;
-    }
-    .title .ping{width:.55rem;height:.55rem;border-radius:999px;background:var(--brand);position:relative;display:inline-block}
-    .title .ping::after{content:"";position:absolute;inset:-6px;border-radius:999px;border:2px solid var(--brand);opacity:.5;animation:pulse 1.6s infinite ease-out}
-    @keyframes pulse{0%{transform:scale(.6);opacity:.6}100%{transform:scale(1.5);opacity:0}}
-    .tagline{color:var(--muted); margin:.25rem 0 0; letter-spacing:.3px}
+    .tagline{ color:var(--muted); margin:.25rem 0 0 }
 
-    /* Controls */
-    .toolbar{
-      display:flex; flex-wrap:wrap; gap:.6rem 0.7rem; align-items:center; justify-content:center;
-      padding: .8rem 1rem 1rem; max-width:1200px; margin:0 auto;
-    }
-    .tool{
-      display:inline-flex; align-items:center; gap:.5rem; background:var(--panel); backdrop-filter:var(--glass);
-      border:1px solid var(--panel-border); border-radius:999px; box-shadow:var(--shadow);
-      padding:.55rem .8rem;
-    }
-    .tool input[type="text"], .tool select, .tool input[type="number"]{
-      border:none; outline:none; background:transparent; color:inherit; font-size:.98rem; min-width:10ch;
-    }
-    .tool .label{font-weight:700; font-size:.85rem; letter-spacing:.3px; color:var(--muted)}
-    .tool button{border:none; background:var(--brand); color:#fff; padding:.55rem 1rem; border-radius:999px; font-weight:700; cursor:pointer}
-    .tool button:hover{filter:brightness(1.05)}
-    .ghost{background:transparent!important; color:var(--brand); border:1px solid var(--brand)}
+    /* ===== Toolbar ===== */
+    .toolbar{ display:flex; flex-wrap:wrap; gap:.6rem .7rem; align-items:center; justify-content:center; max-width:1200px; margin:0 auto; padding:.9rem 1rem 1rem }
+    .tool{ display:inline-flex; align-items:center; gap:.55rem; background:var(--panel); backdrop-filter:var(--glass); border:1px solid var(--panel-border); border-radius:999px; box-shadow:var(--shadow); padding:.55rem .8rem }
+    .tool .label{ font-weight:800; font-size:.82rem; color:var(--muted); letter-spacing:.3px }
+    .tool input[type="text"], .tool select, .tool input[type="number"]{ border:none; outline:none; background:transparent; color:inherit; font-size:.98rem; min-width:10ch }
+    .tool button{ border:none; background:var(--brand); color:#fff; padding:.55rem 1rem; border-radius:999px; font-weight:800; cursor:pointer }
+    .tool button:hover{ filter:brightness(1.06) }
+    .ghost{ background:transparent!important; color:var(--brand); border:1px solid var(--brand) }
+    .spacer{ flex:1 1 100% }
 
-    .spacer{flex:1 1 100%}
+    /* ===== Grid & Cards ===== */
+    .container{ max-width:1200px; margin:0 auto; padding:1rem }
+    .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.25rem }
 
-    .container{max-width:1200px; margin:0 auto; padding:1rem;}
-    .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.3rem}
+    .card{ position:relative; overflow:hidden; border-radius:var(--radius); background:var(--panel); border:1px solid var(--panel-border); backdrop-filter:var(--glass); box-shadow:var(--shadow); display:flex; flex-direction:column; cursor:pointer; min-height:520px; transition: transform .18s ease, box-shadow .18s ease }
+    .card:hover{ transform: translateY(-4px); box-shadow:0 22px 52px rgba(230,0,18,.26) }
 
-    .card{
-      position:relative; overflow:hidden; border-radius:var(--radius);
-      background:var(--panel); border:1px solid var(--panel-border); backdrop-filter:var(--glass);
-      box-shadow:var(--shadow); display:flex; flex-direction:column; cursor:pointer; min-height:520px;
-      transition: transform .2s ease, box-shadow .2s ease;
-    }
-    .card:hover{transform: translateY(-4px); box-shadow:0 20px 50px rgba(229,57,53,.22)}
+    .brand-badge{ position:absolute; top:12px; left:12px; background:var(--brand); color:#fff; padding:.42rem .8rem; border-radius:999px; font-size:.83rem; font-weight:900; letter-spacing:1px; z-index:2 }
 
-    .brand-badge{ position:absolute; top:14px; left:14px; background:var(--brand); color:#fff; padding:.4rem .8rem; border-radius:999px; font-size:.85rem; font-weight:800; letter-spacing:1px; z-index:3 }
-
-    .frame{ display:grid; place-items:center; margin:1.2rem auto .5rem; width:260px; height:260px; border-radius:16px; background:#fff; border:1px solid var(--panel-border); box-shadow:inset 0 2px 0 rgba(255,255,255,.6), 0 8px 24px rgba(0,0,0,.06) }
-    .frame img{ max-width:90%; max-height:90%; object-fit:contain; transition: transform .25s ease; filter: drop-shadow(0 2px 6px rgba(0,0,0,.08)) }
+    .frame{ display:grid; place-items:center; width:260px; height:260px; margin:1.2rem auto .6rem; background:#fff; border:1px solid var(--panel-border); border-radius:18px; box-shadow:inset 0 2px 0 rgba(255,255,255,.6), 0 8px 24px rgba(0,0,0,.06) }
+    .frame img{ max-width:90%; max-height:90%; object-fit:contain; transition: transform .24s ease; filter: drop-shadow(0 2px 6px rgba(0,0,0,.08)) }
     .card:hover .frame img{ transform:scale(1.05) }
 
-    .coin{
-      align-self:center; margin:.3rem 0 .8rem; width:min(96%,520px); display:flex; align-items:center; justify-content:center;
-      gap:.45rem; font-weight:900; font-size:clamp(1.4rem,2.4vw,2rem); color:#3a2e00;
-      background:linear-gradient(90deg,#ffe49c 70%,#ffd700 100%); border:2px solid #ffe3b3; border-radius:28px;
-      box-shadow: 0 0 0 4px #fff6a2, 0 12px 28px #f7b50055;
-      padding:.5rem .9rem
-    }
-    .coin img{width:38px;height:38px}
+    .coin{ align-self:center; margin:.3rem 0 .8rem; width:min(96%,520px); display:flex; align-items:center; justify-content:center; gap:.45rem; font-weight:900; font-size:clamp(1.4rem,2.4vw,2rem); color:#3a2e00; background:linear-gradient(90deg,#ffe49c 70%,#ffd700 100%); border:2px solid #ffe3b3; border-radius:28px; box-shadow:0 0 0 4px #fff6a2, 0 12px 28px #f7b50055; padding:.5rem .9rem }
+    .coin img{ width:38px; height:38px }
 
-    .info{padding:0 1rem 1rem; display:flex; flex-direction:column; align-items:center; text-align:center}
-    .title{font-size:1.02rem; font-weight:800; color:var(--brand); min-height:2.6rem}
-    .model{font-size:.95rem; color:var(--muted); margin-top:.2rem}
+    .info{ padding:0 1rem 1rem; display:flex; flex-direction:column; align-items:center; text-align:center }
+    .name{ font-size:1.02rem; font-weight:900; color:var(--brand); min-height:2.6rem }
+    .model{ font-size:.95rem; color:var(--muted); margin-top:.2rem }
 
-    .tags{display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; margin:.8rem 0}
-    .tag{font-weight:800; font-size:.9rem; border-radius:999px; padding:.3rem .9rem; border:1px dashed var(--panel-border); background:#fff}
+    .tags{ display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; margin:.8rem 0 }
+    .tag{ font-weight:900; font-size:.9rem; border-radius:999px; padding:.3rem .9rem; border:1px dashed var(--panel-border); background:#fff }
     .tag.member{ background:var(--brand); color:#fff; border:none }
     .tag.rcp{ background:transparent; color:var(--brand); text-decoration:line-through }
 
@@ -130,7 +115,7 @@
 
     /* Pagination */
     .pagination{ display:flex; justify-content:center; align-items:center; gap:.5rem; padding:1.1rem 0 2rem }
-    .pagination button{ padding:.55rem 1.1rem; border-radius:10px; border:1px solid var(--panel-border); background:var(--panel); cursor:pointer; font-weight:700 }
+    .pagination button{ padding:.55rem 1.1rem; border-radius:10px; border:1px solid var(--panel-border); background:var(--panel); cursor:pointer; font-weight:800 }
     .pagination button[disabled]{ opacity:.45; cursor:not-allowed }
 
     /* Modal */
@@ -144,38 +129,28 @@
     .dialog .coin{ width:92%; }
     .dialog-body{ text-align:center; color:var(--muted); font-weight:600 }
 
-    /* Skeletons */
+    /* Skeleton */
     .skeleton{ background: linear-gradient(90deg,#eee 25%,#f5f5f5 37%,#eee 63%); background-size:400% 100%; animation: shimmer 1.2s infinite; border-radius:12px }
     @keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
 
-    /* Utilities */
     .hidden{display:none}
-    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
 
     @media (max-width:768px){ .frame{ width:210px; height:210px } .dialog-frame{ width:210px; height:210px } .card{ min-height:460px } }
   </style>
 </head>
 <body>
   <header>
+    <div class="brand-bar" aria-hidden="true"></div>
     <div class="hero">
-      <div class="title" aria-live="polite"><span class="ping" aria-hidden="true"></span>S‑COIN Redemption</div>
+      <div class="title"><span class="logo">SENHENG</span> S‑COIN Redemption</div>
       <p class="tagline">Find your rewards. Claim your joy!</p>
     </div>
 
-    <!-- Controls / Filters -->
+    <!-- Toolbar -->
     <div class="toolbar" role="region" aria-label="Filters">
-      <div class="tool" title="Search">
-        <span class="label">Search</span>
-        <input id="q" type="text" placeholder="Name or model…" autocomplete="off" inputmode="search" aria-label="Search by name or model"/>
-      </div>
-
-      <div class="tool" title="Brand">
-        <span class="label">Brand</span>
-        <select id="brand"><option value="">All</option></select>
-      </div>
-
-      <div class="tool" title="Sort">
-        <span class="label">Sort</span>
+      <div class="tool"><span class="label">Search</span><input id="q" type="text" placeholder="Name or model…" autocomplete="off" inputmode="search" aria-label="Search by name or model"/></div>
+      <div class="tool"><span class="label">Brand</span><select id="brand"><option value="">All</option></select></div>
+      <div class="tool"><span class="label">Sort</span>
         <select id="sort">
           <option value="">—</option>
           <option value="price-asc">Member Price ↑</option>
@@ -184,32 +159,11 @@
           <option value="za">Name Z → A</option>
         </select>
       </div>
-
-      <div class="tool" title="S‑COIN Range">
-        <span class="label">S‑COIN</span>
-        <input id="coinMin" type="number" min="0" step="100" placeholder="min" style="width:7ch">
-        <span style="opacity:.6">–</span>
-        <input id="coinMax" type="number" min="0" step="100" placeholder="max" style="width:7ch">
-      </div>
-
-      <div class="tool" title="Items per page">
-        <span class="label">Per page</span>
-        <select id="perPage">
-          <option>9</option>
-          <option>12</option>
-          <option>18</option>
-          <option>24</option>
-        </select>
-      </div>
-
+      <div class="tool"><span class="label">S‑COIN</span><input id="coinMin" type="number" min="0" step="100" placeholder="min" style="width:7ch"><span style="opacity:.6">–</span><input id="coinMax" type="number" min="0" step="100" placeholder="max" style="width:7ch"></div>
+      <div class="tool"><span class="label">Per page</span><select id="perPage"><option>9</option><option>12</option><option>18</option><option>24</option></select></div>
       <div class="spacer"></div>
-
-      <div class="tool" title="Theme">
-        <button id="themeToggle" class="ghost" aria-pressed="false">Toggle Dark</button>
-      </div>
-      <div class="tool" title="Export current list">
-        <button id="exportBtn" class="ghost">Export CSV</button>
-      </div>
+      <div class="tool"><button id="themeToggle" class="ghost" aria-pressed="false">Toggle Dark</button></div>
+      <div class="tool"><button id="exportBtn" class="ghost">Export CSV</button></div>
     </div>
   </header>
 
@@ -224,7 +178,7 @@
       <button class="close" id="modalClose" aria-label="Close">✕</button>
       <div class="dialog-header">
         <div class="dialog-frame"><img id="mImg" alt="Product image" loading="lazy"></div>
-        <h3 id="mTitle" class="title" style="margin:0"></h3>
+        <h3 id="mTitle" class="name" style="margin:0"></h3>
         <div id="mCoin" class="coin hidden"><img src="SCOIN.png" alt="S‑COIN"><span></span></div>
       </div>
       <div class="dialog-body">
@@ -240,7 +194,7 @@
     // ===== Utilities =====
     const $ = (sel,root=document)=> root.querySelector(sel);
     const $$ = (sel,root=document)=> Array.from(root.querySelectorAll(sel));
-    const toNum = (v)=> Number(String(v||0).toString().replace(/[^\d.]/g,""))||0;
+    const toNum = (v)=> Number(String(v??0).toString().replace(/[^\d.]/g,""))||0;
     const fmtRM = (n)=> toNum(n).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
     const debounce = (fn, ms=250)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms)} };
 
@@ -260,13 +214,13 @@
       for(let i=0;i<9;i++){
         const sk=document.createElement('div');
         sk.className='card';
-        sk.innerHTML=`<div class="brand-badge skeleton" style="width:70px;height:28px"></div>
-                      <div class="frame skeleton" style="height:260px"></div>
-                      <div class="coin skeleton" style="height:52px;width:92%"></div>
-                      <div class="info">
-                        <div class="skeleton" style="width:80%;height:18px;margin:.3rem 0"></div>
-                        <div class="skeleton" style="width:60%;height:14px;margin:.3rem 0"></div>
-                        <div class="skeleton" style="width:75%;height:28px;margin:.8rem 0;border-radius:999px"></div>
+        sk.innerHTML=`<div class=\"brand-badge skeleton\" style=\"width:70px;height:28px\"></div>
+                      <div class=\"frame skeleton\" style=\"height:260px\"></div>
+                      <div class=\"coin skeleton\" style=\"height:52px;width:92%\"></div>
+                      <div class=\"info\">
+                        <div class=\"skeleton\" style=\"width:80%;height:18px;margin:.3rem 0\"></div>
+                        <div class=\"skeleton\" style=\"width:60%;height:14px;margin:.3rem 0\"></div>
+                        <div class=\"skeleton\" style=\"width:75%;height:28px;margin:.8rem 0;border-radius:999px\"></div>
                       </div>`;
         grid.appendChild(sk);
       }
@@ -282,24 +236,18 @@
       applyFilters();
     }).catch(err=>{
       console.error('Error loading data:',err);
-      grid.innerHTML = `<div class="card" style="min-height:auto;padding:1rem">
-        <strong style="color:var(--danger)">Failed to load data.xlsx</strong>
-        <p class="muted">Make sure the file is in the same folder and the first sheet contains columns: <code>FULL NAME, MODEL, BRAND, RCP, MEMBER, URL, REMARK</code>.</p>
-      </div>`;
+      grid.innerHTML = `<div class=\"card\" style=\"min-height:auto;padding:1rem\"><strong style=\"color:var(--danger)\">Failed to load data.xlsx</strong><p class=\"muted\">Ensure the first sheet has: <code>FULL NAME, MODEL, BRAND, RCP, MEMBER, URL, REMARK</code>.</p></div>`;
     });
 
     // ===== Controls =====
     function initControls(list){
-      // Brand options
       const set = new Set(list.map(x=>x.BRAND).filter(Boolean));
       const brandSel = $('#brand');
       [...set].sort().forEach(b=>{ const opt=document.createElement('option'); opt.value=opt.textContent=b; brandSel.appendChild(opt); });
 
-      // Per page
       $('#perPage').value = String(perPage);
       $('#perPage').addEventListener('change',()=>{ perPage=Number($('#perPage').value); localStorage.setItem('perPage',perPage); page=1; render() });
 
-      // Theme toggle
       $('#themeToggle').addEventListener('click',()=>{
         const cur = root.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
         root.setAttribute('data-theme', cur);
@@ -307,36 +255,23 @@
         $('#themeToggle').setAttribute('aria-pressed', cur==='dark');
       });
 
-      // Export
       $('#exportBtn').addEventListener('click',()=>{
-        const rows = view.map(p=>({
-          BRAND:p.BRAND,
-          NAME:p['FULL NAME'],
-          MODEL:p.MODEL||'',
-          RCP:p.RCP,
-          MEMBER:p.MEMBER,
-          SCOIN: toNum(p.MEMBER)*100,
-          URL:p.URL||'',
-          REMARK:p.REMARK||''
-        }));
-        const ws = XLSX.utils.json_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
+        const rows = view.map(p=>({BRAND:p.BRAND, NAME:p['FULL NAME'], MODEL:p.MODEL||'', RCP:p.RCP, MEMBER:p.MEMBER, SCOIN:toNum(p.MEMBER)*100, URL:p.URL||'', REMARK:p.REMARK||''}));
+        const ws = XLSX.utils.json_to_sheet(rows); const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, 'Filtered');
         XLSX.writeFile(wb, 'scoin_filtered.csv');
       });
 
-      // Debounced search
       $('#q').addEventListener('input', debounce(applyFilters, 250));
       $('#brand').addEventListener('change', applyFilters);
       $('#sort').addEventListener('change', applyFilters);
       $('#coinMin').addEventListener('input', debounce(applyFilters, 200));
       $('#coinMax').addEventListener('input', debounce(applyFilters, 200));
 
-      // Coin min/max placeholders from data
-      const coins = list.map(p=>toNum(p.MEMBER)*100).filter(n=>n>0);
-      const min = Math.min(...coins), max = Math.max(...coins);
-      $('#coinMin').placeholder = min ? String(min) : 'min';
-      $('#coinMax').placeholder = max ? String(max) : 'max';
+      const coins = list.map(p=>toNum(p.MEMBER)*100).filter(n=>n>0); if(coins.length){
+        $('#coinMin').placeholder = String(Math.min(...coins));
+        $('#coinMax').placeholder = String(Math.max(...coins));
+      }
     }
 
     function applyFilters(){
@@ -351,9 +286,7 @@
         const model = String(p['MODEL']||'').toLowerCase();
         const okQ = !q || name.includes(q) || model.includes(q);
         const okB = !brand || p.BRAND===brand;
-        const coin = toNum(p.MEMBER)*100;
-        const okMin = !cMin || coin >= cMin;
-        const okMax = !cMax || coin <= cMax;
+        const coin = toNum(p.MEMBER)*100; const okMin = !cMin || coin >= cMin; const okMax = !cMax || coin <= cMax;
         return okQ && okB && okMin && okMax;
       });
 
@@ -362,55 +295,40 @@
       else if(sort==='az') view.sort((a,b)=> String(a['FULL NAME']||'').localeCompare(String(b['FULL NAME']||'')) );
       else if(sort==='za') view.sort((a,b)=> String(b['FULL NAME']||'').localeCompare(String(a['FULL NAME']||'')) );
 
-      page = 1;
-      render();
+      page = 1; render();
     }
 
     function render(){
-      grid.setAttribute('aria-busy','true');
-      grid.innerHTML = '';
-      const start = (page-1)*perPage, end = start + perPage;
-      const data = view.slice(start, end);
+      grid.setAttribute('aria-busy','true'); grid.innerHTML = '';
+      const start = (page-1)*perPage, end = start + perPage; const data = view.slice(start, end);
 
-      if(!data.length){
-        grid.innerHTML = `<div class="card" style="min-height:auto; padding:1rem"><strong>No products found.</strong></div>`;
-        $('#pager').innerHTML='';
-        grid.removeAttribute('aria-busy');
-        return;
-      }
+      if(!data.length){ grid.innerHTML = `<div class=\"card\" style=\"min-height:auto; padding:1rem\"><strong>No products found.</strong></div>`; $('#pager').innerHTML=''; grid.removeAttribute('aria-busy'); return; }
 
       for(const p of data){
-        const card = document.createElement('article');
-        card.className = 'card';
-        const scoin = (toNum(p.MEMBER)*100).toLocaleString();
-        const rcp = fmtRM(p.RCP); const mem = fmtRM(p.MEMBER);
+        const card = document.createElement('article'); card.className = 'card';
+        const scoin = (toNum(p.MEMBER)*100).toLocaleString(); const rcp = fmtRM(p.RCP); const mem = fmtRM(p.MEMBER);
         card.innerHTML = `
-          <div class="brand-badge">${p.BRAND||''}</div>
-          <div class="frame"><img alt="${(p['FULL NAME']||'Product').replace(/"/g,'\"')}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'240\'><rect width=\'100%\' height=\'100%\' fill=\'%23f6f6f8\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23999\' font-family=\'Arial\' font-size=\'14\'>No Image</text></svg>'" src="${p.URL||''}"></div>
-          <div class="coin"><img src="SCOIN.png" alt="S-COIN"><span>${scoin} S‑COIN</span></div>
-          <div class="info">
-            <div class="title">${p['FULL NAME']||''}</div>
-            <div class="model">${p['MODEL']?`Model: ${p['MODEL']}`:'Model: N/A'}</div>
-            <div class="tags">
-              <span class="tag rcp">RCP: RM${rcp}</span>
-              <span class="tag member">Member: RM${mem}</span>
+          <div class=\"brand-badge\">${p.BRAND||''}</div>
+          <div class=\"frame\"><img alt=\"${(p['FULL NAME']||'Product').replace(/\"/g,'\\\"')}\" loading=\"lazy\" onerror=\"this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'240\\' height=\\'240\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23f6f6f8\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' fill=\\'%23999\\' font-family=\\'Arial\\' font-size=\\'14\\'>No Image</text></svg>'\" src=\"${p.URL||''}\"></div>
+          <div class=\"coin\"><img src=\"SCOIN.png\" alt=\"S-COIN\"><span>${scoin} S‑COIN</span></div>
+          <div class=\"info\">
+            <div class=\"name\">${p['FULL NAME']||''}</div>
+            <div class=\"model\">${p['MODEL']?`Model: ${p['MODEL']}`:'Model: N/A'}</div>
+            <div class=\"tags\">
+              <span class=\"tag rcp\">RCP: RM${rcp}</span>
+              <span class=\"tag member\">Member: RM${mem}</span>
             </div>
-            ${p.REMARK? `<div class="remark">${p.REMARK}</div>`: ''}
-          </div>
-        `;
-        card.addEventListener('click',()=> openModal(p));
-        grid.appendChild(card);
+            ${p.REMARK? `<div class=\"remark\">${p.REMARK}</div>`: ''}
+          </div>`;
+        card.addEventListener('click',()=> openModal(p)); grid.appendChild(card);
       }
 
-      // Pagination
-      const total = Math.ceil(view.length / perPage);
-      const pager = $('#pager');
-      const mkBtn = (t,dis,fn)=>{ const b=document.createElement('button'); b.textContent=t; if(dis) b.disabled=true; b.addEventListener('click',fn); return b };
+      const total = Math.ceil(view.length / perPage); const pager = $('#pager'); const mkBtn = (t,dis,fn)=>{ const b=document.createElement('button'); b.textContent=t; if(dis) b.disabled=true; b.addEventListener('click',fn); return b };
       pager.innerHTML='';
       pager.append(
         mkBtn('First', page===1, ()=>{page=1; render()}),
         mkBtn('Prev', page===1, ()=>{page=Math.max(1,page-1); render()}),
-        (()=>{const s=document.createElement('span'); s.style.fontWeight='800'; s.style.minWidth='9ch'; s.style.textAlign='center'; s.textContent=`Page ${page} / ${total}`; return s})(),
+        (()=>{const s=document.createElement('span'); s.style.fontWeight='900'; s.style.minWidth='9ch'; s.style.textAlign='center'; s.textContent=`Page ${page} / ${total}`; return s})(),
         mkBtn('Next', page===total, ()=>{page=Math.min(total,page+1); render()}),
         mkBtn('Last', page===total, ()=>{page=total; render()})
       );
@@ -419,8 +337,7 @@
     }
 
     // ===== Modal =====
-    const modal = $('#modal');
-    const modalClose = $('#modalClose');
+    const modal = $('#modal'); const modalClose = $('#modalClose');
     function openModal(p){
       $('#mImg').src = p.URL || '';
       $('#mTitle').textContent = p['FULL NAME'] || '';
@@ -428,18 +345,13 @@
       $('#mRcp').textContent = `RCP: RM${fmtRM(p.RCP)}`;
       $('#mMember').textContent = `Member Price: RM${fmtRM(p.MEMBER)}`;
       const scoin = toNum(p.MEMBER)*100; $('#mCoin').classList.remove('hidden'); $('#mCoin span').textContent = `${scoin.toLocaleString()} S‑COIN`;
-      $('#mRemark').innerHTML = p.REMARK? `<span class="remark">Remark: ${p.REMARK}</span>` : '';
-      modal.classList.add('show');
-      modal.setAttribute('aria-hidden','false');
-      modalClose.focus();
+      $('#mRemark').innerHTML = p.REMARK? `<span class=\"remark\">Remark: ${p.REMARK}</span>` : '';
+      modal.classList.add('show'); modal.setAttribute('aria-hidden','false'); modalClose.focus();
     }
     function closeModal(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); }
     modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
     window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
-
-    // Restore scroll position when images load
-    if('scrollRestoration' in history){ history.scrollRestoration='manual'; }
   </script>
 </body>
 </html>
