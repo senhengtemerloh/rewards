@@ -10,13 +10,11 @@
   <style>
     /* ===== Senheng Brand System ===== */
     :root{
-      /* Brand core */
       --brand: #E60012;             /* Senheng Red */
-      --brand-600: #cc0010;
       --brand-500: #ff1a2b;
       --brand-050: #fff3f4;
 
-      /* Surface & text (light) */
+      /* Light surfaces & text */
       --bg: #fafafa;
       --panel: rgba(255,255,255,0.96);
       --panel-2: #ffffff;
@@ -32,17 +30,17 @@
       --glass: blur(12px) saturate(110%);
       --shadow: 0 10px 30px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.06);
 
-      --frame-size: 260px;
+      --frame-size: 260px;   /* square frame for consistency */
     }
 
-    /* ===== Dark mode tuned for contrast ===== */
+    /* ===== Dark mode (high contrast) ===== */
     :root[data-theme="dark"]{
       --bg: #0b0c0e;
       --panel: rgba(20,22,26,0.84);
-      --panel-2: #171a20;
+      --panel-2: #171a20;    /* used for cards & tags only */
       --panel-border: #2a2e36;
-      --text: #edf0f5;            /* main text high contrast */
-      --muted: #aeb5c0;           /* muted but readable */
+      --text: #edf0f5;
+      --muted: #aeb5c0;
       --on-strong: #ffffff;
       --shadow: 0 16px 42px rgba(0,0,0,.45), 0 4px 12px rgba(0,0,0,.35);
     }
@@ -61,12 +59,11 @@
       background-attachment:fixed;
     }
 
-    /* ===== Header with Senheng ribbon ===== */
+    /* ===== Header ===== */
     header{position:sticky; top:0; z-index:50; backdrop-filter: blur(8px)}
     .brand-bar{height:8px; background:linear-gradient(90deg,var(--brand) 0 40%, var(--brand-500) 40% 100%)}
     .hero{ max-width:1200px; margin:0 auto; padding:1.1rem 1rem .9rem; text-align:center; background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.78)); border-bottom:1px solid var(--panel-border) }
     [data-theme="dark"] .hero{ background:linear-gradient(180deg,rgba(20,22,26,.92),rgba(20,22,26,.72)) }
-
     .title{ display:flex; align-items:center; justify-content:center; gap:.65rem; font-weight:800; letter-spacing:.3px; font-size:clamp(1.6rem,3.5vw,2.5rem); color:var(--brand) }
     .title .logo{ width:110px; height:22px; display:inline-grid; place-items:center; border-radius:6px; background:var(--brand); color:#fff; font-weight:900; letter-spacing:.5px; font-size:.86rem }
     .tagline{ color:var(--muted); margin:.25rem 0 0 }
@@ -76,13 +73,12 @@
     .tool{ display:inline-flex; align-items:center; gap:.55rem; background:var(--panel); backdrop-filter:var(--glass); border:1px solid var(--panel-border); border-radius:999px; box-shadow:var(--shadow); padding:.55rem .8rem }
     .tool .label{ font-weight:800; font-size:.82rem; color:var(--muted); letter-spacing:.3px }
     .tool input[type="text"], .tool select, .tool input[type="number"]{ border:none; outline:none; background:transparent; color:inherit; font-size:.98rem; min-width:10ch }
-    .ghost{ background:transparent!important; color:var(--brand); border:1px solid var(--brand) }
     .spacer{ flex:1 1 100% }
 
-    /* Switch (mode toggle) */
-    .switch{ --w:54px; --h:30px; --p:3px; position:relative; width:var(--w); height:var(--h); border-radius:999px; background: #e7e7ea; border:1px solid var(--panel-border); cursor:pointer; display:inline-flex; align-items:center; padding:var(--p); box-shadow: var(--shadow) }
+    /* Switch */
+    .switch{ --w:54px; --h:30px; --p:3px; position:relative; width:var(--w); height:var(--h); border-radius:999px; background:#e7e7ea; border:1px solid var(--panel-border); cursor:pointer; display:inline-flex; align-items:center; padding:var(--p); box-shadow: var(--shadow) }
     .switch[aria-checked="true"]{ background: var(--brand) }
-    .switch .knob{ width: calc(var(--h) - var(--p)*2 - 2px); height: calc(var(--h) - var(--p)*2 - 2px); background: var(--panel-2); border-radius:999px; transform: translateX(0); transition: transform .2s ease }
+    .switch .knob{ width: calc(var(--h) - var(--p)*2 - 2px); height: calc(var(--h) - var(--p)*2 - 2px); background: #ffffff; border-radius:999px; transform: translateX(0); transition: transform .2s ease }
     .switch[aria-checked="true"] .knob{ transform: translateX(calc(var(--w) - var(--h))) }
     .switch .sr{ position:absolute; inset:0; opacity:0 }
 
@@ -95,9 +91,9 @@
 
     .brand-badge{ position:absolute; top:12px; left:12px; background:var(--brand); color:var(--on-strong); padding:.42rem .8rem; border-radius:999px; font-size:.83rem; font-weight:900; letter-spacing:1px; z-index:2 }
 
-    /* Consistent image sizing */
-    .frame{ display:grid; place-items:center; width:var(--frame-size); height:var(--frame-size); margin:1.2rem auto .6rem; background:var(--panel-2); border:1px solid var(--panel-border); border-radius:18px; box-shadow:inset 0 2px 0 rgba(255,255,255,.6), 0 8px 24px rgba(0,0,0,.06) }
-    .frame img{ max-width:88%; max-height:88%; object-fit:contain; image-rendering:auto; }
+    /* === Consistent, square, white frames === */
+    .frame{ display:grid; place-items:center; width:var(--frame-size); height:var(--frame-size); margin:1.2rem auto .6rem; background:#ffffff !important; /* always white */ border:1px solid var(--panel-border); border-radius:18px; box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 8px 24px rgba(0,0,0,.06) }
+    .frame img{ width:auto; height:auto; max-width:88%; max-height:88%; object-fit:contain; image-rendering:auto; filter: drop-shadow(0 1px 2px rgba(0,0,0,.12)) }
 
     .coin{ align-self:center; margin:.3rem 0 .8rem; width:min(96%,520px); display:flex; align-items:center; justify-content:center; gap:.45rem; font-weight:900; font-size:clamp(1.4rem,2.4vw,2rem); color:#2a2200; background:linear-gradient(90deg,#ffe49c 70%,#ffd700 100%); border:2px solid #ffe3b3; border-radius:28px; box-shadow:0 0 0 4px #fff6a2, 0 12px 28px #f7b50055; padding:.5rem .9rem }
     [data-theme="dark"] .coin{ color:#1a1400 }
@@ -121,16 +117,17 @@
     .pagination button{ padding:.62rem 1.1rem; border-radius:10px; border:1px solid var(--panel-border); background:var(--panel); cursor:pointer; font-weight:800; color:var(--text) }
     .pagination button[disabled]{ opacity:.55; cursor:not-allowed }
 
-    /* Modal (with zoom) */
+    /* ===== Modal with true-size zoom/pan ===== */
     .modal{ position:fixed; inset:0; display:none; place-items:center; z-index:1000; background:rgba(0,0,0,.5); backdrop-filter: blur(2px) }
     .modal.show{ display:grid }
-    .dialog{ background:var(--panel); border:1px solid var(--panel-border); border-radius:24px; box-shadow:var(--shadow); width:min(95vw,780px); padding:1rem 1rem 1.2rem; position:relative }
-    .close{ position:absolute; top:10px; right:12px; width:42px; height:42px; display:grid; place-items:center; border-radius:12px; border:1px solid var(--panel-border); background:var(--panel-2); cursor:pointer; font-size:1.2rem; color:var(--text) }
-    .dialog-header{ display:grid; gap:.6rem }
-    .dialog-title{ text-align:center; font-weight:900; color:var(--brand); margin:.2rem 0 .4rem }
-    .zoom-wrap{ position:relative; background:var(--panel-2); border:1px solid var(--panel-border); border-radius:18px; width:min(92vw,720px); height: min(92vh,520px); margin:0 auto; overflow:hidden; touch-action: none }
+    .dialog{ background:var(--panel); border:1px solid var(--panel-border); border-radius:24px; box-shadow:var(--shadow); width:min(95vw,820px); padding:1rem 1rem 1.2rem; position:relative }
+    .close{ position:absolute; top:10px; right:12px; width:42px; height:42px; display:grid; place-items:center; border-radius:12px; border:1px solid var(--panel-border); background:#ffffff; cursor:pointer; font-size:1.2rem; color:#111 }
+    .dialog-title{ text-align:center; font-weight:900; color:var(--brand); margin:.2rem 0 .6rem }
+
+    /* Zoom area always white to standardize look */
+    .zoom-wrap{ position:relative; background:#ffffff; border:1px solid var(--panel-border); border-radius:18px; width:min(92vw,760px); height:min(92vh,560px); margin:0 auto; overflow:hidden; touch-action:none }
     .zoom-canvas{ position:absolute; inset:0; display:grid; place-items:center; }
-    .zoom-img{ max-width:none; max-height:none; width:auto; height:auto; transform-origin:center center; will-change:transform; }
+    .zoom-img{ max-width:none; max-height:none; width:auto; height:auto; transform-origin:center center; will-change:transform; image-rendering:auto; }
     .zoom-controls{ position:absolute; right:10px; bottom:10px; display:flex; gap:.4rem }
     .zoom-controls button{ padding:.5rem .7rem; border-radius:10px; border:1px solid var(--panel-border); background:var(--panel); color:var(--text); font-weight:800; cursor:pointer }
 
@@ -140,7 +137,7 @@
 
     .hidden{display:none}
 
-    @media (max-width:768px){ :root{ --frame-size: 210px } .dialog{ width:min(96vw,720px) } .zoom-wrap{ height:min(92vh,420px) } .card{ min-height:460px } }
+    @media (max-width:768px){ :root{ --frame-size: 210px } .dialog{ width:min(96vw,820px) } .zoom-wrap{ height:min(92vh,420px) } .card{ min-height:460px } }
   </style>
 </head>
 <body>
@@ -167,9 +164,7 @@
       <div class="tool"><span class="label">S‑COIN</span><input id="coinMin" type="number" min="0" step="100" placeholder="min" style="width:7ch"><span style="opacity:.6">–</span><input id="coinMax" type="number" min="0" step="100" placeholder="max" style="width:7ch"></div>
       <div class="tool"><span class="label">Per page</span><select id="perPage"><option>9</option><option>12</option><option>18</option><option>24</option></select></div>
       <div class="spacer"></div>
-      <div class="tool" title="Toggle theme">
-        <button id="themeToggle" class="switch" role="switch" aria-checked="false" aria-label="Toggle dark mode"><span class="knob"></span><span class="sr">Theme</span></button>
-      </div>
+      <div class="tool" title="Toggle theme"><button id="themeToggle" class="switch" role="switch" aria-checked="false" aria-label="Toggle dark mode"><span class="knob"></span><span class="sr">Theme</span></button></div>
     </div>
   </header>
 
@@ -178,7 +173,7 @@
     <nav class="pagination" id="pager" aria-label="Pagination"></nav>
   </main>
 
-  <!-- Modal with Zoom -->
+  <!-- Modal with True-size Zoom -->
   <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="dialog" role="document">
       <button class="close" id="modalClose" aria-label="Close">✕</button>
@@ -221,8 +216,6 @@
     root.setAttribute('data-theme', savedTheme);
     const themeBtn = $('#themeToggle');
     themeBtn.setAttribute('aria-checked', savedTheme==='dark');
-
-    // Switch behavior
     themeBtn.addEventListener('click',()=>{
       const next = root.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
       root.setAttribute('data-theme', next);
@@ -317,7 +310,7 @@
         const scoin = (toNum(p.MEMBER)*100).toLocaleString(); const rcp = fmtRM(p.RCP); const mem = fmtRM(p.MEMBER);
         card.innerHTML = `
           <div class=\"brand-badge\">${p.BRAND||''}</div>
-          <div class=\"frame\"><img alt=\"${(p['FULL NAME']||'Product').replace(/\"/g,'\\\"')}\" loading=\"lazy\" onerror=\"this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'240\\' height=\\'240\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23f6f6f8\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' fill=\\'%23999\\' font-family=\\'Arial\\' font-size=\\'14\\'>No Image</text></svg>'\" src=\"${p.URL||''}\"></div>
+          <div class=\"frame\"><img alt=\"${(p['FULL NAME']||'Product').replace(/\"/g,'\\\"')}\" loading=\"lazy\" decoding=\"async\" onerror=\"this.src='data:image/svg+xml,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'240\\' height=\\'240\\'><rect width=\\'100%\\' height=\\'100%\\' fill=\\'%23ffffff\\'/><text x=\\'50%\\' y=\\'50%\\' dominant-baseline=\\'middle\\' text-anchor=\\'middle\\' fill=\\'%23999\\' font-family=\\'Arial\\' font-size=\\'14\\'>No Image</text></svg>'\" src=\"${p.URL||''}\"></div>
           <div class=\"coin\"><img src=\"SCOIN.png\" alt=\"S-COIN\"><span>${scoin} S‑COIN</span></div>
           <div class=\"info\">
             <div class=\"name\">${p['FULL NAME']||''}</div>
@@ -344,7 +337,7 @@
       grid.removeAttribute('aria-busy');
     }
 
-    // ===== Modal + Zoom =====
+    // ===== Modal + True-size Zoom =====
     const modal = $('#modal'); const modalClose = $('#modalClose');
     const wrap = $('#zoomWrap'); const canvas = $('#zoomCanvas'); const img = $('#mImg');
     const zoomInBtn = $('#zoomIn'); const zoomOutBtn = $('#zoomOut'); const zoomResetBtn = $('#zoomReset');
@@ -358,7 +351,7 @@
       $('#mTitle').textContent = p['FULL NAME'] || '';
       $('#mModel').textContent = `Model: ${p['MODEL']||'N/A'}`;
       $('#mRcp').textContent = `RCP: RM${fmtRM(p.RCP)}`;
-      $('#mMember').textContent = `Member: RM${fmtRM(p.MEMBER)}`;
+      $('#mMember').textContent = `Member Price: RM${fmtRM(p.MEMBER)}`;
       $('#mRemark').innerHTML = p.REMARK? `<span class=\"remark\">${p.REMARK}</span>` : '';
       resetZoom();
       modal.classList.add('show'); modal.setAttribute('aria-hidden','false'); modalClose.focus();
@@ -370,13 +363,12 @@
     window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
 
     function resetZoom(){ scale=1; pos={x:0,y:0}; applyTransform(); }
-    zoomInBtn.addEventListener('click',()=>{ scale = Math.min(5, scale+0.2); applyTransform(); });
-    zoomOutBtn.addEventListener('click',()=>{ scale = Math.max(0.4, scale-0.2); applyTransform(); });
+    zoomInBtn.addEventListener('click',()=>{ scale = Math.min(6, scale+0.25); applyTransform(); });
+    zoomOutBtn.addEventListener('click',()=>{ scale = Math.max(0.4, scale-0.25); applyTransform(); });
     zoomResetBtn.addEventListener('click',()=>{ resetZoom(); });
 
-    // Mouse wheel zoom
-    wrap.addEventListener('wheel',(e)=>{ e.preventDefault(); const delta = e.deltaY<0 ? 0.15 : -0.15; const newScale = Math.min(5, Math.max(0.4, scale+delta));
-      // zoom towards cursor
+    // Wheel zoom towards cursor
+    wrap.addEventListener('wheel',(e)=>{ e.preventDefault(); const delta = e.deltaY<0 ? 0.18 : -0.18; const newScale = Math.min(6, Math.max(0.4, scale+delta));
       const rect = wrap.getBoundingClientRect();
       const cx = e.clientX - rect.left - rect.width/2;
       const cy = e.clientY - rect.top - rect.height/2;
