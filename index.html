@@ -3,311 +3,443 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>S‑COIN Redemption Catalog</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <title>S‑COIN Redemption Catalog — Refreshed</title>
+  <meta name="color-scheme" content="light dark">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    :root {
-      /* Color Theme – Red & White*/
-      --primary-red: #d32f2f;
-      --accent-red: #ef5350;
-      --bg-glass: rgba(255,255,255,0.9);
-      --bg-blur: blur(10px);
-      --text-main: #2b2b2b;
-      --text-light: #6b6b6b;
-      --glass-shadow: 0 8px 24px rgba(211,47,47,0.08), 0 1px 4px rgba(0,0,0,0.05);
-      --card-radius: 24px;
-      --border-light: #ebebeb;
-
-      /* S‑COIN highlight colours stay the same */
-      --success: #47d867;
+    :root{
+      /* Core palette */
+      --bg: #0d0d0f;
+      --bg-soft: #121216;
+      --panel: rgba(255,255,255,0.9);
+      --panel-border: #ececec;
+      --text: #1f2328;
+      --muted: #6c727f;
+      --brand: #e53935;           /* primary accent */
+      --brand-2: #ff6b6b;         /* secondary accent */
+      --coin: #f7b500;            /* S-COIN gold */
+      --success: #35c36b;
       --danger: #f14d61;
-      --scoin-highlight: #f7b500;
-      --scoin-text: #231f0e;
-      --scoin-glow: 0 0 0 4px #fff6a2, 0 8px 24px #f7b50055;
+      --radius: 20px;
+      --shadow: 0 10px 30px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.06);
+      --glass: blur(12px) saturate(110%);
+    }
+    
+    /* Dark mode overrides */
+    :root[data-theme="dark"]{
+      --panel: rgba(22,23,27,0.7);
+      --panel-border: #272a32;
+      --bg: #08090b;
+      --bg-soft: #0d0f13;
+      --text: #e9eaee;
+      --muted: #a0a6b0;
+      --shadow: 0 16px 40px rgba(0,0,0,.45), 0 4px 12px rgba(0,0,0,.35);
     }
 
-    /* -------- Global --------*/
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(135deg,#fff8f8 0%,#fff1f1 60%,#ffecec 100%);
-      min-height: 100vh;
-      color: var(--text-main);
-    }
-    header {
-      padding: 2.5rem 1rem 1rem;
-      text-align: center;
-      background: linear-gradient(100deg,#fffafa 60%,#ffe4e4 100%);
-      border-bottom-left-radius: 36px;
-      border-bottom-right-radius: 36px;
-      box-shadow: 0 2px 16px rgba(211,47,47,0.07);
-    }
-    h1 {
-      font-size: 2.4rem;
-      font-weight: 700;
-      color: var(--primary-red);
-      letter-spacing: 0.5px;
-    }
-    .tagline {
-      font-size: 1.08rem;
-      color: var(--text-light);
-      margin-top: .2rem;
-      letter-spacing: .5px;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #ffe3e3 0%, transparent 60%),
+        radial-gradient(900px 600px at 120% 10%, #ffdede 0%, transparent 55%),
+        linear-gradient(180deg,#fff 0%,#fff 260px,transparent 260px),
+        var(--bg);
+      background-attachment: fixed;
     }
 
-    /* -------- Filters --------*/
-    .filters-bar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      background: var(--bg-glass);
-      backdrop-filter: var(--bg-blur);
-      box-shadow: var(--glass-shadow);
-      padding: 1rem 2rem;
-      margin: -2.5rem auto 2rem;
-      max-width: 1050px;
-      border-radius: 20px;
-      gap: .7rem;
-      position: relative;
-      z-index: 2;
+    header{
+      position:sticky; top:0; z-index:40;
+      background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,.65));
+      backdrop-filter: blur(8px);
+      border-bottom:1px solid var(--panel-border);
     }
-    .filters-bar input,
-    .filters-bar select {
-      padding: .52rem 1.2rem;
-      border: 1.5px solid var(--border-light);
-      border-radius: 20px;
-      font-size: 1rem;
-      background: #fff;
-      transition: border .2s;
-      outline: none;
+    [data-theme="dark"] header{ background: linear-gradient(180deg,rgba(13,15,18,.8),rgba(13,15,18,.6)); }
+
+    .hero{
+      max-width:1200px; margin:0 auto; padding:1.2rem 1rem 1rem; text-align:center;
     }
-    .filters-bar input:focus,
-    .filters-bar select:focus {
-      border-color: var(--primary-red);
+    .title{
+      font-size:clamp(1.6rem,3.5vw,2.5rem); font-weight:800; letter-spacing:.2px; color:var(--brand);
+      display:flex; align-items:center; justify-content:center; gap:.65rem;
     }
+    .title .ping{width:.55rem;height:.55rem;border-radius:999px;background:var(--brand);position:relative;display:inline-block}
+    .title .ping::after{content:"";position:absolute;inset:-6px;border-radius:999px;border:2px solid var(--brand);opacity:.5;animation:pulse 1.6s infinite ease-out}
+    @keyframes pulse{0%{transform:scale(.6);opacity:.6}100%{transform:scale(1.5);opacity:0}}
+    .tagline{color:var(--muted); margin:.25rem 0 0; letter-spacing:.3px}
 
-    /* -------- Grid --------*/
-    .container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit,minmax(340px,1fr));
-      gap: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 1rem 2.5rem;
+    /* Controls */
+    .toolbar{
+      display:flex; flex-wrap:wrap; gap:.6rem 0.7rem; align-items:center; justify-content:center;
+      padding: .8rem 1rem 1rem; max-width:1200px; margin:0 auto;
     }
-
-    /* -------- Product Card --------*/
-    .product-card {
-      background: var(--bg-glass);
-      backdrop-filter: var(--bg-blur);
-      border-radius: var(--card-radius);
-      border: 1px solid var(--border-light);
-      box-shadow: var(--glass-shadow);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      transition: transform .22s, box-shadow .22s;
-      overflow: hidden;
-      padding-bottom: 1.4rem;
-      min-height: 560px;
+    .tool{
+      display:inline-flex; align-items:center; gap:.5rem; background:var(--panel); backdrop-filter:var(--glass);
+      border:1px solid var(--panel-border); border-radius:999px; box-shadow:var(--shadow);
+      padding:.55rem .8rem;
     }
-    .product-card:hover {
-      transform: translateY(-7px) scale(1.012);
-      box-shadow: 0 16px 40px rgba(211,47,47,.12);
+    .tool input[type="text"], .tool select, .tool input[type="number"]{
+      border:none; outline:none; background:transparent; color:inherit; font-size:.98rem; min-width:10ch;
     }
+    .tool .label{font-weight:700; font-size:.85rem; letter-spacing:.3px; color:var(--muted)}
+    .tool button{border:none; background:var(--brand); color:#fff; padding:.55rem 1rem; border-radius:999px; font-weight:700; cursor:pointer}
+    .tool button:hover{filter:brightness(1.05)}
+    .ghost{background:transparent!important; color:var(--brand); border:1px solid var(--brand)}
 
-    /* Image frame – bigger, square*/
-    .image-frame {
-      width: 260px;
-      height: 260px;              /* 1:1 ratio*/
-      margin: 2.4rem auto .7rem;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background:#fff;           /* white background*/
-      border-radius: 18px;
-      border: 1.5px solid var(--border-light);
-      box-shadow: 0 3px 14px rgba(0,0,0,.06);
-      position: relative;
-      overflow: hidden;
+    .spacer{flex:1 1 100%}
+
+    .container{max-width:1200px; margin:0 auto; padding:1rem;}
+    .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:1.3rem}
+
+    .card{
+      position:relative; overflow:hidden; border-radius:var(--radius);
+      background:var(--panel); border:1px solid var(--panel-border); backdrop-filter:var(--glass);
+      box-shadow:var(--shadow); display:flex; flex-direction:column; cursor:pointer; min-height:520px;
+      transition: transform .2s ease, box-shadow .2s ease;
     }
-    .image-frame::before { content:none; }
+    .card:hover{transform: translateY(-4px); box-shadow:0 20px 50px rgba(229,57,53,.22)}
 
-    .product-image {
-      max-width: 90%;
-      max-height: 90%;
-      object-fit: contain;
-      filter: drop-shadow(0 1px 2px rgba(0,0,0,.15));
-      transition: transform .25s;
+    .brand-badge{ position:absolute; top:14px; left:14px; background:var(--brand); color:#fff; padding:.4rem .8rem; border-radius:999px; font-size:.85rem; font-weight:800; letter-spacing:1px; z-index:3 }
+
+    .frame{ display:grid; place-items:center; margin:1.2rem auto .5rem; width:260px; height:260px; border-radius:16px; background:#fff; border:1px solid var(--panel-border); box-shadow:inset 0 2px 0 rgba(255,255,255,.6), 0 8px 24px rgba(0,0,0,.06) }
+    .frame img{ max-width:90%; max-height:90%; object-fit:contain; transition: transform .25s ease; filter: drop-shadow(0 2px 6px rgba(0,0,0,.08)) }
+    .card:hover .frame img{ transform:scale(1.05) }
+
+    .coin{
+      align-self:center; margin:.3rem 0 .8rem; width:min(96%,520px); display:flex; align-items:center; justify-content:center;
+      gap:.45rem; font-weight:900; font-size:clamp(1.4rem,2.4vw,2rem); color:#3a2e00;
+      background:linear-gradient(90deg,#ffe49c 70%,#ffd700 100%); border:2px solid #ffe3b3; border-radius:28px;
+      box-shadow: 0 0 0 4px #fff6a2, 0 12px 28px #f7b50055;
+      padding:.5rem .9rem
     }
-    .product-card:hover .product-image { transform: scale(1.06); }
+    .coin img{width:38px;height:38px}
 
-    /* Brand*/
-    .brand-badge {
-      position: absolute;
-      top: 15px;
-      left: 19px;
-      background: var(--accent-red);
-      color:#fff;
-      padding: 6px 14px;
-      border-radius: 18px;
-      font-size: .9rem;
-      font-weight:600;
-      letter-spacing:1.2px;
-      text-transform: uppercase;
-      box-shadow: 0 2px 7px rgba(239,83,80,.3);
-      z-index:4;
-    }
+    .info{padding:0 1rem 1rem; display:flex; flex-direction:column; align-items:center; text-align:center}
+    .title{font-size:1.02rem; font-weight:800; color:var(--brand); min-height:2.6rem}
+    .model{font-size:.95rem; color:var(--muted); margin-top:.2rem}
 
-    /* S‑COIN highlight unchanged*/
-    .scoin-highlight {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 95%;
-      min-height: 70px;
-      margin: .2rem 0 1rem;
-      font-size: 2.0rem;
-      font-weight: 800;
-      color: var(--scoin-text);
-      background: linear-gradient(90deg,#ffe49c 70%,#ffd700 100%);
-      border-radius: 33px;
-      border: 2.5px solid #ffe3b3;
-      box-shadow: var(--scoin-glow);
-      letter-spacing: 1.4px;
-      text-align: center;
-      position: relative;
-      z-index: 10;
-    }
-    .scoin-highlight img {width:45px;height:45px;margin-right:.25em;filter:drop-shadow(0 2px 6px #fffbe3cc);}    
+    .tags{display:flex; gap:.5rem; flex-wrap:wrap; justify-content:center; margin:.8rem 0}
+    .tag{font-weight:800; font-size:.9rem; border-radius:999px; padding:.3rem .9rem; border:1px dashed var(--panel-border); background:#fff}
+    .tag.member{ background:var(--brand); color:#fff; border:none }
+    .tag.rcp{ background:transparent; color:var(--brand); text-decoration:line-through }
 
-    /* Info*/
-    .product-info {width:97%;text-align:center;flex:1;display:flex;flex-direction:column;align-items:center;}
-    .product-title {font-size:1.05rem;font-weight:700;color:var(--primary-red);margin:.9rem 0 .35rem;line-height:1.28;min-height:2.3rem;word-break:break-word;}
-    .model-code {font-size:.97rem;color:var(--text-light);font-weight:500;opacity:.7;margin-bottom:.3rem;word-break:break-all;}
+    .remark{ font-size:.92rem; color:var(--danger); background:#fff3f3; border-left:3px solid var(--danger); padding:.45rem .7rem; border-radius:8px; max-width:95% }
 
-    .product-tags {display:flex;gap:.55rem;flex-wrap:wrap;justify-content:center;margin-bottom:1.05rem;}
-    .tag {background:#fff6f6;color:var(--primary-red);border-radius:50px;font-size:.97rem;font-weight:600;padding:.32rem 1.1rem;border:1px solid #ffe3e3;display:flex;align-items:center;}
-    .tag.member {background:var(--primary-red);color:#fff;border:none;}
-    .tag.rcp {background:#ffecec;color:var(--primary-red);text-decoration:line-through;}
+    /* Pagination */
+    .pagination{ display:flex; justify-content:center; align-items:center; gap:.5rem; padding:1.1rem 0 2rem }
+    .pagination button{ padding:.55rem 1.1rem; border-radius:10px; border:1px solid var(--panel-border); background:var(--panel); cursor:pointer; font-weight:700 }
+    .pagination button[disabled]{ opacity:.45; cursor:not-allowed }
 
-    .remark {font-size:.96rem;color:var(--danger);background:#fff0f2;border-left:3px solid var(--danger);padding:.33rem .7rem;margin-top:.6rem;border-radius:7px;font-style:italic;word-break:break-word;max-width:98%;}
+    /* Modal */
+    .modal{ position:fixed; inset:0; display:none; place-items:center; z-index:1000; background:rgba(0,0,0,.35); backdrop-filter: blur(2px) }
+    .modal.show{ display:grid }
+    .dialog{ background:var(--panel); border:1px solid var(--panel-border); border-radius:24px; box-shadow:var(--shadow); width:min(92vw,560px); padding:1.4rem 1.2rem 1rem; position:relative }
+    .close{ position:absolute; top:10px; right:12px; width:42px; height:42px; display:grid; place-items:center; border-radius:12px; border:1px solid var(--panel-border); background:transparent; cursor:pointer; font-size:1.4rem }
+    .dialog-header{ display:grid; place-items:center; gap:.6rem }
+    .dialog-frame{ width:260px; height:260px; display:grid; place-items:center; border:1px solid var(--panel-border); border-radius:18px; background:#fff; margin:.2rem auto }
+    .dialog-frame img{ max-width:90%; max-height:90%; object-fit:contain }
+    .dialog .coin{ width:92%; }
+    .dialog-body{ text-align:center; color:var(--muted); font-weight:600 }
 
-    /* Pagination*/
-    #pagination {display:flex;justify-content:center;align-items:center;gap:.5rem;padding:2.2rem 0 .8rem;margin-bottom:.5rem;}
-    #pagination button {padding:.5rem 1.35rem;background:var(--primary-red);color:#fff;border:none;border-radius:13px;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;box-shadow:0 1.5px 7px rgba(211,47,47,.15);}    
-    #pagination button:hover:not(:disabled) {background:var(--accent-red);}    
-    #pagination button:disabled {background:#f0f0f0;color:#bbb;cursor:not-allowed;}    
-    #pagination span {font-size:1.08rem;color:var(--text-main);margin:0 1.1rem;font-weight:600;letter-spacing:1.1px;}
+    /* Skeletons */
+    .skeleton{ background: linear-gradient(90deg,#eee 25%,#f5f5f5 37%,#eee 63%); background-size:400% 100%; animation: shimmer 1.2s infinite; border-radius:12px }
+    @keyframes shimmer{0%{background-position:100% 0}100%{background-position:-100% 0}}
 
-    /* Modal*/
-    .modal {display:none;position:fixed;inset:0;z-index:10000;background:rgba(211,47,47,.22);justify-content:center;align-items:center;opacity:0;transition:opacity .22s;backdrop-filter:blur(2px);}    
-    .modal.show {display:flex;opacity:1;}    
-    .modal-content {background:var(--bg-glass);backdrop-filter:blur(22px);box-shadow:var(--glass-shadow);border-radius:26px;padding:2rem 2.2rem 1.5rem;max-width:98vw;width:430px;position:relative;text-align:center;border:1.5px solid var(--border-light);animation:modalFade .25s cubic-bezier(.25,.8,.25,1);}    
-    @keyframes modalFade {0%{transform:scale(.92) translateY(30px);opacity:0;}100%{transform:scale(1) translateY(0);opacity:1;}}
-    .close {position:absolute;top:18px;right:22px;font-size:2rem;color:var(--primary-red);font-weight:700;background:none;border:none;cursor:pointer;opacity:.8;}
-    .close:hover {opacity:1;}
+    /* Utilities */
+    .hidden{display:none}
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
 
-    .modal-image-frame {width:260px;height:260px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;background:#fff;border:1.5px solid var(--border-light);border-radius:18px;box-shadow:0 3px 14px rgba(0,0,0,.06);overflow:hidden;}
-    .modal-image-frame::before {content:none;}
-    #modal-image {max-width:90%;max-height:90%;object-fit:contain;filter:drop-shadow(0 1px 2px rgba(0,0,0,.15));}
-
-    #modal-title {font-size:1.25rem;font-weight:700;color:var(--primary-red);margin-bottom:.3rem;}
-    .modal-scoin-highlight {display:flex;align-items:center;justify-content:center;width:90%;min-height:62px;margin:.8rem auto 1.1rem;font-size:2.05rem;font-weight:800;color:var(--scoin-text);background:linear-gradient(90deg,#ffe49c 70%,#ffd700 100%);border-radius:33px;border:2.5px solid #ffe3b3;box-shadow:var(--scoin-glow);letter-spacing:1.2px;}
-    .modal-scoin-highlight img {width:40px;height:40px;margin-right:.18em;filter:drop-shadow(0 2px 6px #fffbe3cc);}    
-    #modal-model,#modal-rcp,#modal-member,#modal-remark {font-size:1.07rem;color:var(--text-light);margin-bottom:.3rem;font-weight:500;}    
-    #modal-remark {color:var(--danger);background:#fff3f3;padding:.5rem 1rem;border-radius:9px;margin-top:.6rem;}
-
-    /* Responsive*/
-    @media (max-width:750px){
-      header{padding:2rem .2rem 1rem;}
-      .filters-bar{padding:1rem .5rem;gap:.3rem;}
-      .container{gap:1.2rem;}
-      .product-card{min-height:460px;}
-      .image-frame,.modal-image-frame{width:200px;height:200px;}
-      .scoin-highlight,.modal-scoin-highlight{font-size:1.6rem;min-height:48px;}
-    }
-    @media (max-width:500px){
-      .container{padding:0 2px 1.3rem;}
-      .product-card{min-height:380px;}
-      .image-frame,.modal-image-frame{width:160px;height:160px;}
-    }
+    @media (max-width:768px){ .frame{ width:210px; height:210px } .dialog-frame{ width:210px; height:210px } .card{ min-height:460px } }
   </style>
 </head>
 <body>
   <header>
-    <h1>S‑COIN Redemption</h1>
-    <div class="tagline">Find your rewards. Claim your joy!</div>
+    <div class="hero">
+      <div class="title" aria-live="polite"><span class="ping" aria-hidden="true"></span>S‑COIN Redemption</div>
+      <p class="tagline">Find your rewards. Claim your joy!</p>
+    </div>
+
+    <!-- Controls / Filters -->
+    <div class="toolbar" role="region" aria-label="Filters">
+      <div class="tool" title="Search">
+        <span class="label">Search</span>
+        <input id="q" type="text" placeholder="Name or model…" autocomplete="off" inputmode="search" aria-label="Search by name or model"/>
+      </div>
+
+      <div class="tool" title="Brand">
+        <span class="label">Brand</span>
+        <select id="brand"><option value="">All</option></select>
+      </div>
+
+      <div class="tool" title="Sort">
+        <span class="label">Sort</span>
+        <select id="sort">
+          <option value="">—</option>
+          <option value="price-asc">Member Price ↑</option>
+          <option value="price-desc">Member Price ↓</option>
+          <option value="az">Name A → Z</option>
+          <option value="za">Name Z → A</option>
+        </select>
+      </div>
+
+      <div class="tool" title="S‑COIN Range">
+        <span class="label">S‑COIN</span>
+        <input id="coinMin" type="number" min="0" step="100" placeholder="min" style="width:7ch">
+        <span style="opacity:.6">–</span>
+        <input id="coinMax" type="number" min="0" step="100" placeholder="max" style="width:7ch">
+      </div>
+
+      <div class="tool" title="Items per page">
+        <span class="label">Per page</span>
+        <select id="perPage">
+          <option>9</option>
+          <option>12</option>
+          <option>18</option>
+          <option>24</option>
+        </select>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="tool" title="Theme">
+        <button id="themeToggle" class="ghost" aria-pressed="false">Toggle Dark</button>
+      </div>
+      <div class="tool" title="Export current list">
+        <button id="exportBtn" class="ghost">Export CSV</button>
+      </div>
+    </div>
   </header>
 
-  <!-- Filters-->
-  <div class="filters-bar">
-    <input type="text" id="search-input" placeholder="Search product name or model…"/>
-    <select id="brand-filter"><option value="">All Brands</option></select>
-    <select id="sort-filter">
-      <option value="">Sort by Price</option>
-      <option value="low-high">Member Price (Low → High)</option>
-      <option value="high-low">Member Price (High → Low)</option>
-    </select>
-  </div>
+  <main class="container">
+    <div id="grid" class="grid" aria-live="polite" aria-busy="true"></div>
+    <nav class="pagination" id="pager" aria-label="Pagination"></nav>
+  </main>
 
-  <div class="container" id="products"></div>
-  <div id="pagination"></div>
-
-  <!-- Modal-->
-  <div id="product-modal" class="modal" tabindex="-1">
-    <div class="modal-content">
-      <button class="close" aria-label="Close">&times;</button>
-      <div class="modal-image-frame"><img id="modal-image" src="" alt="Product Image"/></div>
-      <h3 id="modal-title"></h3>
-      <div class="modal-scoin-highlight" id="modal-scoin-highlight"></div>
-      <div id="modal-model"></div>
-      <div id="modal-rcp"></div>
-      <div id="modal-member"></div>
-      <div id="modal-remark"></div>
+  <!-- Modal -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="dialog" role="document">
+      <button class="close" id="modalClose" aria-label="Close">✕</button>
+      <div class="dialog-header">
+        <div class="dialog-frame"><img id="mImg" alt="Product image" loading="lazy"></div>
+        <h3 id="mTitle" class="title" style="margin:0"></h3>
+        <div id="mCoin" class="coin hidden"><img src="SCOIN.png" alt="S‑COIN"><span></span></div>
+      </div>
+      <div class="dialog-body">
+        <div id="mModel"></div>
+        <div id="mRcp"></div>
+        <div id="mMember"></div>
+        <div id="mRemark" style="margin-top:.6rem"></div>
+      </div>
     </div>
   </div>
 
-  <!-- JS (unchanged) -->
   <script>
-    let products=[],filteredProducts=[],currentPage=1;const productsPerPage=9;
-    document.addEventListener("DOMContentLoaded",()=>{
-      fetch("data.xlsx").then(r=>r.arrayBuffer()).then(d=>{const wb=XLSX.read(d,{type:"array"});products=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-        const brandSet=new Set();products.forEach(p=>{if(p.BRAND)brandSet.add(p.BRAND)});const brandSel=document.getElementById("brand-filter");brandSet.forEach(b=>{const o=document.createElement("option");o.value=b;o.textContent=b;brandSel.appendChild(o)});
-        filteredProducts=products;renderPage();
-        document.getElementById("search-input").addEventListener("input",applyFilters);
-        brandSel.addEventListener("change",applyFilters);
-        document.getElementById("sort-filter").addEventListener("change",applyFilters);
-      }).catch(err=>console.error("Error loading data:",err));
+    // ===== Utilities =====
+    const $ = (sel,root=document)=> root.querySelector(sel);
+    const $$ = (sel,root=document)=> Array.from(root.querySelectorAll(sel));
+    const toNum = (v)=> Number(String(v||0).toString().replace(/[^\d.]/g,""))||0;
+    const fmtRM = (n)=> toNum(n).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
+    const debounce = (fn, ms=250)=>{ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms)} };
 
-      const modal=document.getElementById("product-modal");document.querySelector(".close").addEventListener("click",()=>modal.classList.remove("show"));window.addEventListener("click",e=>{if(e.target===modal)modal.classList.remove("show")});window.addEventListener("keydown",e=>{if(e.key==="Escape")modal.classList.remove("show")});
+    // ===== State =====
+    let products=[], view=[], page=1, perPage=Number(localStorage.getItem('perPage')||9);
+
+    // Theme init
+    const root = document.documentElement;
+    const savedTheme = localStorage.getItem('theme') || (matchMedia('(prefers-color-scheme: dark)').matches? 'dark':'light');
+    root.setAttribute('data-theme', savedTheme);
+    $('#themeToggle').setAttribute('aria-pressed', savedTheme==='dark');
+
+    // Skeletons
+    const grid = $('#grid');
+    const makeSkeleton = ()=>{
+      grid.innerHTML='';
+      for(let i=0;i<9;i++){
+        const sk=document.createElement('div');
+        sk.className='card';
+        sk.innerHTML=`<div class="brand-badge skeleton" style="width:70px;height:28px"></div>
+                      <div class="frame skeleton" style="height:260px"></div>
+                      <div class="coin skeleton" style="height:52px;width:92%"></div>
+                      <div class="info">
+                        <div class="skeleton" style="width:80%;height:18px;margin:.3rem 0"></div>
+                        <div class="skeleton" style="width:60%;height:14px;margin:.3rem 0"></div>
+                        <div class="skeleton" style="width:75%;height:28px;margin:.8rem 0;border-radius:999px"></div>
+                      </div>`;
+        grid.appendChild(sk);
+      }
+    };
+    makeSkeleton();
+
+    // ===== Load data =====
+    fetch('data.xlsx').then(r=>r.arrayBuffer()).then(buf=>{
+      const wb = XLSX.read(buf,{type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      products = XLSX.utils.sheet_to_json(ws);
+      initControls(products);
+      applyFilters();
+    }).catch(err=>{
+      console.error('Error loading data:',err);
+      grid.innerHTML = `<div class="card" style="min-height:auto;padding:1rem">
+        <strong style="color:var(--danger)">Failed to load data.xlsx</strong>
+        <p class="muted">Make sure the file is in the same folder and the first sheet contains columns: <code>FULL NAME, MODEL, BRAND, RCP, MEMBER, URL, REMARK</code>.</p>
+      </div>`;
     });
 
-    function applyFilters(){const search=document.getElementById("search-input").value.toLowerCase();const brand=document.getElementById("brand-filter").value;const sort=document.getElementById("sort-filter").value;
-      filteredProducts=products.filter(p=>{const full=(p["FULL NAME"]||"").toLowerCase();const model=(p["MODEL"]||"").toLowerCase();const b=p.BRAND||"";return(full.includes(search)||model.includes(search))&&(brand?b===brand:true)});
-      if(sort=="low-high")filteredProducts.sort((a,b)=>Number(a.MEMBER)-Number(b.MEMBER));else if(sort=="high-low")filteredProducts.sort((a,b)=>Number(b.MEMBER)-Number(a.MEMBER));
-      currentPage=1;renderPage();
+    // ===== Controls =====
+    function initControls(list){
+      // Brand options
+      const set = new Set(list.map(x=>x.BRAND).filter(Boolean));
+      const brandSel = $('#brand');
+      [...set].sort().forEach(b=>{ const opt=document.createElement('option'); opt.value=opt.textContent=b; brandSel.appendChild(opt); });
+
+      // Per page
+      $('#perPage').value = String(perPage);
+      $('#perPage').addEventListener('change',()=>{ perPage=Number($('#perPage').value); localStorage.setItem('perPage',perPage); page=1; render() });
+
+      // Theme toggle
+      $('#themeToggle').addEventListener('click',()=>{
+        const cur = root.getAttribute('data-theme')==='dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', cur);
+        localStorage.setItem('theme', cur);
+        $('#themeToggle').setAttribute('aria-pressed', cur==='dark');
+      });
+
+      // Export
+      $('#exportBtn').addEventListener('click',()=>{
+        const rows = view.map(p=>({
+          BRAND:p.BRAND,
+          NAME:p['FULL NAME'],
+          MODEL:p.MODEL||'',
+          RCP:p.RCP,
+          MEMBER:p.MEMBER,
+          SCOIN: toNum(p.MEMBER)*100,
+          URL:p.URL||'',
+          REMARK:p.REMARK||''
+        }));
+        const ws = XLSX.utils.json_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Filtered');
+        XLSX.writeFile(wb, 'scoin_filtered.csv');
+      });
+
+      // Debounced search
+      $('#q').addEventListener('input', debounce(applyFilters, 250));
+      $('#brand').addEventListener('change', applyFilters);
+      $('#sort').addEventListener('change', applyFilters);
+      $('#coinMin').addEventListener('input', debounce(applyFilters, 200));
+      $('#coinMax').addEventListener('input', debounce(applyFilters, 200));
+
+      // Coin min/max placeholders from data
+      const coins = list.map(p=>toNum(p.MEMBER)*100).filter(n=>n>0);
+      const min = Math.min(...coins), max = Math.max(...coins);
+      $('#coinMin').placeholder = min ? String(min) : 'min';
+      $('#coinMax').placeholder = max ? String(max) : 'max';
     }
 
-    function renderPage(){const container=document.getElementById("products");container.innerHTML="";
-      if(!filteredProducts.length){container.innerHTML="<p>No products found.</p>";}else{
-        const start=(currentPage-1)*productsPerPage,end=start+productsPerPage,pageProducts=filteredProducts.slice(start,end);
-        pageProducts.forEach(p=>{
-          const card=document.createElement("div");card.className="product-card";
-          const scoin=(p.MEMBER*100).toLocaleString();const rcpF=Number(p.RCP).toLocaleString();const memF=Number(p.MEMBER).toLocaleString();
-          card.innerHTML=`<div class="image-frame"><img src="${p.URL}" alt="${p['FULL NAME']||'Product Image'}" class="product-image" loading="lazy"/><div class="brand-badge">${p.BRAND}</div></div><div class="scoin-highlight"><img src="SCOIN.png" alt="S‑COIN"/><span class="scoin-label">${scoin} S‑COIN</span></div><div class="product-info"><div class="product-title">${p['FULL NAME']}</div><div class="model-code">${p['MODEL']||'N/A'}</div><div class="product-tags"><span class="tag rcp">RCP: RM${rcpF}</span><span class="tag member">Member: RM${memF}</span></div>${p.REMARK?`<div class="remark">${p.REMARK}</div>`:""}</div>`;
-          card.addEventListener("click",()=>{document.getElementById("modal-image").src=p.URL;document.getElementById("modal-title").textContent=p['FULL NAME'];document.getElementById("modal-model").textContent=`Model: ${p['MODEL']||'N/A'}`;document.getElementById("modal-rcp").textContent=`RCP: RM${rcpF}`;document.getElementById("modal-member").textContent=`Member Price: RM${memF}`;document.getElementById("modal-remark").textContent=p.REMARK?`Remark: ${p.REMARK}`:"";document.getElementById("modal-scoin-highlight").innerHTML=`<img src='SCOIN.png' alt='S‑COIN'/><span class='scoin-label'>${scoin} S‑COIN</span>`;document.getElementById("product-modal").classList.add("show")});
-          container.appendChild(card);
-        });
-      }
-      const pagination=document.getElementById("pagination");pagination.innerHTML="";const totalPages=Math.ceil(filteredProducts.length/productsPerPage);
-      if(totalPages){const firstBtn=btn("First",1===currentPage);firstBtn.onclick=()=>{currentPage=1;renderPage()};const prevBtn=btn("Previous",currentPage<=1);prevBtn.onclick=()=>{if(currentPage>1){currentPage--;renderPage()}};const info=document.createElement("span");info.textContent=`Page ${currentPage} of ${totalPages}`;const nextBtn=btn("Next",currentPage>=totalPages);nextBtn.onclick=()=>{if(currentPage<totalPages){currentPage++;renderPage()}};const lastBtn=btn("Last",currentPage===totalPages);lastBtn.onclick=()=>{currentPage=totalPages;renderPage()};pagination.append(firstBtn,prevBtn,info,nextBtn,lastBtn);
-      }
+    function applyFilters(){
+      const q = $('#q').value.trim().toLowerCase();
+      const brand = $('#brand').value;
+      const sort = $('#sort').value;
+      const cMin = toNum($('#coinMin').value || 0);
+      const cMax = toNum($('#coinMax').value || 0);
+
+      view = products.filter(p=>{
+        const name = String(p['FULL NAME']||'').toLowerCase();
+        const model = String(p['MODEL']||'').toLowerCase();
+        const okQ = !q || name.includes(q) || model.includes(q);
+        const okB = !brand || p.BRAND===brand;
+        const coin = toNum(p.MEMBER)*100;
+        const okMin = !cMin || coin >= cMin;
+        const okMax = !cMax || coin <= cMax;
+        return okQ && okB && okMin && okMax;
+      });
+
+      if(sort==='price-asc') view.sort((a,b)=> toNum(a.MEMBER)-toNum(b.MEMBER));
+      else if(sort==='price-desc') view.sort((a,b)=> toNum(b.MEMBER)-toNum(a.MEMBER));
+      else if(sort==='az') view.sort((a,b)=> String(a['FULL NAME']||'').localeCompare(String(b['FULL NAME']||'')) );
+      else if(sort==='za') view.sort((a,b)=> String(b['FULL NAME']||'').localeCompare(String(a['FULL NAME']||'')) );
+
+      page = 1;
+      render();
     }
 
-    function btn(lbl,dis){const b=document.createElement("button");b.textContent=lbl;b.disabled=dis;return b;}
+    function render(){
+      grid.setAttribute('aria-busy','true');
+      grid.innerHTML = '';
+      const start = (page-1)*perPage, end = start + perPage;
+      const data = view.slice(start, end);
+
+      if(!data.length){
+        grid.innerHTML = `<div class="card" style="min-height:auto; padding:1rem"><strong>No products found.</strong></div>`;
+        $('#pager').innerHTML='';
+        grid.removeAttribute('aria-busy');
+        return;
+      }
+
+      for(const p of data){
+        const card = document.createElement('article');
+        card.className = 'card';
+        const scoin = (toNum(p.MEMBER)*100).toLocaleString();
+        const rcp = fmtRM(p.RCP); const mem = fmtRM(p.MEMBER);
+        card.innerHTML = `
+          <div class="brand-badge">${p.BRAND||''}</div>
+          <div class="frame"><img alt="${(p['FULL NAME']||'Product').replace(/"/g,'\"')}" loading="lazy" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'240\'><rect width=\'100%\' height=\'100%\' fill=\'%23f6f6f8\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23999\' font-family=\'Arial\' font-size=\'14\'>No Image</text></svg>'" src="${p.URL||''}"></div>
+          <div class="coin"><img src="SCOIN.png" alt="S-COIN"><span>${scoin} S‑COIN</span></div>
+          <div class="info">
+            <div class="title">${p['FULL NAME']||''}</div>
+            <div class="model">${p['MODEL']?`Model: ${p['MODEL']}`:'Model: N/A'}</div>
+            <div class="tags">
+              <span class="tag rcp">RCP: RM${rcp}</span>
+              <span class="tag member">Member: RM${mem}</span>
+            </div>
+            ${p.REMARK? `<div class="remark">${p.REMARK}</div>`: ''}
+          </div>
+        `;
+        card.addEventListener('click',()=> openModal(p));
+        grid.appendChild(card);
+      }
+
+      // Pagination
+      const total = Math.ceil(view.length / perPage);
+      const pager = $('#pager');
+      const mkBtn = (t,dis,fn)=>{ const b=document.createElement('button'); b.textContent=t; if(dis) b.disabled=true; b.addEventListener('click',fn); return b };
+      pager.innerHTML='';
+      pager.append(
+        mkBtn('First', page===1, ()=>{page=1; render()}),
+        mkBtn('Prev', page===1, ()=>{page=Math.max(1,page-1); render()}),
+        (()=>{const s=document.createElement('span'); s.style.fontWeight='800'; s.style.minWidth='9ch'; s.style.textAlign='center'; s.textContent=`Page ${page} / ${total}`; return s})(),
+        mkBtn('Next', page===total, ()=>{page=Math.min(total,page+1); render()}),
+        mkBtn('Last', page===total, ()=>{page=total; render()})
+      );
+
+      grid.removeAttribute('aria-busy');
+    }
+
+    // ===== Modal =====
+    const modal = $('#modal');
+    const modalClose = $('#modalClose');
+    function openModal(p){
+      $('#mImg').src = p.URL || '';
+      $('#mTitle').textContent = p['FULL NAME'] || '';
+      $('#mModel').textContent = `Model: ${p['MODEL']||'N/A'}`;
+      $('#mRcp').textContent = `RCP: RM${fmtRM(p.RCP)}`;
+      $('#mMember').textContent = `Member Price: RM${fmtRM(p.MEMBER)}`;
+      const scoin = toNum(p.MEMBER)*100; $('#mCoin').classList.remove('hidden'); $('#mCoin span').textContent = `${scoin.toLocaleString()} S‑COIN`;
+      $('#mRemark').innerHTML = p.REMARK? `<span class="remark">Remark: ${p.REMARK}</span>` : '';
+      modal.classList.add('show');
+      modal.setAttribute('aria-hidden','false');
+      modalClose.focus();
+    }
+    function closeModal(){ modal.classList.remove('show'); modal.setAttribute('aria-hidden','true'); }
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e)=>{ if(e.target===modal) closeModal(); });
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+    // Restore scroll position when images load
+    if('scrollRestoration' in history){ history.scrollRestoration='manual'; }
   </script>
 </body>
 </html>
