@@ -8,137 +8,419 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    :root{
-      --brand:#E60012; --brand-500:#ff1a2b; --brand-050:#fff3f4;
-      --bg:#fafafa; --panel:rgba(255,255,255,.96); --panel-2:#fff; --panel-border:#e6e8eb;
-      --text:#111318; --muted:#5a5f69; --on-strong:#fff; --coin:#f7b500; --danger:#f14d61;
-      --radius:20px; --glass:blur(12px) saturate(110%); --shadow:0 10px 30px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.06);
-      --frame-size:260px; /* change here if you want bigger/smaller thumbnails */
+    :root {
+      --brand:#E60012;
+      --brand-500:#ff1a2b;
+      --brand-050:#fff3f4;
+      --bg:#fafafa;
+      --panel:rgba(255,255,255,.96);
+      --panel-2:#fff;
+      --panel-border:#e6e8eb;
+      --text:#111318;
+      --muted:#5a5f69;
+      --on-strong:#fff;
+      --coin:#f7b500;
+      --danger:#f14d61;
+      --radius:20px;
+      --glass:blur(12px) saturate(110%);
+      --shadow:0 10px 30px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.06);
+      --frame-size:16rem;
     }
-    :root[data-theme="dark"]{
-      --bg:#0b0c0e; --panel:rgba(20,22,26,.84); --panel-2:#171a20; --panel-border:#2a2e36;
-      --text:#edf0f5; --muted:#aeb5c0; --on-strong:#fff; --shadow:0 16px 42px rgba(0,0,0,.45), 0 4px 12px rgba(0,0,0,.35);
+    :root[data-theme="dark"] {
+      --bg:#0b0c0e;
+      --panel:rgba(20,22,26,.88);
+      --panel-2:#171a20;
+      --panel-border:#2a2e36;
+      --text:#edf0f5;
+      --muted:#aeb5c0;
+      --on-strong:#fff;
+      --shadow:0 16px 42px rgba(0,0,0,.45), 0 4px 12px rgba(0,0,0,.35);
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;font-family:'Montserrat',system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif;color:var(--text);
-      background:radial-gradient(1200px 600px at -10% -20%,var(--brand-050) 0%,transparent 55%),radial-gradient(900px 600px at 110% 10%,#fff1f2 0%,transparent 55%),linear-gradient(180deg,#fff 0,#fff 240px,transparent 240px),var(--bg);background-attachment:fixed}
-    header{position:sticky;top:0;z-index:50;backdrop-filter:blur(8px)}
-    .brand-bar{height:8px;background:linear-gradient(90deg,var(--brand) 0 40%,var(--brand-500) 40% 100%)}
-    .hero{max-width:1200px;margin:0 auto;padding:1.1rem 1rem .9rem;text-align:center;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.78));border-bottom:1px solid var(--panel-border)}
-    [data-theme="dark"] .hero{background:linear-gradient(180deg,rgba(20,22,26,.92),rgba(20,22,26,.72))}
-    .title{display:flex;align-items:center;justify-content:center;gap:.65rem;font-weight:800;letter-spacing:.3px;font-size:clamp(1.6rem,3.5vw,2.5rem);color:var(--brand)}
-    .title .logo{width:110px;height:22px;display:inline-grid;place-items:center;border-radius:6px;background:var(--brand);color:#fff;font-weight:900;letter-spacing:.5px;font-size:.86rem}
-    .tagline{color:var(--muted);margin:.25rem 0 0}
+    html {
+      font-size: clamp(15px, 1.6vw, 18px);
+      scroll-behavior: smooth;
+    }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+      background: radial-gradient(1200px 600px at -10% -20%,var(--brand-050) 0%,transparent 55%),radial-gradient(900px 600px at 110% 10%,#fff1f2 0%,transparent 55%),linear-gradient(180deg,#fff 0,#fff 240px,transparent 240px),var(--bg);
+      background-attachment:fixed;
+    }
+    .skip-link {
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: var(--brand);
+      color: var(--on-strong);
+      padding: 0.6rem 1.1rem;
+      font-weight: bold;
+      border-radius: 0 0 15px 0;
+      z-index: 1000;
+      transform: translateY(-120%);
+      transition: transform 0.2s;
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      outline: 2px solid var(--muted);
+      transform: translateY(0);
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+    }
+    .brand-bar {
+      height: 8px;
+      background: linear-gradient(90deg,var(--brand) 0 40%,var(--brand-500) 40% 100%);
+    }
+    .hero {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.1rem 1rem .9rem;
+      text-align: center;
+      background: linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.78));
+      border-bottom: 1px solid var(--panel-border);
+    }
+    [data-theme="dark"] .hero {
+      background: linear-gradient(180deg,rgba(20,22,26,.92),rgba(20,22,26,.72))
+    }
+    .title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: .65rem;
+      font-weight: 800;
+      letter-spacing: .3px;
+      font-size: clamp(1.6rem,3.5vw,2.5rem);
+      color: var(--brand);
+    }
+    .title .logo {
+      width: 110px;
+      height: 22px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 6px;
+      background: var(--brand);
+      color: #fff;
+      font-weight: 900;
+      letter-spacing: .5px;
+      font-size: .86rem;
+    }
+    .tagline {
+      color: var(--muted);
+      margin: .25rem 0 0;
+      font-size: 1.1rem;
+    }
 
-    .toolbar{display:flex;flex-wrap:wrap;gap:.6rem .7rem;align-items:center;justify-content:center;max-width:1200px;margin:0 auto;padding:.9rem 1rem 1rem}
-    .tool{display:inline-flex;align-items:center;gap:.55rem;background:var(--panel);backdrop-filter:var(--glass);border:1px solid var(--panel-border);border-radius:999px;box-shadow:var(--shadow);padding:.55rem .8rem}
-    .tool .label{font-weight:800;font-size:.82rem;color:var(--muted);letter-spacing:.3px}
-    .tool input[type="text"],.tool select,.tool input[type="number"]{border:none;outline:none;background:transparent;color:inherit;font-size:.98rem;min-width:10ch}
-    .spacer{flex:1 1 100%}
-
-    .switch{--w:54px;--h:30px;--p:3px;position:relative;width:var(--w);height:var(--h);border-radius:999px;background:#e7e7ea;border:1px solid var(--panel-border);cursor:pointer;display:inline-flex;align-items:center;padding:var(--p);box-shadow:var(--shadow)}
-    .switch[aria-checked="true"]{background:var(--brand)}
-    .switch .knob{width:calc(var(--h) - var(--p)*2 - 2px);height:calc(var(--h) - var(--p)*2 - 2px);background:#fff;border-radius:999px;transform:translateX(0);transition:transform .2s ease}
-    .switch[aria-checked="true"] .knob{transform:translateX(calc(var(--w) - var(--h)))}
-
-    .container{max-width:1200px;margin:0 auto;padding:1rem}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.25rem}
-
-    .card{position:relative;overflow:hidden;border-radius:var(--radius);background:var(--panel);border:1px solid var(--panel-border);backdrop-filter:var(--glass);box-shadow:var(--shadow);display:flex;flex-direction:column;cursor:pointer;min-height:520px;transition:transform .18s ease, box-shadow .18s ease}
-    .card:hover{transform:translateY(-4px);box-shadow:0 22px 52px rgba(230,0,18,.26)}
-    .brand-badge{position:absolute;top:12px;left:12px;background:var(--brand);color:var(--on-strong);padding:.42rem .8rem;border-radius:999px;font-size:.83rem;font-weight:900;letter-spacing:1px;z-index:2}
-
-    /* STRICT SQUARE FRAMES (never stretch image) */
-    .frame{position:relative;width:var(--frame-size); /* fixed width */
-      aspect-ratio:1/1; /* keep it perfect square */
-      margin:1.2rem auto .6rem;background:#fff !important;border:1px solid var(--panel-border);border-radius:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 8px 24px rgba(0,0,0,.06);overflow:hidden}
-    /* Fallback for browsers without aspect-ratio */
+    nav.toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem .7rem;
+      align-items: center;
+      justify-content: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: .9rem 1rem 1rem;
+    }
+    .tool {
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      background: var(--panel);
+      backdrop-filter: var(--glass);
+      border: 1px solid var(--panel-border);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      padding: .55rem .8rem;
+    }
+    .tool .label {
+      font-weight: 800;
+      font-size: .92rem;
+      color: var(--muted);
+      letter-spacing: .3px;
+    }
+    .tool input[type="text"],
+    .tool select, .tool input[type="number"]{
+      border: none;
+      outline: none;
+      background: transparent;
+      color: inherit;
+      font-size: 1rem;
+      min-width: 9ch;
+      padding: .25rem .2rem;
+    }
+    .spacer { flex:1 1 100%; }
+    .switch{
+      --w:54px;--h:30px;--p:3px;position:relative;width:var(--w);height:var(--h);
+      border-radius:999px;background:#e7e7ea;border:1px solid var(--panel-border);
+      cursor:pointer;display:inline-flex;align-items:center;padding:var(--p);
+      box-shadow:var(--shadow);
+    }
+    .switch[aria-checked="true"]{background:var(--brand);}
+    .switch .knob{
+      width:calc(var(--h) - var(--p)*2 - 2px);height:calc(var(--h) - var(--p)*2 - 2px);
+      background:#fff;border-radius:999px;transform:translateX(0);transition:transform .2s;
+    }
+    .switch[aria-checked="true"] .knob{transform:translateX(calc(var(--w) - var(--h)));}
+    main.container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+      outline: none;
+    }
+    section {
+      margin: 0;
+    }
+    .visually-hidden {
+      border:0 !important;
+      clip: rect(0 0 0 0) !important;
+      height:1px !important;
+      margin:-1px !important;
+      overflow:hidden !important;
+      padding:0 !important;
+      position:absolute !important;
+      width:1px !important;
+      white-space:nowrap !important;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(270px,1fr));
+      gap: 1.35rem;
+    }
+    .card {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      backdrop-filter: var(--glass);
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 25rem;
+      transition: transform .18s, box-shadow .18s;
+      cursor: pointer;
+      outline: none;
+    }
+    .card:focus-visible {
+      box-shadow: 0 0 0 3px var(--brand-500), var(--shadow);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 22px 52px rgba(230,0,18,.26);
+    }
+    .brand-badge {
+      position: absolute; top: 12px; left: 12px;
+      background: var(--brand); color: var(--on-strong);
+      padding: .42rem .8rem;
+      border-radius: 999px;
+      font-size: .83rem; font-weight: 900; letter-spacing:1px;
+      z-index:2
+    }
+    .frame {
+      position: relative;
+      width: var(--frame-size);
+      aspect-ratio:1/1;
+      margin: 1.2rem auto .6rem;
+      background:#fff !important;
+      border:1px solid var(--panel-border);
+      border-radius:18px;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 8px 24px rgba(0,0,0,.06);
+      overflow:hidden
+    }
     .frame::before{content:"";display:block;padding-top:100%}
-    .frame > img{position:absolute;inset:0;margin:auto; /* center */
-      max-width:88%;max-height:88%;width:auto;height:auto; /* preserve ratio */
-      object-fit:contain;image-rendering:auto;filter:drop-shadow(0 1px 2px rgba(0,0,0,.12))}
-
-    .coin{align-self:center;margin:.3rem 0 .8rem;width:min(96%,520px);display:flex;align-items:center;justify-content:center;gap:.45rem;font-weight:900;font-size:clamp(1.4rem,2.4vw,2rem);color:#2a2200;background:linear-gradient(90deg,#ffe49c 70%,#ffd700 100%);border:2px solid #ffe3b3;border-radius:28px;box-shadow:0 0 0 4px #fff6a2, 0 12px 28px #f7b50055;padding:.5rem .9rem}
+    .frame > img {
+      position:absolute;inset:0;margin:auto;
+      max-width:88%;max-height:88%;width:auto;height:auto;
+      object-fit:contain;image-rendering:auto;
+      filter:drop-shadow(0 1px 2px rgba(0,0,0,.12))
+    }
+    .coin {
+      align-self:center;margin:.3rem 0 .8rem;
+      width:min(96%,520px);
+      display:flex;align-items:center;justify-content:center;gap:.45rem;
+      font-weight:900;font-size:clamp(1.4rem,2.4vw,2rem);color:#2a2200;
+      background:linear-gradient(90deg,#ffe49c 70%,#ffd700 100%);
+      border:2px solid #ffe3b3;border-radius:28px;
+      box-shadow:0 0 0 4px #fff6a2, 0 12px 28px #f7b50055;
+      padding:.5rem .9rem
+    }
     [data-theme="dark"] .coin{color:#1a1400}
     .coin img{width:38px;height:38px}
-
     .info{padding:0 1rem 1rem;display:flex;flex-direction:column;align-items:center;text-align:center}
-    .name{font-size:1.02rem;font-weight:900;color:var(--brand);min-height:2.6rem}
-    .model{font-size:.95rem;color:var(--muted);margin-top:.2rem}
+    .name{font-size:1.17rem;font-weight:900;color:var(--brand);min-height:2.6rem}
+    .model{font-size:.98rem;color:var(--muted);margin-top:.2rem}
 
     .tags{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin:.8rem 0}
-    .tag{font-weight:900;font-size:.9rem;border-radius:999px;padding:.36rem .9rem;border:1px dashed var(--panel-border);background:var(--panel-2);color:var(--text)}
+    .tag{font-weight:900;font-size:.99rem;border-radius:999px;padding:.36rem .9rem;border:1px dashed var(--panel-border);background:var(--panel-2);color:var(--text)}
     .tag.member{background:var(--brand);color:var(--on-strong);border:none}
     .tag.rcp{background:transparent;color:var(--brand);text-decoration:line-through}
     [data-theme="dark"] .tag{background:#1b1e24;border-color:#303640;color:#e9edf3}
+    .remark{font-size:.98rem;color:var(--on-strong);background:linear-gradient(0deg,#f85b73 0,#f14d61 100%);
+      padding:.55rem .7rem;border-radius:8px;max-width:95%;font-weight:700}
 
-    .remark{font-size:.92rem;color:var(--on-strong);background:linear-gradient(0deg,#f85b73 0,#f14d61 100%);padding:.55rem .7rem;border-radius:8px;max-width:95%;font-weight:700}
-
-    .pagination{display:flex;justify-content:center;align-items:center;gap:.5rem;padding:1.1rem 0 2rem}
-    .pagination button{padding:.62rem 1.1rem;border-radius:10px;border:1px solid var(--panel-border);background:var(--panel);cursor:pointer;font-weight:800;color:var(--text)}
+    .pagination {
+      display: flex;justify-content: center;align-items:center;gap: .5rem;
+      padding: 1.1rem 0 2rem;
+    }
+    .pagination button {
+      padding: .62rem 1.1rem;
+      border-radius: 10px;
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      cursor: pointer;
+      font-weight: 800;
+      color: var(--text);
+    }
     .pagination button[disabled]{opacity:.55;cursor:not-allowed}
-
-    /* Modal with true‑size zoom/pan on a white canvas */
-    .modal{position:fixed;inset:0;display:none;place-items:center;z-index:1000;background:rgba(0,0,0,.5);backdrop-filter:blur(2px)}
-    .modal.show{display:grid}
-    .dialog{background:var(--panel);border:1px solid var(--panel-border);border-radius:24px;box-shadow:var(--shadow);width:min(95vw,820px);padding:1rem 1rem 1.2rem;position:relative}
-    .close{position:absolute;top:10px;right:12px;width:42px;height:42px;display:grid;place-items:center;border-radius:12px;border:1px solid var(--panel-border);background:#fff;cursor:pointer;font-size:1.2rem;color:#111}
-    .dialog-title{text-align:center;font-weight:900;color:var(--brand);margin:.2rem 0 .6rem}
-    .zoom-wrap{position:relative;background:#fff;border:1px solid var(--panel-border);border-radius:18px;width:min(92vw,760px);height:min(92vh,560px);margin:0 auto;overflow:hidden;touch-action:none}
-    .zoom-canvas{position:absolute;inset:0;display:grid;place-items:center}
-    .zoom-img{max-width:none;max-height:none;width:auto;height:auto;transform-origin:center center;will-change:transform;image-rendering:auto}
+    /* Modal using dialog */
+    dialog[open] {
+      z-index:1000;
+      position:fixed;
+      background:rgba(0,0,0,.5);
+      inset:0;
+      width:100vw;
+      height:100vh;
+      overflow:auto;
+      display:grid;
+      place-items:center;
+      padding:0;
+      border:none;
+      margin:0;
+    }
+    dialog::backdrop {
+      background:rgba(0,0,0,.5);
+      backdrop-filter: blur(2px);
+    }
+    .dialog {
+      background: var(--panel);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      width: min(95vw,820px);
+      padding: 1rem 1rem 1.2rem;
+      position: relative;
+    }
+    .close {
+      position: absolute; top: 10px; right: 12px;
+      width: 42px; height: 42px;display: grid;place-items:center;
+      border-radius: 12px; border: 1px solid var(--panel-border);
+      background: #fff; cursor: pointer;font-size:1.2rem;color:#111;
+    }
+    .dialog-title {text-align:center;font-weight:900;color:var(--brand);margin:.2rem 0 .6rem}
+    .zoom-wrap{
+      position:relative;background:#fff;border:1px solid var(--panel-border);border-radius:18px;
+      width:min(92vw,760px);height:min(92vh,560px);margin:0 auto;overflow:hidden;touch-action:none
+    }
+    .zoom-canvas {position:absolute;inset:0;display:grid;place-items:center}
+    .zoom-img {max-width:none;max-height:none;width:auto;height:auto;transform-origin:center center;will-change:transform;image-rendering:auto}
     .zoom-controls{position:absolute;right:10px;bottom:10px;display:flex;gap:.4rem}
     .zoom-controls button{padding:.5rem .7rem;border-radius:10px;border:1px solid var(--panel-border);background:var(--panel);color:var(--text);font-weight:800;cursor:pointer}
-
-    .hidden{display:none}
-    @media (max-width:768px){:root{--frame-size:210px}.dialog{width:min(96vw,820px)}.zoom-wrap{height:min(92vh,420px)}.card{min-height:460px}}
+    .hidden { display: none }
+    @media (max-width:768px){
+      :root { --frame-size: 12rem; }
+      .dialog{width:min(98vw,700px)}
+      .zoom-wrap{height:min(92vh,420px)}
+      .card{min-height:16.2rem}
+    }
+    @media (max-width:540px){
+      :root { --frame-size: 9.5rem; }
+      nav.toolbar, .hero, main.container { padding-left: .5rem; padding-right: .5rem; }
+    }
   </style>
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <header>
-    <div class="brand-bar" aria-hidden="true"></div>
+    <div aria-hidden="true" class="brand-bar"></div>
     <div class="hero">
-      <div class="title"><span class="logo">SENHENG</span> S‑COIN Redemption</div>
+      <div class="title"><span class="logo" aria-label="Senheng Logo">SENHENG</span> S‑COIN Redemption</div>
       <p class="tagline">Find your rewards. Claim your joy!</p>
     </div>
-    <div class="toolbar" role="region" aria-label="Filters">
-      <div class="tool"><span class="label">Search</span><input id="q" type="text" placeholder="Name or model…" autocomplete="off" inputmode="search" aria-label="Search by name or model"></div>
-      <div class="tool"><span class="label">Brand</span><select id="brand"><option value="">All</option></select></div>
-      <div class="tool"><span class="label">Sort</span>
-        <select id="sort"><option value="">—</option><option value="price-asc">Member Price ↑</option><option value="price-desc">Member Price ↓</option><option value="az">Name A → Z</option><option value="za">Name Z → A</option></select>
+    <nav class="toolbar" aria-label="Rewards Filter and Settings">
+      <div class="tool">
+        <label class="label" for="q">Search</label>
+        <input id="q" type="text" placeholder="Name or model…" autocomplete="off" inputmode="search" aria-label="Search by name or model">
       </div>
-      <div class="tool"><span class="label">S‑COIN</span><input id="coinMin" type="number" min="0" step="100" placeholder="min" style="width:7ch"><span style="opacity:.6">–</span><input id="coinMax" type="number" min="0" step="100" placeholder="max" style="width:7ch"></div>
-      <div class="tool"><span class="label">Per page</span><select id="perPage"><option>9</option><option>12</option><option>18</option><option>24</option></select></div>
+      <div class="tool">
+        <label class="label" for="brand">Brand</label>
+        <select id="brand" aria-label="Filter by brand">
+          <option value="">All</option>
+        </select>
+      </div>
+      <div class="tool">
+        <label class="label" for="sort">Sort</label>
+        <select id="sort" aria-label="Sort product list">
+          <option value="">—</option>
+          <option value="price-asc">Member Price ↑</option>
+          <option value="price-desc">Member Price ↓</option>
+          <option value="az">Name A → Z</option>
+          <option value="za">Name Z → A</option>
+        </select>
+      </div>
+      <div class="tool">
+        <label class="label" id="coinLabel">S‑COIN</label>
+        <input id="coinMin" type="number" min="0" step="100" placeholder="min" aria-labelledby="coinLabel" style="width:7ch">
+        <span style="opacity:.6">–</span>
+        <input id="coinMax" type="number" min="0" step="100" placeholder="max" aria-labelledby="coinLabel" style="width:7ch">
+      </div>
+      <div class="tool">
+        <label class="label" for="perPage">Per page</label>
+        <select id="perPage" aria-label="Change results per page">
+          <option>9</option>
+          <option>12</option>
+          <option>18</option>
+          <option>24</option>
+        </select>
+      </div>
       <div class="spacer"></div>
-      <div class="tool" title="Toggle theme"><button id="themeToggle" class="switch" role="switch" aria-checked="false" aria-label="Toggle dark mode"><span class="knob"></span></button></div>
-    </div>
+      <div class="tool" title="Toggle theme">
+        <button id="themeToggle" class="switch" role="switch" aria-checked="false" aria-label="Toggle dark mode">
+          <span class="knob"></span>
+        </button>
+      </div>
+    </nav>
   </header>
-
-  <main class="container">
-    <div id="grid" class="grid" aria-live="polite" aria-busy="true"></div>
-    <nav class="pagination" id="pager" aria-label="Pagination"></nav>
+  <main id="main-content" class="container" tabindex="-1">
+    <section aria-labelledby="product-list-heading">
+      <h2 id="product-list-heading" class="visually-hidden">Available Reward Products</h2>
+      <div id="grid" class="grid" aria-live="polite" aria-busy="true"></div>
+      <nav class="pagination" id="pager" aria-label="Product pagination"></nav>
+    </section>
   </main>
 
-  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="dialog" role="document">
-      <button class="close" id="modalClose" aria-label="Close">✕</button>
+  <dialog id="modal" aria-modal="true" aria-labelledby="mTitle" aria-describedby="mDesc" hidden>
+    <form method="dialog" class="dialog" tabindex="0" role="document">
+      <button class="close" id="modalClose" aria-label="Close dialog window">✕</button>
       <h3 id="mTitle" class="dialog-title"></h3>
       <div class="zoom-wrap" id="zoomWrap">
         <div class="zoom-canvas" id="zoomCanvas">
-          <img id="mImg" class="zoom-img" alt="Product image"/>
+          <img id="mImg" class="zoom-img" alt="" />
         </div>
-        <div class="zoom-controls"><button id="zoomOut">−</button><button id="zoomReset">100%</button><button id="zoomIn">+</button></div>
+        <div class="zoom-controls">
+          <button type="button" id="zoomOut">−</button>
+          <button type="button" id="zoomReset">100%</button>
+          <button type="button" id="zoomIn">+</button>
+        </div>
       </div>
       <div class="info" style="padding-top:.8rem">
         <div id="mModel" class="model"></div>
-        <div class="tags" style="margin-top:.6rem"><span id="mRcp" class="tag rcp"></span><span id="mMember" class="tag member"></span></div>
+        <div class="tags" style="margin-top:.6rem">
+          <span id="mRcp" class="tag rcp"></span>
+          <span id="mMember" class="tag member"></span>
+        </div>
         <div id="mRemark" style="margin-top:.6rem"></div>
+        <div id="mDesc" class="visually-hidden"></div>
       </div>
-    </div>
-  </div>
+    </form>
+  </dialog>
 
   <script>
+    // Utility functions for DOM and formatting
     const $=(s,r=document)=>r.querySelector(s); const $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
     const toNum=(v)=>Number(String(v??0).toString().replace(/[^\d.]/g,""))||0;
     const fmtRM=(n)=>toNum(n).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
@@ -151,29 +433,233 @@
     root.setAttribute('data-theme',savedTheme); themeBtn.setAttribute('aria-checked',savedTheme==='dark');
     themeBtn.addEventListener('click',()=>{const next=root.getAttribute('data-theme')==='dark'?'light':'dark';root.setAttribute('data-theme',next);localStorage.setItem('theme',next);themeBtn.setAttribute('aria-checked',next==='dark')});
 
+    // Accessibility: Move focus to main content if skip link is used
+    document.querySelector('.skip-link').addEventListener('click', function(e) {
+      setTimeout(() => { $('#main-content').focus(); }, 10);
+    });
+
     const grid=$('#grid');
-    function makeSkeleton(){grid.innerHTML='';for(let i=0;i<9;i++){const sk=document.createElement('div');sk.className='card';sk.innerHTML=`<div class="brand-badge skeleton" style="width:70px;height:28px"></div><div class="frame skeleton"></div><div class="coin skeleton" style="height:52px;width:92%"></div><div class="info"><div class="skeleton" style="width:80%;height:18px;margin:.3rem 0"></div><div class="skeleton" style="width:60%;height:14px;margin:.3rem 0"></div><div class="skeleton" style="width:75%;height:28px;margin:.8rem 0;border-radius:999px"></div></div>`;grid.appendChild(sk)}}
+    function makeSkeleton() {
+      grid.innerHTML='';
+      for(let i=0;i<9;i++){
+        const sk=document.createElement('div');sk.className='card';sk.innerHTML=
+        `<div class="brand-badge skeleton" style="width:70px;height:28px"></div>
+        <div class="frame skeleton"></div>
+        <div class="coin skeleton" style="height:52px;width:92%"></div>
+        <div class="info">
+          <div class="skeleton" style="width:80%;height:18px;margin:.3rem 0"></div>
+          <div class="skeleton" style="width:60%;height:14px;margin:.3rem 0"></div>
+          <div class="skeleton" style="width:75%;height:28px;margin:.8rem 0;border-radius:999px"></div>
+        </div>`;
+        grid.appendChild(sk)
+      }
+    }
     makeSkeleton();
 
-    fetch('data.xlsx').then(r=>r.arrayBuffer()).then(buf=>{const wb=XLSX.read(buf,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];products=XLSX.utils.sheet_to_json(ws);initControls(products);applyFilters()}).catch(err=>{console.error('Error loading data:',err);grid.innerHTML=`<div class="card" style="min-height:auto;padding:1rem"><strong style="color:var(--on-strong);background:var(--brand);padding:.2rem .4rem;border-radius:6px">Failed to load data.xlsx</strong><p style="color:var(--muted)">Ensure the first sheet has: <code>FULL NAME, MODEL, BRAND, RCP, MEMBER, URL, REMARK</code>.</p></div>`});
+    fetch('data.xlsx').then(r=>r.arrayBuffer()).then(buf=>{
+      const wb=XLSX.read(buf,{type:'array'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      products=XLSX.utils.sheet_to_json(ws);
+      initControls(products);
+      applyFilters()
+    }).catch(err=>{
+      console.error('Error loading data:',err);
+      grid.innerHTML=`<div class="card" style="min-height:auto;padding:1rem"><strong style="color:var(--on-strong);background:var(--brand);padding:.2rem .4rem;border-radius:6px">Failed to load data.xlsx</strong><p style="color:var(--muted)">Ensure the first sheet has: <code>FULL NAME, MODEL, BRAND, RCP, MEMBER, URL, REMARK</code>.</p></div>`
+    });
 
-    function initControls(list){const set=new Set(list.map(x=>x.BRAND).filter(Boolean));const brandSel=$('#brand');[...set].sort().forEach(b=>{const o=document.createElement('option');o.value=o.textContent=b;brandSel.appendChild(o)});$('#perPage').value=String(perPage);$('#perPage').addEventListener('change',()=>{perPage=Number($('#perPage').value);localStorage.setItem('perPage',perPage);page=1;render()});$('#q').addEventListener('input',debounce(applyFilters,250));$('#brand').addEventListener('change',applyFilters);$('#sort').addEventListener('change',applyFilters);$('#coinMin').addEventListener('input',debounce(applyFilters,200));$('#coinMax').addEventListener('input',debounce(applyFilters,200));const coins=list.map(p=>toNum(p.MEMBER)*100).filter(n=>n>0);if(coins.length){$('#coinMin').placeholder=String(Math.min(...coins));$('#coinMax').placeholder=String(Math.max(...coins))}}
+    function initControls(list){
+      const set=new Set(list.map(x=>x.BRAND).filter(Boolean));
+      const brandSel=$('#brand');
+      [...set].sort().forEach(b=>{
+        const o=document.createElement('option');
+        o.value=o.textContent=b;
+        brandSel.appendChild(o)
+      });
+      $('#perPage').value=String(perPage);
+      $('#perPage').addEventListener('change',()=>{
+        perPage=Number($('#perPage').value);
+        localStorage.setItem('perPage',perPage);page=1;render()
+      });
+      $('#q').addEventListener('input',debounce(applyFilters,250));
+      $('#brand').addEventListener('change',applyFilters);
+      $('#sort').addEventListener('change',applyFilters);
+      $('#coinMin').addEventListener('input',debounce(applyFilters,200));
+      $('#coinMax').addEventListener('input',debounce(applyFilters,200));
+      const coins=list.map(p=>toNum(p.MEMBER)*100).filter(n=>n>0);
+      if(coins.length){
+        $('#coinMin').placeholder=String(Math.min(...coins));
+        $('#coinMax').placeholder=String(Math.max(...coins))
+      }
+    }
 
-    function applyFilters(){const q=$('#q').value.trim().toLowerCase();const brand=$('#brand').value;const sort=$('#sort').value;const cMin=toNum($('#coinMin').value||0);const cMax=toNum($('#coinMax').value||0);view=products.filter(p=>{const name=String(p['FULL NAME']||'').toLowerCase();const model=String(p['MODEL']||'').toLowerCase();const okQ=!q||name.includes(q)||model.includes(q);const okB=!brand||p.BRAND===brand;const coin=toNum(p.MEMBER)*100;const okMin=!cMin||coin>=cMin;const okMax=!cMax||coin<=cMax;return okQ&&okB&&okMin&&okMax});if(sort==='price-asc')view.sort((a,b)=>toNum(a.MEMBER)-toNum(b.MEMBER));else if(sort==='price-desc')view.sort((a,b)=>toNum(b.MEMBER)-toNum(a.MEMBER));else if(sort==='az')view.sort((a,b)=>String(a['FULL NAME']||'').localeCompare(String(b['FULL NAME']||'')));else if(sort==='za')view.sort((a,b)=>String(b['FULL NAME']||'').localeCompare(String(a['FULL NAME']||'')));page=1;render()}
+    function applyFilters(){
+      const q=$('#q').value.trim().toLowerCase();
+      const brand=$('#brand').value;
+      const sort=$('#sort').value;
+      const cMin=toNum($('#coinMin').value||0);
+      const cMax=toNum($('#coinMax').value||0);
+      view=products.filter(p=>{
+        const name=String(p['FULL NAME']||'').toLowerCase();
+        const model=String(p['MODEL']||'').toLowerCase();
+        const okQ=!q||name.includes(q)||model.includes(q);
+        const okB=!brand||p.BRAND===brand;
+        const coin=toNum(p.MEMBER)*100;
+        const okMin=!cMin||coin>=cMin;
+        const okMax=!cMax||coin<=cMax;
+        return okQ&&okB&&okMin&&okMax
+      });
+      if(sort==='price-asc')view.sort((a,b)=>toNum(a.MEMBER)-toNum(b.MEMBER));
+      else if(sort==='price-desc')view.sort((a,b)=>toNum(b.MEMBER)-toNum(a.MEMBER));
+      else if(sort==='az')view.sort((a,b)=>String(a['FULL NAME']||'').localeCompare(String(b['FULL NAME']||'')));
+      else if(sort==='za')view.sort((a,b)=>String(b['FULL NAME']||'').localeCompare(String(a['FULL NAME']||'')));
+      page=1;
+      render()
+    }
 
-    function render(){grid.setAttribute('aria-busy','true');grid.innerHTML='';const start=(page-1)*perPage,end=start+perPage;const data=view.slice(start,end);if(!data.length){grid.innerHTML=`<div class="card" style="min-height:auto;padding:1rem"><strong>No products found.</strong></div>`;$('#pager').innerHTML='';grid.removeAttribute('aria-busy');return}for(const p of data){const card=document.createElement('article');card.className='card';const scoin=(toNum(p.MEMBER)*100).toLocaleString();const rcp=fmtRM(p.RCP);const mem=fmtRM(p.MEMBER);card.innerHTML=`<div class="brand-badge">${p.BRAND||''}</div><div class="frame"><img alt="${(p['FULL NAME']||'Product').replace(/"/g,'\"')}" loading="lazy" decoding="async" onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'240\'><rect width=\'100%\' height=\'100%\' fill=\'%23ffffff\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23999\' font-family=\'Arial\' font-size=\'14\'>No Image</text></svg>'" src="${p.URL||''}"></div><div class="coin"><img src="SCOIN.png" alt="S-COIN"><span>${scoin} S‑COIN</span></div><div class="info"><div class="name">${p['FULL NAME']||''}</div><div class="model">${p['MODEL']?`Model: ${p['MODEL']}`:'Model: N/A'}</div><div class="tags"><span class="tag rcp">RCP: RM${rcp}</span><span class="tag member">Member: RM${mem}</span></div>${p.REMARK?`<div class="remark">${p.REMARK}</div>`:''}</div>`;card.addEventListener('click',()=>openModal(p));grid.appendChild(card)}const total=Math.ceil(view.length/perPage);const pager=$('#pager');const mk=(t,dis,fn)=>{const b=document.createElement('button');b.textContent=t;if(dis)b.disabled=true;b.addEventListener('click',fn);return b};pager.innerHTML='';pager.append(mk('First',page===1,()=>{page=1;render()}),mk('Prev',page===1,()=>{page=Math.max(1,page-1);render()}),(()=>{const s=document.createElement('span');s.style.fontWeight='900';s.style.minWidth='9ch';s.style.textAlign='center';s.textContent=`Page ${page} / ${total}`;return s})(),mk('Next',page===total,()=>{page=Math.min(total,page+1);render()}),mk('Last',page===total,()=>{page=total;render()}));grid.removeAttribute('aria-busy')}
+    function render() {
+      grid.setAttribute('aria-busy','true');
+      grid.innerHTML='';
+      const start=(page-1)*perPage, end=start+perPage, data=view.slice(start,end);
 
-    // Modal + True-size zoom/pan
-    const modal=$('#modal'), modalClose=$('#modalClose'); const wrap=$('#zoomWrap'), canvas=$('#zoomCanvas'), img=$('#mImg');
-    const zin=$('#zoomIn'), zout=$('#zoomOut'), zreset=$('#zoomReset'); let scale=1, pos={x:0,y:0}, isPan=false, start={x:0,y:0};
-    function applyTransform(){canvas.style.transform=`translate(${pos.x}px,${pos.y}px) scale(${scale})`}
-    function openModal(p){img.src=p.URL||'';$('#mTitle').textContent=p['FULL NAME']||'';$('#mModel').textContent=`Model: ${p['MODEL']||'N/A'}`;$('#mRcp').textContent=`RCP: RM${fmtRM(p.RCP)}`;$('#mMember').textContent=`Member Price: RM${fmtRM(p.MEMBER)}`;$('#mRemark').innerHTML=p.REMARK?`<span class="remark">${p.REMARK}</span>`:'';resetZoom();modal.classList.add('show');modal.setAttribute('aria-hidden','false');modalClose.focus()}
-    function closeModal(){modal.classList.remove('show');modal.setAttribute('aria-hidden','true')}
-    modalClose.addEventListener('click',closeModal); modal.addEventListener('click',e=>{if(e.target===modal)closeModal()}); window.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
-    function resetZoom(){scale=1;pos={x:0,y:0};applyTransform()}
-    zin.addEventListener('click',()=>{scale=Math.min(6,scale+0.25);applyTransform()}); zout.addEventListener('click',()=>{scale=Math.max(0.4,scale-0.25);applyTransform()}); zreset.addEventListener('click',resetZoom);
-    wrap.addEventListener('wheel',e=>{e.preventDefault();const d=e.deltaY<0?0.18:-0.18;const ns=Math.min(6,Math.max(0.4,scale+d));const r=wrap.getBoundingClientRect();const cx=e.clientX-r.left-r.width/2;const cy=e.clientY-r.top-r.height/2;pos.x-=cx*(ns-scale);pos.y-=cy*(ns-scale);scale=ns;applyTransform()},{passive:false});
-    wrap.addEventListener('pointerdown',e=>{isPan=true;start={x:e.clientX-pos.x,y:e.clientY-pos.y};wrap.setPointerCapture(e.pointerId)}); wrap.addEventListener('pointermove',e=>{if(!isPan)return;pos.x=e.clientX-start.x;pos.y=e.clientY-start.y;applyTransform()}); wrap.addEventListener('pointerup',()=>{isPan=false}); wrap.addEventListener('pointerleave',()=>{isPan=false});
+      if(!data.length){
+        grid.innerHTML=`<div class="card" tabindex="0" style="min-height:auto;padding:1rem"><strong>No products found.</strong></div>`;
+        $('#pager').innerHTML='';
+        grid.removeAttribute('aria-busy');
+        return
+      }
+      for(const p of data){
+        const card=document.createElement('article');
+        card.className='card';
+        card.tabIndex=0;
+        card.setAttribute('role','button');
+        const scoin=(toNum(p.MEMBER)*100).toLocaleString();
+        const rcp=fmtRM(p.RCP);
+        const mem=fmtRM(p.MEMBER);
+        card.innerHTML=
+        `<div class="brand-badge">${p.BRAND||''}</div>
+        <div class="frame">
+          <img alt="${(p['FULL NAME']||'Product').replace(/"/g,'\"')}" loading="lazy" decoding="async" 
+            onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'240\'><rect width=\'100%\' height=\'100%\' fill=\'%23ffffff\'/><text x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23999\' font-family=\'Arial\' font-size=\'14\'>No Image</text></svg>'"
+            src="${p.URL||''}">
+        </div>
+        <div class="coin"><img src="SCOIN.png" alt="S-COIN symbol"><span>${scoin} S‑COIN</span></div>
+        <div class="info">
+          <div class="name">${p['FULL NAME']||''}</div>
+          <div class="model">${p['MODEL']?`Model: ${p['MODEL']}`:'Model: N/A'}</div>
+          <div class="tags">
+            <span class="tag rcp">RCP: RM${rcp}</span>
+            <span class="tag member">Member: RM${mem}</span>
+          </div>
+          ${p.REMARK?`<div class="remark">${p.REMARK}</div>`:''}
+        </div>`;
+        card.addEventListener('click',()=>openModal(p));
+        card.addEventListener('keydown',e=>{
+          if(e.key==='Enter'||e.key===' ')openModal(p)
+        });
+        grid.appendChild(card)
+      }
+      const total=Math.ceil(view.length/perPage);
+      const pager=$('#pager');
+      const mk=(t,dis,fn)=>{
+        const b=document.createElement('button');b.textContent=t;
+        if(dis)b.disabled=true;
+        b.addEventListener('click',fn);
+        return b
+      };
+      pager.innerHTML='';
+      pager.append(
+        mk('First',page===1,()=>{page=1;render()}),
+        mk('Prev',page===1,()=>{page=Math.max(1,page-1);render()}),
+        (()=>{const s=document.createElement('span');s.style.fontWeight='900';s.style.minWidth='9ch';s.style.textAlign='center';s.textContent=`Page ${page} / ${total}`;return s})(),
+        mk('Next',page===total,()=>{page=Math.min(total,page+1);render()}),
+        mk('Last',page===total,()=>{page=total;render()})
+      );
+      grid.removeAttribute('aria-busy')
+    }
+
+    // Accessible Modal Dialog Logic
+    const modal = $('#modal');
+    const modalDialog = modal.querySelector('.dialog');
+    const modalClose = $('#modalClose');
+    const wrap = $('#zoomWrap'), canvas = $('#zoomCanvas'), img = $('#mImg');
+    const zin=$('#zoomIn'), zout=$('#zoomOut'), zreset=$('#zoomReset');
+    let scale=1, pos={x:0,y:0}, isPan=false, start={x:0,y:0};
+    let lastFocus = null;
+    function applyTransform(){
+      canvas.style.transform=`translate(${pos.x}px,${pos.y}px) scale(${scale})`
+    }
+    function openModal(p){
+      lastFocus = document.activeElement;
+      img.src=p.URL||'';
+      img.alt = p['FULL NAME']||'Product image';
+      $('#mTitle').textContent=p['FULL NAME']||'';
+      $('#mModel').textContent=`Model: ${p['MODEL']||'N/A'}`;
+      $('#mRcp').textContent=`RCP: RM${fmtRM(p.RCP)}`;
+      $('#mMember').textContent=`Member Price: RM${fmtRM(p.MEMBER)}`;
+      $('#mRemark').innerHTML=p.REMARK?`<span class="remark">${p.REMARK}</span>`:'';
+      $('#mDesc').textContent = "Use zoom controls for a closer look at the product image, review model, pricing and notes below.";
+      resetZoom();
+
+      modal.removeAttribute('hidden');
+      modal.showModal();
+      modal.addEventListener('close', handleDialogClose, {once:true});
+      trapFocus(modalDialog);
+    }
+    function handleDialogClose(){
+      modal.setAttribute('hidden','');
+      if(lastFocus && lastFocus.focus) setTimeout(()=>lastFocus.focus(), 20)
+    }
+    function closeModal(){
+      modal.close();
+    }
+    modalClose.addEventListener('click',closeModal);
+    modal.addEventListener('click',e=>{
+      if(e.target===modal)closeModal()
+    });
+    window.addEventListener('keydown',e=>{
+      if(modal.open && e.key==='Escape') closeModal();
+    });
+    // Trap focus within modal dialog when open
+    function trapFocus(modalElem){
+      const focusable=modalElem.querySelectorAll('button,a,input,select,textarea,[tabindex]:not([tabindex="-1"])');
+      const first=focusable[0], last=focusable[focusable.length-1];
+      modalElem.addEventListener('keydown',e=>{
+        if(e.key!=='Tab')return;
+        if(e.shiftKey){
+          if(document.activeElement===first){e.preventDefault();last.focus()}
+        } else {
+          if(document.activeElement===last){e.preventDefault();first.focus()}
+        }
+      });
+      setTimeout(()=>first.focus(), 20);
+    }
+    // Zoom and pan logic
+    function resetZoom(){
+      scale=1;pos={x:0,y:0};applyTransform()
+    }
+    zin.addEventListener('click',()=>{scale=Math.min(6,scale+0.25);applyTransform()});
+    zout.addEventListener('click',()=>{scale=Math.max(0.4,scale-0.25);applyTransform()});
+    zreset.addEventListener('click',resetZoom);
+    wrap.addEventListener('wheel',e=>{
+      e.preventDefault();
+      const d=e.deltaY<0?0.18:-0.18;
+      const ns=Math.min(6,Math.max(0.4,scale+d));
+      const r=wrap.getBoundingClientRect();
+      const cx=e.clientX-r.left-r.width/2;
+      const cy=e.clientY-r.top-r.height/2;
+      pos.x-=cx*(ns-scale);
+      pos.y-=cy*(ns-scale);
+      scale=ns;applyTransform()
+    },{passive:false});
+    wrap.addEventListener('pointerdown',e=>{
+      isPan=true;start={x:e.clientX-pos.x,y:e.clientY-pos.y};
+      wrap.setPointerCapture(e.pointerId)
+    });
+    wrap.addEventListener('pointermove',e=>{
+      if(!isPan)return;pos.x=e.clientX-start.x;pos.y=e.clientY-start.y;applyTransform()
+    });
+    wrap.addEventListener('pointerup',()=>{isPan=false});
+    wrap.addEventListener('pointerleave',()=>{isPan=false});
   </script>
 </body>
 </html>
